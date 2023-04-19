@@ -1,5 +1,9 @@
 #include "start_page.h"
+#include "socket.h"
 #include<QString>
+#include <QProcess>
+#include<QObject>
+#include<QStringList>
 Start_page::Start_page(QWidget *parent)
     : QGroupBox(parent),
     label_email(new QLabel("Email:",this)),
@@ -41,5 +45,18 @@ Start_page::~Start_page(){};
 void Start_page::on_button_entry_clicked(){
     QString email=edit_email->text();
     QString password=edit_password->text();
+    QString list_query;
+    list_query.append("0");
+    list_query.append(" ");
+    list_query.append(email);
+    list_query.append(" ");
+    list_query.append(password);
+
+    QObject* parent;
+    Socket* socket_to_db(parent);
+    socket_to_db.sendQuery(list_query);
+
+
+
 
 }
