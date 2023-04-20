@@ -20,6 +20,7 @@ set(PROJECT_SOURCES
         start_page.h
         start_page.cpp
         socket.cpp
+        app_page.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
