@@ -22,6 +22,8 @@ private:
     QPushButton* button_entry;
     QGridLayout* layout_page1;
 
+    void set_start_page_visible(bool flag);
+
 public slots:
     void on_button_entry_clicked();
 };

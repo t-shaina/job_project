@@ -4,7 +4,8 @@
 #include <QObject>
 #include<QTcpSocket>
 #include<QStringList>
-class Socket:public QObject
+#include <QWidget>
+class Socket: public QObject
 {
     Q_OBJECT
 public:

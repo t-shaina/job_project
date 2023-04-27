@@ -11,7 +11,7 @@ Socket::Socket(QObject* parent):
 }
 
 void Socket::readTcpData(){
-
+    QByteArray data=client_socket->readAll();//обертка или
 
 }
 void Socket::sendQuery(QString message){

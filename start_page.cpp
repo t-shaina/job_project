@@ -4,13 +4,17 @@
 #include <QProcess>
 #include<QObject>
 #include<QStringList>
+
+const QString email="Email:";
+const QString password="Пароль:";
+const QString entry="Вход";
 Start_page::Start_page(QWidget *parent)
     : QGroupBox(parent),
-    label_email(new QLabel("Email:",this)),
-    label_password(new QLabel("Пароль:", this)),
+    label_email(new QLabel(email,this)),
+    label_password(new QLabel(password, this)),
     edit_email(new QLineEdit(this)),
     edit_password(new QLineEdit(this)),
-    button_entry(new QPushButton("Вход", this)),
+    button_entry(new QPushButton(entry, this)),
     layout_page1(new QGridLayout(this))
 
 {
@@ -42,6 +46,13 @@ Start_page::Start_page(QWidget *parent)
 
 Start_page::~Start_page(){};
 
+void Start_page::set_start_page_visible(bool flag){
+    label_email->setVisible(flag);
+    label_password->setVisible(flag);
+    edit_email->setVisible(flag);
+    edit_password->setVisible(flag);
+    button_entry->setVisible(flag);
+}
 void Start_page::on_button_entry_clicked(){
     QString email=edit_email->text();
     QString password=edit_password->text();
@@ -52,9 +63,12 @@ void Start_page::on_button_entry_clicked(){
     list_query.append(" ");
     list_query.append(password);
 
-    QObject* parent;
-    Socket* socket_to_db(parent);
+    Socket socket_to_db(this);
     socket_to_db.sendQuery(list_query);
+
+    //set visible false
+    set_start_page_visible(false);
+
 
 
 
