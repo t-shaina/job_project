@@ -7,7 +7,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QGridLayout>
-
+#include<QString>
 class Start_page : public QGroupBox
 {
     Q_OBJECT
@@ -23,7 +23,8 @@ private:
     QGridLayout* layout_page1;
 
     void set_start_page_visible(bool flag);
-
+signals:
+    void logged_in(QString username);
 public slots:
     void on_button_entry_clicked();
 };

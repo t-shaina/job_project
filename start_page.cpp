@@ -5,16 +5,16 @@
 #include<QObject>
 #include<QStringList>
 
-const QString email="Email:";
-const QString password="Пароль:";
-const QString entry="Вход";
+const QString email_label_text="Email:";
+const QString password_label_text="Пароль:";
+const QString entrbutton_text="Вход";
 Start_page::Start_page(QWidget *parent)
     : QGroupBox(parent),
-    label_email(new QLabel(email,this)),
-    label_password(new QLabel(password, this)),
+    label_email(new QLabel(email_label_text,this)),
+    label_password(new QLabel(password_label_text, this)),
     edit_email(new QLineEdit(this)),
     edit_password(new QLineEdit(this)),
-    button_entry(new QPushButton(entry, this)),
+    button_entry(new QPushButton(entrbutton_text, this)),
     layout_page1(new QGridLayout(this))
 
 {
@@ -53,6 +53,7 @@ void Start_page::set_start_page_visible(bool flag){
     edit_password->setVisible(flag);
     button_entry->setVisible(flag);
 }
+//void Start_page::logged_in(QString username){};
 void Start_page::on_button_entry_clicked(){
     QString email=edit_email->text();
     QString password=edit_password->text();
@@ -66,7 +67,8 @@ void Start_page::on_button_entry_clicked(){
     Socket socket_to_db(this);
     socket_to_db.sendQuery(list_query);
 
-    //set visible false
+    //if logged in
+    emit logged_in(email);
     set_start_page_visible(false);
 
 
