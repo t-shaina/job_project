@@ -8,13 +8,15 @@
 #include <QLabel>
 #include <QGridLayout>
 #include<QString>
-class Start_page : public QGroupBox
+class Start_page: public QWidget
 {
     Q_OBJECT
 public:
     explicit Start_page(QWidget *parent = nullptr);
     ~Start_page();
+    void set_start_page_visible(bool flag);
 private:
+
     QLabel* label_email;
     QLabel* label_password;
     QLineEdit* edit_email;
@@ -22,11 +24,12 @@ private:
     QPushButton* button_entry;
     QGridLayout* layout_page1;
 
-    void set_start_page_visible(bool flag);
+
 signals:
     void logged_in(QString username);
 public slots:
     void on_button_entry_clicked();
+
 };
 
 #endif // START_PAGE_H

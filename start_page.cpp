@@ -9,7 +9,7 @@ const QString email_label_text="Email:";
 const QString password_label_text="Пароль:";
 const QString entrbutton_text="Вход";
 Start_page::Start_page(QWidget *parent)
-    : QGroupBox(parent),
+    :QWidget(parent),
     label_email(new QLabel(email_label_text,this)),
     label_password(new QLabel(password_label_text, this)),
     edit_email(new QLineEdit(this)),
@@ -70,9 +70,5 @@ void Start_page::on_button_entry_clicked(){
     //if logged in
     emit logged_in(email);
     set_start_page_visible(false);
-
-
-
-
 
 }

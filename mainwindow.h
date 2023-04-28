@@ -22,5 +22,6 @@ private:
 
 public slots:
     void set_username(QString username);
+    void resize_window();
 };
 #endif // MAINWINDOW_H

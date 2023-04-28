@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 {
     ui->setupUi(this);
+    this->setMaximumSize(500, 350);
+    this->setMinimumSize(500, 350);
     statusBar()->addWidget(&status);
     status.setText("Войдите в систему");
 }
@@ -20,4 +22,9 @@ MainWindow::~MainWindow()
 void MainWindow::set_username(QString username){
     QString message="Вы вошли как ";
     status.setText(message+=username);
+}
+void MainWindow::resize_window(){
+    this->setMaximumSize(1024, 768);
+    this->setMinimumSize(800, 600);
+    this->setSizeIncrement(8, 6);
 }
