@@ -18,6 +18,7 @@
 class App_page:public QWidget
 {
     Q_OBJECT
+    friend class MainWindow;
 public:
     App_page(QWidget* parent=nullptr);
 private:
@@ -54,8 +55,13 @@ private:
     QComboBox* status_combo_box;
     QPushButton* accept_button;
     QPushButton* back_button;
+
+    void base_settings();
 public slots:
     void set_app_page_visible(bool flag);
+    void on_back_button_clicked();
+signals:
+    void step_back();
 
 };
 

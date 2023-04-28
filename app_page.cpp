@@ -50,30 +50,24 @@ App_page::App_page(QWidget *parent)
     QVBoxLayout* genre_group_layout=new QVBoxLayout;
     QVBoxLayout* data_group_layout=new QVBoxLayout;
 
-    data_slider->setOrientation(Qt::Horizontal);
-    QDate* currenta_date=new QDate();
-    data_slider->setMaximum(currenta_date->year());
-    data_slider->setMinimum(1895);
-    data_slider->setTickInterval(1);
-
     tabel_group_layout->addWidget(tabel_scroll);
     tabel_group_layout->addWidget(delete_button);
     search_group_layout->addWidget(search_combo_box);
     search_group_layout->addWidget(search_edit);
     search_group_layout->addWidget(search_button);
-    edit_group_layout->addWidget(name_label, 0,0, Qt::AlignCenter);
+    edit_group_layout->addWidget(name_label, 0,0, Qt::AlignLeft|Qt::AlignTop);
     edit_group_layout->addWidget(name_edit, 0,1, Qt::AlignCenter);
-    edit_group_layout->addWidget(director_label, 1,0, Qt::AlignCenter);
+    edit_group_layout->addWidget(director_label, 1,0, Qt::AlignLeft|Qt::AlignTop);
     edit_group_layout->addWidget(director_group, 1,1, Qt::AlignCenter);
-    edit_group_layout->addWidget(genre_label, 2,0, Qt::AlignCenter);
+    edit_group_layout->addWidget(genre_label, 2,0, Qt::AlignLeft|Qt::AlignTop);
     edit_group_layout->addWidget(genre_group, 2,1, Qt::AlignCenter);
-    edit_group_layout->addWidget(data_label, 3,0, Qt::AlignCenter);
+    edit_group_layout->addWidget(data_label, 3,0, Qt::AlignLeft|Qt::AlignTop);
     edit_group_layout->addWidget(data_group, 3,1, Qt::AlignCenter);
-    edit_group_layout->addWidget(rating_label, 4,0, Qt::AlignCenter);
+    edit_group_layout->addWidget(rating_label, 4,0, Qt::AlignLeft|Qt::AlignTop);
     edit_group_layout->addWidget(rating_spin_box, 4,1, Qt::AlignCenter);
-    edit_group_layout->addWidget(status_label, 5,0, Qt::AlignCenter);
+    edit_group_layout->addWidget(status_label, 5,0, Qt::AlignLeft|Qt::AlignTop);
     edit_group_layout->addWidget(status_combo_box, 5,1, Qt::AlignCenter);
-    edit_group_layout->addWidget(accept_button, 6,1, Qt::AlignCenter);
+    edit_group_layout->addWidget(accept_button, 7,1, Qt::AlignCenter);
     director_group_layout->addWidget(director_combo_box, Qt::AlignCenter);
     director_group_layout->addWidget(director_edit, Qt::AlignCenter);
     genre_group_layout->addWidget(genre_combo_box, Qt::AlignCenter);
@@ -91,21 +85,50 @@ App_page::App_page(QWidget *parent)
     navigation_group->setLayout(navigation_group_layout);
 
 
-    layout_page->addWidget(tabel_group, 1,1, Qt::AlignCenter);
-    layout_page->addWidget(search_group, 3,1, Qt::AlignCenter);
-    layout_page->addWidget(edit_group, 1,3, Qt::AlignCenter);
-    layout_page->addWidget(navigation_group, 3,3, Qt::AlignCenter);
+    layout_page->addWidget(tabel_group, 1,1, Qt::AlignLeft|Qt::AlignTop);
+    layout_page->addWidget(search_group, 3,1, Qt::AlignLeft|Qt::AlignBottom);
+    layout_page->addWidget(edit_group, 1,3, Qt::AlignRight|Qt::AlignTop);
+    layout_page->addWidget(navigation_group, 3,3, Qt::AlignRight|Qt::AlignBottom);
 
     setLayout(layout_page);
     this->show();
-    this->setFixedSize(500,350);
-    this->resize(500,500);
-    set_app_page_visible(false);
-    //изменить размер окна
+    //this->setFixedSize(500,350);
+    this->resize(800,600);
+    this->setMaximumHeight(768);
+    this->setMaximumWidth(1024);
+    edit_group_layout->setRowMinimumHeight(6, 30);
+    edit_group_layout->setVerticalSpacing(25);
+    base_settings();
+    connect(back_button, SIGNAL(clicked()), this, SLOT(on_back_button_clicked()));
 }
 void App_page::set_app_page_visible(bool flag){
     tabel_group->setVisible(flag);
     search_group->setVisible(flag);
     edit_group->setVisible(flag);
     navigation_group->setVisible(flag);
+}
+void App_page::on_back_button_clicked(){
+    emit step_back();
+}
+void App_page::base_settings(){
+    layout_page->setAlignment(layout_page->parentWidget(), Qt::AlignHCenter|Qt::AlignVCenter);
+    layout_page->setContentsMargins(8,10, 8, 10);
+    layout_page->setHorizontalSpacing(50);
+    layout_page->setVerticalSpacing(50);
+    layout_page->setColumnMinimumWidth(0, 0);
+    layout_page->setColumnMinimumWidth(4, 0);
+    layout_page->setColumnMinimumWidth(2, 8);
+    layout_page->setRowMinimumHeight(0, 0);
+    layout_page->setRowMinimumHeight(2, 8);
+    layout_page->setRowMinimumHeight(4, 0);
+    layout_page->setColumnStretch(1, 2);
+    layout_page->setColumnStretch(3, 2);
+    layout_page->setRowStretch(1, 2);
+    layout_page->setRowStretch(3, 2);
+
+    data_slider->setOrientation(Qt::Horizontal);
+    QDate* currenta_date=new QDate();
+    data_slider->setMaximum(currenta_date->year());
+    data_slider->setMinimum(1895);
+    data_slider->setTickInterval(1);
 }

@@ -1,4 +1,5 @@
 #include "start_page.h"
+#include "app_page.h"
 #include "socket.h"
 #include<QString>
 #include <QProcess>
@@ -70,5 +71,7 @@ void Start_page::on_button_entry_clicked(){
     //if logged in
     emit logged_in(email);
     set_start_page_visible(false);
+    App_page app_page(this);
+    //this->~Start_page();
 
 }

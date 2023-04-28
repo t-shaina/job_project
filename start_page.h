@@ -11,6 +11,7 @@
 class Start_page: public QWidget
 {
     Q_OBJECT
+
 public:
     explicit Start_page(QWidget *parent = nullptr);
     ~Start_page();
@@ -29,6 +30,7 @@ signals:
     void logged_in(QString username);
 public slots:
     void on_button_entry_clicked();
+
 
 };
 

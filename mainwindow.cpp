@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setMinimumSize(500, 350);
     statusBar()->addWidget(&status);
     status.setText("Войдите в систему");
+    QObject::connect(this->app_page, SIGNAL(step_back()), this, SLOT(destroy_app_page()));
 }
 
 MainWindow::~MainWindow()
@@ -27,4 +28,10 @@ void MainWindow::resize_window(){
     this->setMaximumSize(1024, 768);
     this->setMinimumSize(800, 600);
     this->setSizeIncrement(8, 6);
+}
+void MainWindow:: creat_app_page(){
+    App_page app_page=new App_page(this);
+}
+void MainWindow:: destroy_app_page(){
+    delete app_page;
 }
