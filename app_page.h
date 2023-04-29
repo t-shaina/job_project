@@ -22,18 +22,21 @@ class App_page:public QWidget
 public:
     App_page(QWidget* parent=nullptr);
 private:
+    //QGroupBox* page_group;
     QGridLayout* layout_page;
-    QGroupBox* tabel_group;
+    QGroupBox* table_group;
+    QGroupBox* scroll_table_group;
     QGroupBox* search_group;
+    QGroupBox* settings_group;
     QGroupBox* edit_group;
     QGroupBox* navigation_group;
-    QScrollArea* tabel_scroll;
+    QScrollArea* table_scroll;
     QScrollArea* edit_scroll;
     QGroupBox* director_group;
     QGroupBox* genre_group;
     QGroupBox* data_group;
 
-    QTableView* tabel;
+    QTableView* table;
     QPushButton* delete_button;
     QComboBox* search_combo_box;
     QLineEdit* search_edit;
@@ -57,6 +60,7 @@ private:
     QPushButton* back_button;
 
     void base_settings();
+    void main_buttons_settings(int w, int h);
 public slots:
     void set_app_page_visible(bool flag);
     void on_back_button_clicked();

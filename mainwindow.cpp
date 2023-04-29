@@ -26,8 +26,9 @@ void MainWindow::set_username(QString username){
 }
 void MainWindow::resize_window(){
     this->setMaximumSize(1024, 768);
-    this->setMinimumSize(800, 600);
+    this->setMinimumSize(912, 684);
     this->setSizeIncrement(8, 6);
+    this->setFixedSize(1024, 768);
 }
 void MainWindow:: creat_app_page(){
     App_page app_page=new App_page(this);

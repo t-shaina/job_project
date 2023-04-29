@@ -6,19 +6,34 @@
 #include <QLabel>
 #include<QScrollArea>
 #include<QDate>
+
+const int width_window=1024;
+const int hight_window=768;
+const int l_margin=10;
+const int t_margin=30;
+const int r_margin=10;
+const int b_margin=30;
+const int v_spacing=30;
+const int h_spacing=30;
+const int navigation_group_hight=50;
+const int table_magrin=5;
+
 App_page::App_page(QWidget *parent)
     :QWidget(parent),
+    //page_group(new QGroupBox(this)),
     layout_page(new QGridLayout(this)),
-    tabel_group(new QGroupBox(this)),
+    table_group(new QGroupBox(this)),
+    scroll_table_group(new QGroupBox(table_group)),
     search_group(new QGroupBox(this)),
+    settings_group(new QGroupBox(this)),
     edit_group(new QGroupBox(this)),
     navigation_group(new QGroupBox(this)),
-    tabel_scroll(new QScrollArea(tabel_group)),
-    edit_scroll(new QScrollArea(edit_group)),
-    director_group(new QGroupBox(edit_scroll)),
-    genre_group(new QGroupBox(edit_scroll)),
-    data_group(new QGroupBox(edit_scroll)),
-    tabel(new QTableView(this)),
+    table_scroll(new QScrollArea()),
+    edit_scroll(new QScrollArea()),
+    director_group(new QGroupBox(edit_group)),
+    genre_group(new QGroupBox(edit_group)),
+    data_group(new QGroupBox(edit_group)),
+    table(new QTableView(scroll_table_group)),
     delete_button(new QPushButton("Удалить", this)),
     search_combo_box(new QComboBox(this)),
     search_edit(new QLineEdit(this)),
@@ -42,93 +57,121 @@ App_page::App_page(QWidget *parent)
     back_button (new QPushButton("Назад", this))
 {
 
-    QVBoxLayout* tabel_group_layout=new QVBoxLayout;
+    QVBoxLayout* table_group_layout=new QVBoxLayout;
+    QVBoxLayout* scroll_table_group_layout=new QVBoxLayout;
     QHBoxLayout* search_group_layout=new QHBoxLayout;
     QHBoxLayout* navigation_group_layout=new QHBoxLayout;
+    QVBoxLayout* settings_group_layout=new QVBoxLayout;
     QGridLayout* edit_group_layout=new QGridLayout;
     QVBoxLayout* director_group_layout=new QVBoxLayout;
     QVBoxLayout* genre_group_layout=new QVBoxLayout;
     QVBoxLayout* data_group_layout=new QVBoxLayout;
 
-    tabel_group_layout->addWidget(tabel_scroll);
-    tabel_group_layout->addWidget(delete_button);
+    table_group_layout->addWidget(table_scroll);
+    table_group_layout->addWidget(delete_button);
     search_group_layout->addWidget(search_combo_box);
     search_group_layout->addWidget(search_edit);
     search_group_layout->addWidget(search_button);
+    settings_group_layout->addWidget(edit_scroll);
+    settings_group_layout->addWidget(accept_button);
     edit_group_layout->addWidget(name_label, 0,0, Qt::AlignLeft|Qt::AlignTop);
-    edit_group_layout->addWidget(name_edit, 0,1, Qt::AlignCenter);
+    edit_group_layout->addWidget(name_edit, 0,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(director_label, 1,0, Qt::AlignLeft|Qt::AlignTop);
-    edit_group_layout->addWidget(director_group, 1,1, Qt::AlignCenter);
+    edit_group_layout->addWidget(director_group, 1,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(genre_label, 2,0, Qt::AlignLeft|Qt::AlignTop);
-    edit_group_layout->addWidget(genre_group, 2,1, Qt::AlignCenter);
+    edit_group_layout->addWidget(genre_group, 2,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(data_label, 3,0, Qt::AlignLeft|Qt::AlignTop);
-    edit_group_layout->addWidget(data_group, 3,1, Qt::AlignCenter);
+    edit_group_layout->addWidget(data_group, 3,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(rating_label, 4,0, Qt::AlignLeft|Qt::AlignTop);
-    edit_group_layout->addWidget(rating_spin_box, 4,1, Qt::AlignCenter);
+    edit_group_layout->addWidget(rating_spin_box, 4,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(status_label, 5,0, Qt::AlignLeft|Qt::AlignTop);
-    edit_group_layout->addWidget(status_combo_box, 5,1, Qt::AlignCenter);
-    edit_group_layout->addWidget(accept_button, 7,1, Qt::AlignCenter);
+    edit_group_layout->addWidget(status_combo_box, 5,1, Qt::AlignCenter|Qt::AlignTop);
     director_group_layout->addWidget(director_combo_box, Qt::AlignCenter);
     director_group_layout->addWidget(director_edit, Qt::AlignCenter);
     genre_group_layout->addWidget(genre_combo_box, Qt::AlignCenter);
     genre_group_layout->addWidget(genre_edit, Qt::AlignCenter);
     data_group_layout->addWidget(data_slider, Qt::AlignCenter);
     data_group_layout->addWidget(data_edit, Qt::AlignCenter);
-    navigation_group_layout->addWidget(back_button);
+    navigation_group_layout->addWidget(back_button, Qt::AlignRight);
 
-    tabel_group->setLayout(tabel_group_layout);
+    table_group->setLayout(table_group_layout);
+    scroll_table_group->setLayout(scroll_table_group_layout);
     search_group->setLayout(search_group_layout);
+    settings_group->setLayout(settings_group_layout);
     edit_group->setLayout(edit_group_layout);
     director_group->setLayout(director_group_layout);
     genre_group->setLayout(genre_group_layout);
     data_group->setLayout(data_group_layout);
     navigation_group->setLayout(navigation_group_layout);
 
+    table_scroll->setWidget(scroll_table_group);
+    table_scroll->setWidgetResizable(true);
+    edit_scroll->setWidget(edit_group);
+    edit_scroll->setWidgetResizable(true);
 
-    layout_page->addWidget(tabel_group, 1,1, Qt::AlignLeft|Qt::AlignTop);
-    layout_page->addWidget(search_group, 3,1, Qt::AlignLeft|Qt::AlignBottom);
-    layout_page->addWidget(edit_group, 1,3, Qt::AlignRight|Qt::AlignTop);
-    layout_page->addWidget(navigation_group, 3,3, Qt::AlignRight|Qt::AlignBottom);
+    layout_page->addWidget(table_group, 0,0, Qt::AlignLeft|Qt::AlignTop);
+    layout_page->addWidget(search_group, 1,0, Qt::AlignLeft|Qt::AlignBottom);
+    layout_page->addWidget(settings_group, 0,1, Qt::AlignRight|Qt::AlignTop);
+    layout_page->addWidget(navigation_group, 1,1, Qt::AlignRight|Qt::AlignBottom);
 
     setLayout(layout_page);
     this->show();
     //this->setFixedSize(500,350);
-    this->resize(800,600);
+    this->resize(1024,768);
     this->setMaximumHeight(768);
     this->setMaximumWidth(1024);
-    edit_group_layout->setRowMinimumHeight(6, 30);
+    //edit_group_layout->setRowMinimumHeight(6, 30);
     edit_group_layout->setVerticalSpacing(25);
     base_settings();
     connect(back_button, SIGNAL(clicked()), this, SLOT(on_back_button_clicked()));
 }
 void App_page::set_app_page_visible(bool flag){
-    tabel_group->setVisible(flag);
+    table_group->setVisible(flag);
     search_group->setVisible(flag);
-    edit_group->setVisible(flag);
+    settings_group->setVisible(flag);
     navigation_group->setVisible(flag);
 }
 void App_page::on_back_button_clicked(){
     emit step_back();
 }
 void App_page::base_settings(){
+
     layout_page->setAlignment(layout_page->parentWidget(), Qt::AlignHCenter|Qt::AlignVCenter);
-    layout_page->setContentsMargins(8,10, 8, 10);
-    layout_page->setHorizontalSpacing(50);
-    layout_page->setVerticalSpacing(50);
-    layout_page->setColumnMinimumWidth(0, 0);
-    layout_page->setColumnMinimumWidth(4, 0);
-    layout_page->setColumnMinimumWidth(2, 8);
-    layout_page->setRowMinimumHeight(0, 0);
-    layout_page->setRowMinimumHeight(2, 8);
-    layout_page->setRowMinimumHeight(4, 0);
+    layout_page->setContentsMargins(l_margin, t_margin, r_margin, b_margin);
+    layout_page->setHorizontalSpacing(h_spacing);
+    layout_page->setVerticalSpacing(v_spacing);
+    layout_page->setColumnMinimumWidth(0, (width_window-l_margin-r_margin-v_spacing)*0.6);
+    layout_page->setColumnMinimumWidth(1, (width_window-l_margin-r_margin-v_spacing)*0.4);
+    layout_page->setRowMinimumHeight(0, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
+    layout_page->setRowMinimumHeight(1, navigation_group_hight);
+    layout_page->setColumnStretch(0, 2);
     layout_page->setColumnStretch(1, 2);
-    layout_page->setColumnStretch(3, 2);
+    layout_page->setRowStretch(0, 2);
     layout_page->setRowStretch(1, 2);
-    layout_page->setRowStretch(3, 2);
+
+    table_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.6, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
+    settings_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.4, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
+    search_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.6, navigation_group_hight);
+    navigation_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.4, navigation_group_hight);
+
+    int main_buttons_width=100;
+    int main_buttons_hight=30;
+    table->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.6, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight-main_buttons_hight);
+    main_buttons_settings(main_buttons_width,main_buttons_hight);
 
     data_slider->setOrientation(Qt::Horizontal);
     QDate* currenta_date=new QDate();
     data_slider->setMaximum(currenta_date->year());
     data_slider->setMinimum(1895);
     data_slider->setTickInterval(1);
+}
+void App_page::main_buttons_settings(int w, int h){
+    delete_button->setFixedSize(w, h);
+    search_combo_box->setFixedSize(w, h);
+    search_edit->setFixedSize((width_window-l_margin-r_margin-v_spacing)*0.6-2*w-50, h);
+    search_button->setFixedSize(w, h);
+    accept_button->setFixedSize(w, h);
+    back_button->setFixedSize(w, h);
+
+
 }
