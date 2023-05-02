@@ -9,7 +9,7 @@
 #include<QPushButton>
 #include<QRadioButton>
 #include<QCheckBox>
-#include<QTableView>
+#include<QTableWidget>>
 #include<QGroupBox>
 #include<QComboBox>
 #include<QScrollArea>
@@ -36,7 +36,7 @@ private:
     QGroupBox* genre_group;
     QGroupBox* data_group;
 
-    QTableView* table;
+    QTableWidget* table;
     QPushButton* delete_button;
     QComboBox* search_combo_box;
     QLineEdit* search_edit;
@@ -64,6 +64,10 @@ private:
 public slots:
     void set_app_page_visible(bool flag);
     void on_back_button_clicked();
+private slots:
+    void set_search_edit(int search_id);//переименовать
+    void set_data_edit(int data_value);
+    void set_genre_edit(int genre_id);
 signals:
     void step_back();
 

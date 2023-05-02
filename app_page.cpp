@@ -6,6 +6,10 @@
 #include <QLabel>
 #include<QScrollArea>
 #include<QDate>
+#include<QHeaderView>
+#include<QAbstractItemView>
+#include<QStringList>
+#include<QString>
 
 const int width_window=1024;
 const int hight_window=768;
@@ -17,7 +21,14 @@ const int v_spacing=30;
 const int h_spacing=30;
 const int navigation_group_hight=50;
 const int table_magrin=5;
-
+const int main_buttons_width=100;
+const int main_buttons_hight=30;
+const QStringList genre_list=QStringList()<<"Комедия"<<"Мелодрама"<<"Мультфильм"<<"Ужасы"<<"Фантастика"<<"Триллер"
+                                              <<"Боевик"<<"Детектив"<<"Фентези"<<"Исторический"<<"Драма"<<"Документальный"
+                                              <<"Криминал"<<"Биография"<<"Вестерн"<<"Мюзиклы"<<"Короткометражка";
+const QStringList headers= QStringList()<<"№"<<"Название"<<"Режиссер"<<"Жанр"<<"Год"<<"Рейтинг"<<"Статус";
+const QStringList search_list=QStringList()<<"Название"<<"Режиссер"<<"Жанр"<<"Статус";
+const QStringList status_list=QStringList()<<"Просмотрено"<<"Собираюсь смотреть"<<"Не рекомендую";
 App_page::App_page(QWidget *parent)
     :QWidget(parent),
     //page_group(new QGroupBox(this)),
@@ -33,7 +44,7 @@ App_page::App_page(QWidget *parent)
     director_group(new QGroupBox(edit_group)),
     genre_group(new QGroupBox(edit_group)),
     data_group(new QGroupBox(edit_group)),
-    table(new QTableView(scroll_table_group)),
+    table(new QTableWidget(scroll_table_group)),
     delete_button(new QPushButton("Удалить", this)),
     search_combo_box(new QComboBox(this)),
     search_edit(new QLineEdit(this)),
@@ -71,9 +82,9 @@ App_page::App_page(QWidget *parent)
     table_group_layout->addWidget(delete_button);
     search_group_layout->addWidget(search_combo_box);
     search_group_layout->addWidget(search_edit);
-    search_group_layout->addWidget(search_button);
+    search_group_layout->addWidget(search_button, Qt::AlignCenter);
     settings_group_layout->addWidget(edit_scroll);
-    settings_group_layout->addWidget(accept_button);
+    settings_group_layout->addWidget(accept_button, Qt::AlignCenter);
     edit_group_layout->addWidget(name_label, 0,0, Qt::AlignLeft|Qt::AlignTop);
     edit_group_layout->addWidget(name_edit, 0,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(director_label, 1,0, Qt::AlignLeft|Qt::AlignTop);
@@ -91,7 +102,7 @@ App_page::App_page(QWidget *parent)
     genre_group_layout->addWidget(genre_combo_box, Qt::AlignCenter);
     genre_group_layout->addWidget(genre_edit, Qt::AlignCenter);
     data_group_layout->addWidget(data_slider, Qt::AlignCenter);
-    data_group_layout->addWidget(data_edit, Qt::AlignCenter);
+    data_group_layout->addWidget(data_edit, Qt::AlignRight);
     navigation_group_layout->addWidget(back_button, Qt::AlignRight);
 
     table_group->setLayout(table_group_layout);
@@ -122,8 +133,13 @@ App_page::App_page(QWidget *parent)
     this->setMaximumWidth(1024);
     //edit_group_layout->setRowMinimumHeight(6, 30);
     edit_group_layout->setVerticalSpacing(25);
+    edit_group_layout->setColumnMinimumWidth(1, (width_window-l_margin-r_margin-v_spacing)*0.24);
     base_settings();
+    connect(search_combo_box, SIGNAL(activated(int)), this, SLOT(set_search_edit(int)));
+    connect(genre_combo_box, SIGNAL(activated(int)), this, SLOT(set_genre_edit(int)));
+    connect(data_slider, SIGNAL(valueChanged(int)), this, SLOT(set_data_edit(int)));
     connect(back_button, SIGNAL(clicked()), this, SLOT(on_back_button_clicked()));
+
 }
 void App_page::set_app_page_visible(bool flag){
     table_group->setVisible(flag);
@@ -133,6 +149,18 @@ void App_page::set_app_page_visible(bool flag){
 }
 void App_page::on_back_button_clicked(){
     emit step_back();
+}
+void App_page::set_search_edit(int search_id){
+    //
+}
+void App_page::set_data_edit(int data_value){
+    QString text=QString::number(data_value);
+    data_edit->setText(text);
+}
+void App_page::set_genre_edit(int genre_id){
+
+    QString text=genre_list.at(genre_id);
+    genre_edit->setText(text);
 }
 void App_page::base_settings(){
 
@@ -153,17 +181,43 @@ void App_page::base_settings(){
     settings_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.4, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
     search_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.6, navigation_group_hight);
     navigation_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.4, navigation_group_hight);
+    director_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.24);
+    genre_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.24);
+    data_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.24);
+    name_edit->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.24);
+    data_edit->setFixedWidth((data_group->width())*0.25);
+    data_edit->setAlignment(Qt::AlignCenter);
+    //name_edit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    //director_edit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    //genre_edit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    rating_spin_box->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.06);
+    status_combo_box->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.24);
 
-    int main_buttons_width=100;
-    int main_buttons_hight=30;
     table->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.6, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight-main_buttons_hight);
+    table->setColumnCount(7);
+    table->setShowGrid(true);
+    table->setSelectionMode(QAbstractItemView::SingleSelection);//мб несколько shift
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table->setHorizontalHeaderLabels(headers);
+
     main_buttons_settings(main_buttons_width,main_buttons_hight);
 
+    search_combo_box->addItems(search_list);
+    genre_combo_box->addItems(genre_list);
     data_slider->setOrientation(Qt::Horizontal);
-    QDate* currenta_date=new QDate();
-    data_slider->setMaximum(currenta_date->year());
+    QDate* current_date=new QDate();
+    data_slider->setMaximum(current_date->currentDate().year());
     data_slider->setMinimum(1895);
-    data_slider->setTickInterval(1);
+    data_slider->setTickInterval(10);
+    data_slider->setTickPosition(QSlider::TicksAbove);
+    data_slider->setPageStep(1);
+    data_slider->setSingleStep(1);
+    data_slider->setValue((data_slider->maximum()-1895)/2);
+    data_slider->setEnabled(true);
+    data_slider->setTracking(true);
+    data_slider->setSliderDown(true);
+    rating_spin_box->setRange(0, 5);
+    status_combo_box->addItems(status_list);
 }
 void App_page::main_buttons_settings(int w, int h){
     delete_button->setFixedSize(w, h);
@@ -172,6 +226,4 @@ void App_page::main_buttons_settings(int w, int h){
     search_button->setFixedSize(w, h);
     accept_button->setFixedSize(w, h);
     back_button->setFixedSize(w, h);
-
-
 }
