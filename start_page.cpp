@@ -65,13 +65,13 @@ void Start_page::on_button_entry_clicked(){
     list_query.append(" ");
     list_query.append(password);
 
-    Socket socket_to_db(this);
-    socket_to_db.sendQuery(list_query);
+    //Socket socket_to_db(this);
+    //socket_to_db.sendQuery(list_query);
 
     //if logged in
-    emit logged_in(email);
-    set_start_page_visible(false);
-    App_page app_page(this);
-    //this->~Start_page();
+    emit entry_request(email);
+    //set_start_page_visible(false);
+    //App_page app_page(this);
+
 
 }

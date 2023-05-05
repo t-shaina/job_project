@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+#include"start_page.h"
 #include"app_page.h"
+#include"socket.h"
 #include <QMainWindow>
 #include <QString>
 #include<QLabel>
@@ -17,7 +19,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     QLabel status;
+    Start_page* start_page;
     App_page* app_page;
+    Socket* socket_db;
 private:
     Ui::MainWindow *ui;
 
@@ -26,5 +30,6 @@ public slots:
     void resize_window();
     void creat_app_page();
     void destroy_app_page();
+    void on_search_request(QString);
 };
 #endif // MAINWINDOW_H

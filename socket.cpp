@@ -10,11 +10,11 @@ Socket::Socket(QObject* parent):
 
 }
 
-void Socket::readTcpData(){
+void Socket::readData(){
     QByteArray data=client_socket->readAll();//обертка или
 
 }
-void Socket::sendQuery(QString message){
+void Socket::sendData(QString message){
     if (client_socket->waitForConnected(1000)){
         client_socket->write(message.toUtf8());
     }

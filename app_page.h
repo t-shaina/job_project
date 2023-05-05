@@ -9,16 +9,17 @@
 #include<QPushButton>
 #include<QRadioButton>
 #include<QCheckBox>
-#include<QTableWidget>>
+#include<QTableWidget>
 #include<QGroupBox>
 #include<QComboBox>
 #include<QScrollArea>
 #include <QSlider>
 #include<QSpinBox>
+#include<QStringList>
 class App_page:public QWidget
 {
     Q_OBJECT
-    friend class MainWindow;
+    //friend class MainWindow;
 public:
     App_page(QWidget* parent=nullptr);
 private:
@@ -62,14 +63,26 @@ private:
     void base_settings();
     void main_buttons_settings(int w, int h);
 public slots:
-    void set_app_page_visible(bool flag);
+    //void set_app_page_visible(bool flag);
     void on_back_button_clicked();
+    void on_delete_button_clicked();
+    void on_search_button_clicked();
+    void on_accept_button_clicked();
 private slots:
     void set_search_edit(int search_id);//переименовать
     void set_data_edit(int data_value);
     void set_genre_edit(int genre_id);
+    void on_search_edit_edited();
+    void on_name_edit_changed();
+    void on_director_edit_changed();
+    void on_genre_edit_changed();
+    void on_data_edit_changed();
+    void on_table_row_selected();
 signals:
     void step_back();
+    void search_request(QString*);
+    void update_request(QStringList*);
+    void delete_request(QStringList*);
 
 };
 

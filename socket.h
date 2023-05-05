@@ -10,12 +10,12 @@ class Socket: public QObject
     Q_OBJECT
 public:
     explicit Socket(QObject* parent=nullptr);
-    void sendQuery(QString message);
+    void sendData(QString message);
 private:
     QTcpSocket* client_socket;
 public slots:
     //void newConnection();
-    void readTcpData();
+    void readData();
 };
 
 #endif // SOCKET_H
