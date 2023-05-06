@@ -5,7 +5,8 @@
 #include <QWidget>
 #include<QGridLayout>
 #include<QLineEdit>
-#include <QLabel>
+#include<QTextEdit>
+#include<QLabel>
 #include<QPushButton>
 #include<QRadioButton>
 #include<QCheckBox>
@@ -27,6 +28,8 @@ private:
     QGridLayout* layout_page;
     QGroupBox* table_group;
     QGroupBox* scroll_table_group;
+    QGroupBox* delete_sort_group;
+    QGroupBox* sort_group;
     QGroupBox* search_group;
     QGroupBox* settings_group;
     QGroupBox* edit_group;
@@ -39,17 +42,19 @@ private:
 
     QTableWidget* table;
     QPushButton* delete_button;
-    QComboBox* search_combo_box;
+    QLabel* sort_label;
+    QComboBox* sort_combo_box;
+    QPushButton* sort_button;
     QLineEdit* search_edit;
     QPushButton* search_button;
     QLabel* name_label;
-    QLineEdit* name_edit;
+    QTextEdit* name_edit;
     QLabel* director_label;
     QComboBox* director_combo_box;
-    QLineEdit* director_edit;
+    QTextEdit* director_edit;
     QLabel* genre_label;
     QComboBox* genre_combo_box;
-    QLineEdit* genre_edit;
+    QTextEdit* genre_edit;
     QLineEdit* data_edit;
     QLabel* data_label;
     QSlider* data_slider;
@@ -66,6 +71,7 @@ public slots:
     //void set_app_page_visible(bool flag);
     void on_back_button_clicked();
     void on_delete_button_clicked();
+    void on_sort_button_clicked();
     void on_search_button_clicked();
     void on_accept_button_clicked();
 private slots:
@@ -73,11 +79,9 @@ private slots:
     void set_data_edit(int data_value);
     void set_genre_edit(int genre_id);
     void on_search_edit_edited();
+    void on_name_director_genre_data_edit_changed();
     void on_name_edit_changed();
-    void on_director_edit_changed();
-    void on_genre_edit_changed();
-    void on_data_edit_changed();
-    void on_table_row_selected();
+    void on_table_row_selected(int);
 signals:
     void step_back();
     void search_request(QString*);

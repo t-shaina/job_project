@@ -42,6 +42,8 @@ void MainWindow:: creat_app_page(){
     this->app_page=new App_page(this);
     QObject::connect(this->app_page, SIGNAL(step_back()), this, SLOT(destroy_app_page()));
     QObject::connect(this->app_page, SIGNAL(search_request(QString*)), this, SLOT(on_search_request(QString*)));
+    QObject::connect(this->app_page, SIGNAL(delete_request(QStringList*)), this, SLOT(on_delete_request(QStringList)));
+    QObject::connect(this->app_page, SIGNAL(update_request(QStringList*)), this, SLOT(on_update_request(QStringList)));
 }
 void MainWindow:: destroy_app_page(){
     this->app_page->~App_page();
@@ -50,5 +52,12 @@ void MainWindow:: destroy_app_page(){
     status.setText("Войдите в систему");
 }
 void MainWindow::on_search_request(QString search_string){
-    this->socket_db->sendData(search_string);
+    this->socket_db->sendData("2"+search_string);
+}
+void MainWindow::on_delete_request(QStringList delete_list){
+    this->socket_db->sendData("1");
+
+}
+void MainWindow::on_update_request(QStringList update_list){
+
 }

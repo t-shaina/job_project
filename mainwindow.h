@@ -5,6 +5,7 @@
 #include"socket.h"
 #include <QMainWindow>
 #include <QString>
+#include<QStringList>
 #include<QLabel>
 
 QT_BEGIN_NAMESPACE
@@ -31,5 +32,7 @@ public slots:
     void creat_app_page();
     void destroy_app_page();
     void on_search_request(QString);
+    void on_delete_request(QStringList);
+    void on_update_request(QStringList);
 };
 #endif // MAINWINDOW_H

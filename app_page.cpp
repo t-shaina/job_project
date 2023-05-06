@@ -12,7 +12,7 @@
 #include<QString>
 
 const int width_window=1280;
-const int hight_window=800;
+const int height_window=800;
 const int l_margin=10;
 const int t_margin=30;
 const int r_margin=10;
@@ -22,12 +22,12 @@ const int h_spacing=30;
 const int navigation_group_hight=50;
 const int table_magrin=5;
 const int main_buttons_width=100;
-const int main_buttons_hight=30;
+const int main_buttons_height=30;
 const QStringList genre_list=QStringList()<<"Комедия"<<"Мелодрама"<<"Мультфильм"<<"Ужасы"<<"Фантастика"<<"Триллер"
                                               <<"Боевик"<<"Детектив"<<"Фентези"<<"Исторический"<<"Драма"<<"Документальный"
                                               <<"Криминал"<<"Биография"<<"Вестерн"<<"Мюзиклы"<<"Короткометражка";
 const QStringList headers= QStringList()<<"№"<<"Название"<<"Режиссер"<<"Жанр"<<"Год"<<"Рейтинг"<<"Статус";
-const QStringList search_list=QStringList()<<"Название"<<"Режиссер"<<"Жанр"<<"Статус";
+const QStringList sort_list=QStringList()<<"Год"<<"Рейтинг"<<"Статус";
 const QStringList status_list=QStringList()<<"Просмотрено"<<"Собираюсь смотреть"<<"Не рекомендую";
 static int required_fields_flag =0;
 
@@ -37,6 +37,8 @@ App_page::App_page(QWidget *parent)
     layout_page(new QGridLayout(this)),
     table_group(new QGroupBox(this)),
     scroll_table_group(new QGroupBox(table_group)),
+    delete_sort_group(new QGroupBox(table_group)),
+    sort_group(new QGroupBox(delete_sort_group)),
     search_group(new QGroupBox(this)),
     settings_group(new QGroupBox(this)),
     edit_group(new QGroupBox(this)),
@@ -48,16 +50,18 @@ App_page::App_page(QWidget *parent)
     data_group(new QGroupBox(edit_group)),
     table(new QTableWidget(scroll_table_group)),
     delete_button(new QPushButton("Удалить", this)),
-    search_combo_box(new QComboBox(this)),
+    sort_label(new QLabel("Сортировать по", this)),
+    sort_combo_box(new QComboBox(this)),
+    sort_button(new QPushButton("Сортировать",this)),
     search_edit(new QLineEdit(this)),
     search_button(new QPushButton("Поиск", this)),
     name_label (new QLabel("Название", this)),
-    name_edit (new QLineEdit(this)),
+    name_edit (new QTextEdit(this)),
     director_label (new QLabel("Режиссер", this)),
     director_combo_box(new QComboBox(this)),
-    director_edit(new QLineEdit(this)),
+    director_edit(new QTextEdit(this)),
     genre_label (new QLabel("Жанр", this)),
-    genre_edit(new QLineEdit(this)),
+    genre_edit(new QTextEdit(this)),
     genre_combo_box(new QComboBox(this)),
     data_edit(new QLineEdit(this)),
     data_label (new QLabel("Год создания", this)),
@@ -72,6 +76,8 @@ App_page::App_page(QWidget *parent)
 
     QVBoxLayout* table_group_layout=new QVBoxLayout;
     QVBoxLayout* scroll_table_group_layout=new QVBoxLayout;
+    QHBoxLayout* delete_sort_group_layout=new QHBoxLayout;
+    QHBoxLayout* sort_group_layout=new QHBoxLayout;
     QHBoxLayout* search_group_layout=new QHBoxLayout;
     QHBoxLayout* navigation_group_layout=new QHBoxLayout;
     QVBoxLayout* settings_group_layout=new QVBoxLayout;
@@ -81,8 +87,12 @@ App_page::App_page(QWidget *parent)
     QVBoxLayout* data_group_layout=new QVBoxLayout;
 
     table_group_layout->addWidget(table_scroll);
-    table_group_layout->addWidget(delete_button);
-    search_group_layout->addWidget(search_combo_box);
+    delete_sort_group_layout->addWidget(delete_button, Qt::AlignLeft);
+    delete_sort_group_layout->addWidget(sort_group, Qt::AlignRight);
+    table_group_layout->addWidget(delete_sort_group);
+    sort_group_layout->addWidget(sort_label);
+    sort_group_layout->addWidget(sort_combo_box);
+    sort_group_layout->addWidget(sort_button);
     search_group_layout->addWidget(search_edit);
     search_group_layout->addWidget(search_button, Qt::AlignCenter);
     settings_group_layout->addWidget(edit_scroll);
@@ -109,6 +119,8 @@ App_page::App_page(QWidget *parent)
 
     table_group->setLayout(table_group_layout);
     scroll_table_group->setLayout(scroll_table_group_layout);
+    delete_sort_group->setLayout(delete_sort_group_layout);
+    sort_group->setLayout(sort_group_layout);
     search_group->setLayout(search_group_layout);
     settings_group->setLayout(settings_group_layout);
     edit_group->setLayout(edit_group_layout);
@@ -130,28 +142,36 @@ App_page::App_page(QWidget *parent)
     setLayout(layout_page);
     this->show();
     //this->setFixedSize(500,350);
-    this->resize(width_window,hight_window);
-    this->setMaximumHeight(hight_window);
+    this->resize(width_window,height_window);
+    this->setMaximumHeight(height_window);
     this->setMaximumWidth(width_window);
     //edit_group_layout->setRowMinimumHeight(6, 30);
+    delete_sort_group_layout->setContentsMargins(0,0,0,0);
+    director_group_layout->setContentsMargins(0,0,0,0);
+    genre_group_layout->setContentsMargins(0,0,0,0);
+    data_group_layout->setContentsMargins(0,0,0,0);
+
     edit_group_layout->setVerticalSpacing(25);
     edit_group_layout->setColumnMinimumWidth(1, (width_window-l_margin-r_margin-v_spacing)*0.15);
     base_settings();
-    connect(search_combo_box, SIGNAL(activated(int)), this, SLOT(set_search_edit(int)));
+    //connect(sort_combo_box, SIGNAL(activated(int)), this, SLOT(set_search_edit(int)));
     connect(genre_combo_box, SIGNAL(activated(int)), this, SLOT(set_genre_edit(int)));
     connect(data_slider, SIGNAL(valueChanged(int)), this, SLOT(set_data_edit(int)));
 
     connect(back_button, SIGNAL(clicked()), this, SLOT(on_back_button_clicked()));
     connect(delete_button, SIGNAL(clicked()), this, SLOT(on_delete_button_clicked()));
+    connect(sort_button, SIGNAL(clicked()), this, SLOT(on_sort_button_clicked()));
     connect(search_button, SIGNAL(clicked()), this, SLOT(on_search_button_clicked()));
     connect(accept_button, SIGNAL(clicked()), this, SLOT(on_accept_button_clicked()));
 
-    connect(table, SIGNAL(pressed()), this, SLOT(on_table_row_selected()));
-    connect(search_edit, SIGNAL(textEdited()), this, SLOT(on_search_edit_edited()));
-    connect(name_edit, SIGNAL(textChanged()), this, SLOT(on_name_edit_changed()));
-    connect(director_edit, SIGNAL(textChanged()), this, SLOT(on_director_edit_changed()));
-    connect(genre_edit, SIGNAL(textChanged()), this, SLOT(on_genre_edit_changed()));
-    connect(data_edit, SIGNAL(textChanged()), this, SLOT(on_data_edit_changed()));
+
+    connect(table, SIGNAL(itemClicked(int)), this, SLOT(on_table_row_selected(int)));
+    connect(search_edit, SIGNAL(textEdited(QString)), this, SLOT(on_search_edit_edited()));
+    connect(name_edit, SIGNAL(textChanged()), this, SLOT(on_name_director_genre_data_edit_changed()));
+    connect(director_edit, SIGNAL(textChanged()), this, SLOT(on_name_director_genre_data_edit_changed()));
+    connect(genre_edit, SIGNAL(textChanged()), this, SLOT(on_name_director_genre_data_edit_changed()));
+    connect(data_edit, SIGNAL(textChanged(QString)), this, SLOT(on_name_director_genre_data_edit_changed()));
+
 
 }
 /*void App_page::set_app_page_visible(bool flag){
@@ -163,6 +183,11 @@ App_page::App_page(QWidget *parent)
 void App_page::on_back_button_clicked(){
     emit step_back();
 }
+void App_page::on_sort_button_clicked(){
+    int sort_id=sort_combo_box->currentIndex();
+    table->sortItems(sort_id+4, Qt::AscendingOrder);
+
+}
 void App_page::set_search_edit(int search_id){
     //
 }
@@ -173,10 +198,13 @@ void App_page::set_data_edit(int data_value){
 void App_page::set_genre_edit(int genre_id){
 
     QString text=genre_list.at(genre_id);
-    genre_edit->setText(text);
+    genre_edit->setText(genre_edit->toPlainText()+" "+text);
 }
 void App_page::on_delete_button_clicked(){
+    int row=table->currentRow();
     QStringList delete_list=QStringList();
+    for(int i=0; i<table->columnCount();i++){
+        delete_list<<table->cellWidget(row, i)->text();
     emit delete_request(&delete_list);
 
 }
@@ -189,55 +217,36 @@ void App_page::on_search_button_clicked(){
 }
 void App_page::on_accept_button_clicked(){
 
-    QStringList update_list= QStringList()   <<name_edit->text()
-                                             <<director_edit->text()
-                                             <<genre_edit->text()
+    QStringList update_list= QStringList()   <<name_edit->placeholderText()
+                                             <<director_edit->placeholderText()
+                                             <<genre_edit->placeholderText()
                                              <<data_edit->text()
                                              <<rating_spin_box->text()
                                              <<status_combo_box->currentText();
     emit update_request(&update_list);
 
 }
-void App_page::on_table_row_selected(){
+void App_page::on_table_row_selected(int){
     delete_button->setEnabled(true);
-}
-void App_page::on_search_edit_edited(){
-    if(search_edit->text()!="")
-    search_button->setEnabled(true);
-}
-void App_page::on_name_edit_changed(){
-    if(name_edit->text()!="")
-        required_fields_flag++;
-    else if(required_fields_flag!=0)
-        required_fields_flag--;
-    if (required_fields_flag==4)
-        accept_button->setEnabled(true);
 
 }
-void App_page::on_director_edit_changed(){
-    if(director_edit->text()!="")
-        required_fields_flag++;
-    else if(required_fields_flag!=0)
-        required_fields_flag--;
-    if (required_fields_flag==4)
-        accept_button->setEnabled(true);
+void App_page::on_search_edit_edited(){
+    if(search_edit->text().isEmpty())
+        search_button->setEnabled(false);
+    else search_button->setEnabled(true);
 }
-void App_page::on_genre_edit_changed(){
-    if(genre_edit->text()!="")
-        required_fields_flag++;
-    else if(required_fields_flag!=0)
-        required_fields_flag--;
-    if (required_fields_flag==4)
-        accept_button->setEnabled(true);
+void App_page::on_name_director_genre_data_edit_changed(){
+    if(name_edit->toPlainText().isEmpty()||director_edit->toPlainText().isEmpty()||genre_edit->toPlainText().isEmpty()||data_edit->text().isEmpty())
+        accept_button->setEnabled(false);
+    else accept_button->setEnabled(true);
+
 }
-void App_page::on_data_edit_changed(){
-    if(data_edit->text()!="")
-        required_fields_flag++;
-    else if(required_fields_flag!=0)
-        required_fields_flag--;
-    if (required_fields_flag==4)
-        accept_button->setEnabled(true);
+void App_page::on_name_edit_changed(){
+    QSize text_size=name_edit->fontMetrics().size(Qt::TextWordWrap, name_edit->placeholderText());
+    if(text_size.width()>name_edit->width())
+        name_edit->setMinimumHeight(text_size.height()*text_size.width()/name_edit->width());
 }
+
 void App_page::base_settings(){
 
     layout_page->setAlignment(layout_page->parentWidget(), Qt::AlignHCenter|Qt::AlignVCenter);
@@ -246,15 +255,16 @@ void App_page::base_settings(){
     layout_page->setVerticalSpacing(v_spacing);
     layout_page->setColumnMinimumWidth(0, (width_window-l_margin-r_margin-v_spacing)*0.7);
     layout_page->setColumnMinimumWidth(1, (width_window-l_margin-r_margin-v_spacing)*0.3);
-    layout_page->setRowMinimumHeight(0, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
+    layout_page->setRowMinimumHeight(0, (height_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
     layout_page->setRowMinimumHeight(1, navigation_group_hight);
     layout_page->setColumnStretch(0, 2);
     layout_page->setColumnStretch(1, 2);
     layout_page->setRowStretch(0, 2);
     layout_page->setRowStretch(1, 2);
 
-    table_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.7, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
-    settings_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.3, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
+    table_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.7, (height_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
+    sort_group->setFixedWidth((width_window-l_margin-r_margin-v_spacing)*0.7*0.5);
+    settings_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.3, (height_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
     search_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.7, navigation_group_hight);
     navigation_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.3, navigation_group_hight);
     //edit_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.3, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight-main_buttons_hight-h_spacing);
@@ -262,6 +272,7 @@ void App_page::base_settings(){
     genre_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
     data_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
     name_edit->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
+    name_edit->setMaximumHeight(100);
     data_edit->setFixedWidth((data_group->width())*0.25);
     data_edit->setAlignment(Qt::AlignCenter);
     //name_edit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
@@ -270,7 +281,7 @@ void App_page::base_settings(){
     rating_spin_box->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.06);
     status_combo_box->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.16);
 
-    table->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.7, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight-main_buttons_hight);
+    table->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.7, (height_window-t_margin-b_margin-h_spacing)-navigation_group_hight-main_buttons_height);
     table->setColumnCount(7);
     table->setShowGrid(true);
     table->setSelectionMode(QAbstractItemView::SingleSelection);//мб несколько shift
@@ -284,13 +295,13 @@ void App_page::base_settings(){
     table->setColumnWidth(5, (width_window-l_margin-r_margin-v_spacing)*0.7*0.11);
     table->setColumnWidth(6, (width_window-l_margin-r_margin-v_spacing)*0.7*0.2);
 
-    main_buttons_settings(main_buttons_width,main_buttons_hight);
+    main_buttons_settings(main_buttons_width,main_buttons_height);
 
-    search_combo_box->addItems(search_list);
+    sort_combo_box->addItems(sort_list);
     genre_combo_box->addItems(genre_list);
     data_slider->setOrientation(Qt::Horizontal);
-    QDate* current_date=new QDate();
-    data_slider->setMaximum(current_date->currentDate().year());
+    //QDate* current_date=new QDate();
+    data_slider->setMaximum(QDate().currentDate().year());
     data_slider->setMinimum(1895);
     data_slider->setTickInterval(10);
     data_slider->setTickPosition(QSlider::TicksAbove);
@@ -305,7 +316,8 @@ void App_page::base_settings(){
 }
 void App_page::main_buttons_settings(int w, int h){
     delete_button->setFixedSize(w, h);
-    search_combo_box->setFixedSize(w, h);
+    sort_combo_box->setFixedSize(w, h);
+    sort_button->setFixedSize(w+10, h);
     search_edit->setFixedSize((width_window-l_margin-r_margin-v_spacing)*0.6-2*w-50, h);
     search_button->setFixedSize(w, h);
     accept_button->setFixedSize(w, h);
