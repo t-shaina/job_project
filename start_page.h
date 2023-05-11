@@ -27,7 +27,7 @@ private:
 
 
 signals:
-    void entry_request(QString username);
+    void entry_request(QString);
 public slots:
     void on_button_entry_clicked();
 

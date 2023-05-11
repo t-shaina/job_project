@@ -203,8 +203,8 @@ void App_page::set_genre_edit(int genre_id){
 void App_page::on_delete_button_clicked(){
     int row=table->currentRow();
     QStringList delete_list=QStringList();
-    for(int i=0; i<table->columnCount();i++){
-        delete_list<<table->cellWidget(row, i)->text();
+    for(int i=0; i<table->columnCount();i++)
+        delete_list<<table->item(row, i)->text();
     emit delete_request(&delete_list);
 
 }

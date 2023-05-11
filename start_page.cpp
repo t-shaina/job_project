@@ -69,7 +69,7 @@ void Start_page::on_button_entry_clicked(){
     //socket_to_db.sendQuery(list_query);
 
     //if logged in
-    emit entry_request(email);
+    emit entry_request(email+" "+password);
     //set_start_page_visible(false);
     //App_page app_page(this);
 
