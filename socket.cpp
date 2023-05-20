@@ -9,9 +9,10 @@ Socket::Socket(QObject* parent):
 
 
 }
-
 void Socket::readData(){
-    QByteArray data=client_socket->readAll();//обертка или
+    QByteArray data_array=client_socket->readAll();
+    QString data=QString::fromStdString(data_array.data());
+    emit(new_data_received(data));
 
 }
 void Socket::sendData(QString message){

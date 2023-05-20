@@ -24,7 +24,8 @@ private:
     QLineEdit* edit_password;
     QPushButton* button_entry;
     QGridLayout* layout_page1;
-
+private slots:
+    void on_email_password_edit_edited();
 
 signals:
     void entry_request(QString);

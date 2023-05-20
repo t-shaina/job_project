@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     status.setText("Войдите в систему");
     this->start_page=new Start_page(this);
     this->socket_db=new Socket(this);
-    QObject::connect(this->start_page, SIGNAL(entry_request(QString)), this, SLOT(set_username(QString)));
+    QObject::connect(this->start_page, SIGNAL(entry_request(QString)), this, SLOT(set_username(QString)));//
     QObject::connect(this->start_page, SIGNAL(entry_request(QString)), this, SLOT(resize_window()));
     QObject::connect(this->start_page, SIGNAL(entry_request(QString)), this, SLOT(creat_app_page()));
     QObject::connect(this->start_page, SIGNAL(entry_request(QString)), this, SLOT(on_entry_request(QString)));
@@ -46,6 +46,7 @@ void MainWindow:: creat_app_page(){
     QObject::connect(this->app_page, SIGNAL(search_request(QString*)), this, SLOT(on_search_request(QString*)));
     QObject::connect(this->app_page, SIGNAL(delete_request(QStringList*)), this, SLOT(on_delete_request(QStringList)));
     QObject::connect(this->app_page, SIGNAL(update_request(QStringList*)), this, SLOT(on_update_request(QStringList)));
+    QObject::connect(this->socket_db, SIGNAL(new_data_received(QString)), this, SLOT(data_decryption(QString)));
 }
 void MainWindow:: destroy_app_page(){
     this->app_page->~App_page();
@@ -78,5 +79,8 @@ void MainWindow::on_update_request(QStringList update_list){
 
     }
     this->socket_db->sendData("3"+*encoded_update_list);
-
+}
+void MainWindow::data_decryption(QString data){
+    if (data.at(0)=='0') emit (entry_response());
+    else if(data.at(0)=='0')
 }

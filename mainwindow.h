@@ -23,6 +23,7 @@ public:
     Start_page* start_page;
     App_page* app_page;
     Socket* socket_db;
+
 private:
     Ui::MainWindow *ui;
 
@@ -35,5 +36,6 @@ public slots:
     void on_delete_request(QStringList);
     void on_update_request(QStringList);
     void on_entry_request(QString);
+    void data_decryption(QString);
 };
 #endif // MAINWINDOW_H

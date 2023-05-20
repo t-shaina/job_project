@@ -41,8 +41,12 @@ Start_page::Start_page(QWidget *parent)
     edit_password->resize(200,70);
     edit_email->resize(200,70);
     button_entry->resize(100, 50);
+    edit_password->setEchoMode(QLineEdit::Password);
+    button_entry->setEnabled(false);
 
     connect(button_entry, SIGNAL(clicked()), this, SLOT(on_button_entry_clicked()));
+    connect(edit_email, SIGNAL(textEdited(QString)), this, SLOT(on_email_password_edit_edited()));
+    connect(edit_password, SIGNAL(textEdited(QString)), this, SLOT(on_email_password_edit_edited()));
 }
 
 Start_page::~Start_page(){};
@@ -58,20 +62,11 @@ void Start_page::set_start_page_visible(bool flag){
 void Start_page::on_button_entry_clicked(){
     QString email=edit_email->text();
     QString password=edit_password->text();
-    QString list_query;
-    list_query.append("0");
-    list_query.append(" ");
-    list_query.append(email);
-    list_query.append(" ");
-    list_query.append(password);
+    emit entry_request(QString::number(email.length())+email+QString::number(email.length())+password);
 
-    //Socket socket_to_db(this);
-    //socket_to_db.sendQuery(list_query);
-
-    //if logged in
-    emit entry_request(email+" "+password);
-    //set_start_page_visible(false);
-    //App_page app_page(this);
-
-
+}
+void Start_page::on_email_password_edit_edited(){
+    if(edit_email->text().isEmpty()||edit_password->text().isEmpty()||edit_password->text().length()!=6)
+        button_entry->setEnabled(false);
+    else button_entry->setEnabled(true);
 }

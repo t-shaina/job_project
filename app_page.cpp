@@ -47,7 +47,7 @@ App_page::App_page(QWidget *parent)
     edit_scroll(new QScrollArea()),
     director_group(new QGroupBox(edit_group)),
     genre_group(new QGroupBox(edit_group)),
-    data_group(new QGroupBox(edit_group)),
+    date_group(new QGroupBox(edit_group)),
     table(new QTableWidget(scroll_table_group)),
     delete_button(new QPushButton("Удалить", this)),
     sort_label(new QLabel("Сортировать по", this)),
@@ -63,9 +63,9 @@ App_page::App_page(QWidget *parent)
     genre_label (new QLabel("Жанр", this)),
     genre_edit(new QTextEdit(this)),
     genre_combo_box(new QComboBox(this)),
-    data_edit(new QLineEdit(this)),
-    data_label (new QLabel("Год создания", this)),
-    data_slider(new QSlider(this)),
+    date_edit(new QLineEdit(this)),
+    date_label (new QLabel("Год создания", this)),
+    date_slider(new QSlider(this)),
     rating_label (new QLabel("Рейтинг", this)),
     rating_spin_box(new QSpinBox(this)),
     status_label (new QLabel("Статус", this)),
@@ -84,7 +84,7 @@ App_page::App_page(QWidget *parent)
     QGridLayout* edit_group_layout=new QGridLayout;
     QVBoxLayout* director_group_layout=new QVBoxLayout;
     QVBoxLayout* genre_group_layout=new QVBoxLayout;
-    QVBoxLayout* data_group_layout=new QVBoxLayout;
+    QVBoxLayout* date_group_layout=new QVBoxLayout;
 
     table_group_layout->addWidget(table_scroll);
     delete_sort_group_layout->addWidget(delete_button, Qt::AlignLeft);
@@ -103,8 +103,8 @@ App_page::App_page(QWidget *parent)
     edit_group_layout->addWidget(director_group, 1,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(genre_label, 2,0, Qt::AlignLeft|Qt::AlignTop);
     edit_group_layout->addWidget(genre_group, 2,1, Qt::AlignCenter|Qt::AlignTop);
-    edit_group_layout->addWidget(data_label, 3,0, Qt::AlignLeft|Qt::AlignTop);
-    edit_group_layout->addWidget(data_group, 3,1, Qt::AlignCenter|Qt::AlignTop);
+    edit_group_layout->addWidget(date_label, 3,0, Qt::AlignLeft|Qt::AlignTop);
+    edit_group_layout->addWidget(date_group, 3,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(rating_label, 4,0, Qt::AlignLeft|Qt::AlignTop);
     edit_group_layout->addWidget(rating_spin_box, 4,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(status_label, 5,0, Qt::AlignLeft|Qt::AlignTop);
@@ -113,8 +113,8 @@ App_page::App_page(QWidget *parent)
     director_group_layout->addWidget(director_edit, Qt::AlignCenter);
     genre_group_layout->addWidget(genre_combo_box, Qt::AlignCenter);
     genre_group_layout->addWidget(genre_edit, Qt::AlignCenter);
-    data_group_layout->addWidget(data_slider, Qt::AlignCenter);
-    data_group_layout->addWidget(data_edit, Qt::AlignRight);
+    date_group_layout->addWidget(date_slider, Qt::AlignCenter);
+    date_group_layout->addWidget(date_edit, Qt::AlignRight);
     navigation_group_layout->addWidget(back_button, Qt::AlignRight);
 
     table_group->setLayout(table_group_layout);
@@ -126,7 +126,7 @@ App_page::App_page(QWidget *parent)
     edit_group->setLayout(edit_group_layout);
     director_group->setLayout(director_group_layout);
     genre_group->setLayout(genre_group_layout);
-    data_group->setLayout(data_group_layout);
+    date_group->setLayout(date_group_layout);
     navigation_group->setLayout(navigation_group_layout);
 
     table_scroll->setWidget(scroll_table_group);
@@ -149,14 +149,14 @@ App_page::App_page(QWidget *parent)
     delete_sort_group_layout->setContentsMargins(0,0,0,0);
     director_group_layout->setContentsMargins(0,0,0,0);
     genre_group_layout->setContentsMargins(0,0,0,0);
-    data_group_layout->setContentsMargins(0,0,0,0);
+    date_group_layout->setContentsMargins(0,0,0,0);
 
     edit_group_layout->setVerticalSpacing(25);
     edit_group_layout->setColumnMinimumWidth(1, (width_window-l_margin-r_margin-v_spacing)*0.15);
     base_settings();
     //connect(sort_combo_box, SIGNAL(activated(int)), this, SLOT(set_search_edit(int)));
     connect(genre_combo_box, SIGNAL(activated(int)), this, SLOT(set_genre_edit(int)));
-    connect(data_slider, SIGNAL(valueChanged(int)), this, SLOT(set_data_edit(int)));
+    connect(date_slider, SIGNAL(valueChanged(int)), this, SLOT(set_date_edit(int)));
 
     connect(back_button, SIGNAL(clicked()), this, SLOT(on_back_button_clicked()));
     connect(delete_button, SIGNAL(clicked()), this, SLOT(on_delete_button_clicked()));
@@ -170,7 +170,8 @@ App_page::App_page(QWidget *parent)
     connect(name_edit, SIGNAL(textChanged()), this, SLOT(on_name_director_genre_data_edit_changed()));
     connect(director_edit, SIGNAL(textChanged()), this, SLOT(on_name_director_genre_data_edit_changed()));
     connect(genre_edit, SIGNAL(textChanged()), this, SLOT(on_name_director_genre_data_edit_changed()));
-    connect(data_edit, SIGNAL(textChanged(QString)), this, SLOT(on_name_director_genre_data_edit_changed()));
+    connect(date_edit, SIGNAL(textChanged(QString)), this, SLOT(on_name_director_genre_data_edit_changed()));
+    connect(date_edit, SIGNAL(textEdited(QString)), this, SLOT(set_date_slider_position()));
 
 
 }
@@ -191,14 +192,21 @@ void App_page::on_sort_button_clicked(){
 void App_page::set_search_edit(int search_id){
     //
 }
-void App_page::set_data_edit(int data_value){
+void App_page::set_date_edit(int data_value){
     QString text=QString::number(data_value);
-    data_edit->setText(text);
+    date_edit->setText(text);
 }
 void App_page::set_genre_edit(int genre_id){
 
     QString text=genre_list.at(genre_id);
     genre_edit->setText(genre_edit->toPlainText()+" "+text);
+}
+void App_page::set_date_slider_position(){
+    int year=date_edit->text().toInt();
+    int current_year=QDate().currentDate().year();
+    if(year<=current_year)
+        date_slider->setSliderPosition(year);
+    else date_slider->setSliderPosition(current_year);
 }
 void App_page::on_delete_button_clicked(){
     int row=table->currentRow();
@@ -220,7 +228,7 @@ void App_page::on_accept_button_clicked(){
     QStringList update_list= QStringList()   <<name_edit->placeholderText()
                                              <<director_edit->placeholderText()
                                              <<genre_edit->placeholderText()
-                                             <<data_edit->text()
+                                             <<date_edit->text()
                                              <<rating_spin_box->text()
                                              <<status_combo_box->currentText();
     emit update_request(&update_list);
@@ -236,7 +244,7 @@ void App_page::on_search_edit_edited(){
     else search_button->setEnabled(true);
 }
 void App_page::on_name_director_genre_data_edit_changed(){
-    if(name_edit->toPlainText().isEmpty()||director_edit->toPlainText().isEmpty()||genre_edit->toPlainText().isEmpty()||data_edit->text().isEmpty())
+    if(name_edit->toPlainText().isEmpty()||director_edit->toPlainText().isEmpty()||genre_edit->toPlainText().isEmpty()||date_edit->text().isEmpty())
         accept_button->setEnabled(false);
     else accept_button->setEnabled(true);
 
@@ -270,11 +278,11 @@ void App_page::base_settings(){
     //edit_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.3, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight-main_buttons_hight-h_spacing);
     director_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
     genre_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
-    data_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
+    date_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
     name_edit->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
     name_edit->setMaximumHeight(100);
-    data_edit->setFixedWidth((data_group->width())*0.25);
-    data_edit->setAlignment(Qt::AlignCenter);
+    date_edit->setFixedWidth((date_group->width())*0.25);
+    date_edit->setAlignment(Qt::AlignCenter);
     //name_edit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     //director_edit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     //genre_edit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
@@ -299,18 +307,20 @@ void App_page::base_settings(){
 
     sort_combo_box->addItems(sort_list);
     genre_combo_box->addItems(genre_list);
-    data_slider->setOrientation(Qt::Horizontal);
+    date_slider->setOrientation(Qt::Horizontal);
+    genre_edit->setReadOnly(true);
+
     //QDate* current_date=new QDate();
-    data_slider->setMaximum(QDate().currentDate().year());
-    data_slider->setMinimum(1895);
-    data_slider->setTickInterval(10);
-    data_slider->setTickPosition(QSlider::TicksAbove);
-    data_slider->setPageStep(1);
-    data_slider->setSingleStep(1);
-    data_slider->setValue((data_slider->maximum()-1895)/2);
-    data_slider->setEnabled(true);
-    data_slider->setTracking(true);
-    data_slider->setSliderDown(true);
+    date_slider->setMaximum(QDate().currentDate().year());
+    date_slider->setMinimum(1895);
+    date_slider->setTickInterval(10);
+    date_slider->setTickPosition(QSlider::TicksAbove);
+    date_slider->setPageStep(1);
+    date_slider->setSingleStep(1);
+    date_slider->setValue((date_slider->maximum()-1895)/2);
+    date_slider->setEnabled(true);
+    date_slider->setTracking(true);
+    date_slider->setSliderDown(true);
     rating_spin_box->setRange(0, 5);
     status_combo_box->addItems(status_list);
 }

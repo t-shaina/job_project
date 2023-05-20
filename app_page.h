@@ -38,7 +38,7 @@ private:
     QScrollArea* edit_scroll;
     QGroupBox* director_group;
     QGroupBox* genre_group;
-    QGroupBox* data_group;
+    QGroupBox* date_group;
 
     QTableWidget* table;
     QPushButton* delete_button;
@@ -55,9 +55,9 @@ private:
     QLabel* genre_label;
     QComboBox* genre_combo_box;
     QTextEdit* genre_edit;
-    QLineEdit* data_edit;
-    QLabel* data_label;
-    QSlider* data_slider;
+    QLineEdit* date_edit;
+    QLabel* date_label;
+    QSlider* date_slider;
     QLabel* rating_label;
     QSpinBox* rating_spin_box;
     QLabel* status_label;
@@ -76,7 +76,8 @@ public slots:
     void on_accept_button_clicked();
 private slots:
     void set_search_edit(int search_id);//переименовать
-    void set_data_edit(int data_value);
+    void set_date_edit(int data_value);
+    void set_date_slider_position();
     void set_genre_edit(int genre_id);
     void on_search_edit_edited();
     void on_name_director_genre_data_edit_changed();

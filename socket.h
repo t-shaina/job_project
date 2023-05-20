@@ -14,11 +14,12 @@ public:
 
 
 private:
-    QTcpSocket* client_socket;
+    QTcpSocket* client_socket; 
 public slots:
     //void newConnection();
     void readData();
     void sendData(QString message);
+signals: void new_data_received(QString);
 };
 
 #endif // SOCKET_H
