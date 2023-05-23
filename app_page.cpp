@@ -244,7 +244,10 @@ void App_page::on_search_edit_edited(){
     else search_button->setEnabled(true);
 }
 void App_page::on_name_director_genre_data_edit_changed(){
-    if(name_edit->toPlainText().isEmpty()||director_edit->toPlainText().isEmpty()||genre_edit->toPlainText().isEmpty()||date_edit->text().isEmpty())
+    if(name_edit->toPlainText().isEmpty()||
+        director_edit->toPlainText().isEmpty()||
+        genre_edit->toPlainText().isEmpty()||
+        date_edit->text().isEmpty())
         accept_button->setEnabled(false);
     else accept_button->setEnabled(true);
 

@@ -23,14 +23,17 @@ private:
     QLineEdit* edit_email;
     QLineEdit* edit_password;
     QPushButton* button_entry;
+    QPushButton* button_registration;
     QGridLayout* layout_page1;
 private slots:
     void on_email_password_edit_edited();
 
 signals:
     void entry_request(QString);
+    void create_registration_page();
 public slots:
     void on_button_entry_clicked();
+    void on_button_registration_clicked();
 
 
 };
