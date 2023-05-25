@@ -18,10 +18,10 @@ MainWindow::MainWindow(QWidget *parent)
     status.setText("Войдите в систему");
     this->start_page=new Start_page(this);
     this->socket_db=new Socket(this);
-    QObject::connect(this->start_page, SIGNAL(entry_request(QString)), this, SLOT(set_username(QString)));//
-    QObject::connect(this->start_page, SIGNAL(entry_request(QString)), this, SLOT(resize_window()));
-    QObject::connect(this->start_page, SIGNAL(entry_request(QString)), this, SLOT(create_app_page()));
-    QObject::connect(this->start_page, SIGNAL(entry_request(QString)), this, SLOT(on_entry_request(QString)));
+    QObject::connect(this->start_page, SIGNAL(entry_request(QStringList)), this, SLOT(set_username(QString)));//
+    QObject::connect(this->start_page, SIGNAL(entry_request(QStringlist)), this, SLOT(resize_window()));
+    QObject::connect(this->start_page, SIGNAL(entry_request(QStringList)), this, SLOT(create_app_page()));
+    QObject::connect(this->start_page, SIGNAL(entry_request(QStringList)), this, SLOT(on_entry_request(QStringList)));
     QObject::connect(this->start_page, SIGNAL(create_registration_page()), this, SLOT(on_create_registration_page()));
     QObject::connect(this->socket_db, SIGNAL(new_data_received(QString)), this, SLOT(data_decryption(QString)));
     //QObject::connect(this->app_page, SIGNAL(step_back()), this, SLOT(destroy_app_page()));
@@ -61,6 +61,7 @@ void MainWindow::on_create_registration_page(){
     this->start_page->set_start_page_visible(false);
     this->registration_page=new Registration_page(this);
     QObject::connect(this->registration_page, SIGNAL(step_back()), this, SLOT(on_destroy_registration_page()));
+    QObject::connect(this->registration_page, SIGNAL(registration_request(QStringList)), this, SLOT(on_registration_request(QStringList)));
     status.setText("Зарегестрируйтесь");
 }
 void MainWindow:: on_destroy_registration_page(){
@@ -69,8 +70,13 @@ void MainWindow:: on_destroy_registration_page(){
     this->setFixedSize(500, 350);
     status.setText("Войдите в систему");
 }
-void MainWindow::on_entry_request(QString email_password){
-    this->socket_db->sendData("0"+email_password);
+void MainWindow::on_entry_request(QStringList entry_list){
+    QString* encoded_entry_list=new QString();
+    for(int i=0; i<entry_list.size();i++){
+        *encoded_entry_list+=static_cast<char>(entry_list.at(i).size());
+        *encoded_entry_list+=entry_list.at(i);
+    }
+    this->socket_db->sendData("0"+*encoded_entry_list);
 }
 void MainWindow::on_search_request(QString search_string){
     this->socket_db->sendData("2"+search_string);
@@ -80,7 +86,6 @@ void MainWindow::on_delete_request(QStringList delete_list){
     for(int i=0; i<delete_list.size();i++){
         *encoded_delete_list+=static_cast<char>(delete_list.at(i).size());
         *encoded_delete_list+=delete_list.at(i);
-
     }
     this->socket_db->sendData("1"+*encoded_delete_list);
 
@@ -90,11 +95,18 @@ void MainWindow::on_update_request(QStringList update_list){
     for(int i=0; i<update_list.size();i++){
         *encoded_update_list+=static_cast<char>(update_list.at(i).size());
         *encoded_update_list+=update_list.at(i);
-
     }
     this->socket_db->sendData("3"+*encoded_update_list);
 }
 void MainWindow::data_decryption(QString data){
     if (data.at(0)=='0') emit entry_response();
         else if(data.at(0)=='1') emit delete_response();
+}
+void MainWindow::on_registration_request(QStringList registration_list){
+    QString* encoded_registration_list=new QString();
+    for(int i=0; i<registration_list.size();i++){
+        *encoded_registration_list+=static_cast<char>(registration_list.at(i).size());
+        *encoded_registration_list+=registration_list.at(i);
+        }
+        this->socket_db->sendData("4"+*encoded_registration_list);
 }

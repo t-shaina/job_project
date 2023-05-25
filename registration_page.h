@@ -7,7 +7,7 @@
 #include<QLabel>
 #include<QGridLayout>
 #include<QLineEdit>
-
+#include<QStringList>
 class Registration_page: public QWidget
 {
     Q_OBJECT
@@ -23,6 +23,7 @@ private:
     QLineEdit* edit_email;
     QLineEdit* edit_password;
     QLineEdit* edit_repeat_password;
+    QLabel* incorrect_repeated_password_msg;
     QPushButton* button_entry;
     QPushButton* button_registration;
     QGridLayout* layout_registration_page;
@@ -31,8 +32,10 @@ private:
 private slots:
     void on_edits_edited();
     void on_back_button_clicked();
+    void on_registration_button_clicked();
 signals:
     void step_back();
+    void registration_request(QStringList);
 
 
 };

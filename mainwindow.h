@@ -41,7 +41,8 @@ public slots:
     void on_search_request(QString);
     void on_delete_request(QStringList);
     void on_update_request(QStringList);
-    void on_entry_request(QString);
+    void on_entry_request(QStringList);
+    void on_registration_request(QStringList);
     void data_decryption(QString);
 };
 #endif // MAINWINDOW_H

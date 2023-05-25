@@ -1,7 +1,7 @@
 #include "start_page.h"
 #include "app_page.h"
 #include "socket.h"
-#include<QString>
+#include<QStringList>
 #include <QProcess>
 #include<QObject>
 #include<QStringList>
@@ -65,10 +65,10 @@ void Start_page::set_start_page_visible(bool flag){
     button_registration->setVisible(flag);
 }
 //void Start_page::logged_in(QString username){};
+
 void Start_page::on_button_entry_clicked(){
-    QString email=edit_email->text();
-    QString password=edit_password->text();
-    emit entry_request(QString::number(email.length())+email+QString::number(email.length())+password);
+    QStringList entry_list=QStringList()<<edit_email->text()<<edit_password->text();
+    emit entry_request(entry_list);
 
 }
 void Start_page::on_email_password_edit_edited(){

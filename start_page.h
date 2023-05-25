@@ -7,7 +7,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QGridLayout>
-#include<QString>
+#include<QStringList>
 class Start_page: public QWidget
 {
     Q_OBJECT
@@ -29,7 +29,7 @@ private slots:
     void on_email_password_edit_edited();
 
 signals:
-    void entry_request(QString);
+    void entry_request(QStringList);
     void create_registration_page();
 public slots:
     void on_button_entry_clicked();
