@@ -45,10 +45,14 @@ void MainWindow:: create_app_page(){
     //App_page app_page=new App_page(this);
     //this->start_page->set_start_page_visible(false);
     this->app_page=new App_page(this);
+    this->resize_window();
     QObject::connect(this->app_page, SIGNAL(step_back()), this, SLOT(destroy_app_page()));
     QObject::connect(this->app_page, SIGNAL(search_request(QString*)), this, SLOT(on_search_request(QString*)));
+    QObject::connect(this->app_page, SIGNAL(select_all_request(QString*)), this, SLOT(on_select_all_request(QString*)));
     QObject::connect(this->app_page, SIGNAL(delete_request(QStringList*)), this, SLOT(on_delete_request(QStringList)));
     QObject::connect(this->app_page, SIGNAL(update_request(QStringList*)), this, SLOT(on_update_request(QStringList)));
+    QObject::connect(this->app_page, SIGNAL(insert_request(QStringList*)), this, SLOT(on_insert_request(QStringList)));
+    status.setText("Вы вошли как: ");
 
 }
 void MainWindow:: destroy_app_page(){
@@ -88,13 +92,27 @@ void MainWindow::on_delete_request(QStringList delete_list){
         *encoded_delete_list+=delete_list.at(i);
     }
     this->socket_db->sendData("1"+*encoded_delete_list);
-
 }
-void MainWindow::on_update_request(QStringList update_list){
+void MainWindow::on_select_all_request(QString email){
+    this->socket_db->sendData("5"+email);
+}
+void MainWindow::on_update_request(QStringList update_list){//do
     QString* encoded_update_list=new QString();
+    for(int i=0; i<this->app_page->row_data->size();i++){
+        *encoded_update_list+=static_cast<char>(this->app_page->row_data->at(i).size());
+        *encoded_update_list+=this->app_page->row_data->at(i);
+    }
     for(int i=0; i<update_list.size();i++){
         *encoded_update_list+=static_cast<char>(update_list.at(i).size());
         *encoded_update_list+=update_list.at(i);
+    }
+    this->socket_db->sendData("6"+*encoded_update_list);
+}
+void MainWindow::on_insert_request(QStringList insert_list){
+    QString* encoded_update_list=new QString();
+    for(int i=0; i<insert_list.size();i++){
+        *encoded_update_list+=static_cast<char>(insert_list.at(i).size());
+        *encoded_update_list+=insert_list.at(i);
     }
     this->socket_db->sendData("3"+*encoded_update_list);
 }

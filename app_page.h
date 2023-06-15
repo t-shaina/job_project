@@ -23,8 +23,11 @@ class App_page:public QWidget
     //friend class MainWindow;
 public:
     App_page(QWidget* parent=nullptr);
+    QString email;
+    QStringList* row_data;
 private:
     //QGroupBox* page_group;
+    bool redact_transfer_state;
     QGridLayout* layout_page;
     QGroupBox* table_group;
     QGroupBox* scroll_table_group;
@@ -42,6 +45,8 @@ private:
 
     QTableWidget* table;
     QPushButton* delete_button;
+    QPushButton* redact_button;
+    QPushButton* show_all_button;
     QLabel* sort_label;
     QComboBox* sort_combo_box;
     QPushButton* sort_button;
@@ -71,6 +76,8 @@ public slots:
     //void set_app_page_visible(bool flag);
     void on_back_button_clicked();
     void on_delete_button_clicked();
+    void on_redact_button_clicked();
+    void on_show_all_button_clicked();
     void on_sort_button_clicked();
     void on_search_button_clicked();
     void on_accept_button_clicked();
@@ -86,7 +93,9 @@ private slots:
 signals:
     void step_back();
     void search_request(QString*);
+    void select_all_request(QString*);
     void update_request(QStringList*);
+    void insert_request(QStringList*);
     void delete_request(QStringList*);
 
 };

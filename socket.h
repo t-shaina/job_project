@@ -19,7 +19,8 @@ public slots:
     //void newConnection();
     void readData();
     void sendData(QString message);
-signals: void new_data_received(QString);
+    //void on_new_data_received();
+//signals: void new_data_received(QString);
 };
 
 #endif // SOCKET_H

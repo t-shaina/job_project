@@ -5,6 +5,7 @@ Socket::Socket(QObject* parent):
 {
     client_socket= new QTcpSocket();
     connect(client_socket, SIGNAL(readyRead()), client_socket, SLOT(readData()));
+
     client_socket->connectToHost("127.0.0.1", 9000);
 
 
@@ -12,7 +13,7 @@ Socket::Socket(QObject* parent):
 void Socket::readData(){
     QByteArray data_array=client_socket->readAll();
     QString data=QString::fromStdString(data_array.data());
-    emit(new_data_received(data));
+    //emit new_data_received(data);
 
 }
 void Socket::sendData(QString message){
@@ -20,4 +21,5 @@ void Socket::sendData(QString message){
         client_socket->write(message.toUtf8());
     }
 }
+
 

@@ -40,7 +40,9 @@ public slots:
     void on_destroy_registration_page();
     void on_search_request(QString);
     void on_delete_request(QStringList);
+    void on_select_all_request(QString);
     void on_update_request(QStringList);
+    void on_insert_request(QStringList);
     void on_entry_request(QStringList);
     void on_registration_request(QStringList);
     void data_decryption(QString);

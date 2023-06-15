@@ -34,6 +34,7 @@ static int required_fields_flag =0;
 App_page::App_page(QWidget *parent)
     :QWidget(parent),
     //page_group(new QGroupBox(this)),
+    redact_transfer_state(false),
     layout_page(new QGridLayout(this)),
     table_group(new QGroupBox(this)),
     scroll_table_group(new QGroupBox(table_group)),
@@ -48,8 +49,10 @@ App_page::App_page(QWidget *parent)
     director_group(new QGroupBox(edit_group)),
     genre_group(new QGroupBox(edit_group)),
     date_group(new QGroupBox(edit_group)),
-    table(new QTableWidget(scroll_table_group)),
+    table(new QTableWidget(scroll_table_group)),  
     delete_button(new QPushButton("Удалить", this)),
+    redact_button(new QPushButton("Редактировать", this)),
+    show_all_button(new QPushButton("Показать все", this)),
     sort_label(new QLabel("Сортировать по", this)),
     sort_combo_box(new QComboBox(this)),
     sort_button(new QPushButton("Сортировать",this)),
@@ -70,8 +73,8 @@ App_page::App_page(QWidget *parent)
     rating_spin_box(new QSpinBox(this)),
     status_label (new QLabel("Статус", this)),
     status_combo_box(new QComboBox(this)),
-    accept_button (new QPushButton("Принять", this)),
-    back_button (new QPushButton("Назад", this))
+    accept_button (new QPushButton("Добавить", this)),
+    back_button (new QPushButton("Выйти", this))
 {
 
     QVBoxLayout* table_group_layout=new QVBoxLayout;
@@ -88,12 +91,14 @@ App_page::App_page(QWidget *parent)
 
     table_group_layout->addWidget(table_scroll);
     delete_sort_group_layout->addWidget(delete_button, Qt::AlignLeft);
+    delete_sort_group_layout->addWidget(redact_button, Qt::AlignLeft);
+    delete_sort_group_layout->addWidget(show_all_button, Qt::AlignLeft);
     delete_sort_group_layout->addWidget(sort_group, Qt::AlignRight);
     table_group_layout->addWidget(delete_sort_group);
     sort_group_layout->addWidget(sort_label);
     sort_group_layout->addWidget(sort_combo_box);
     sort_group_layout->addWidget(sort_button);
-    search_group_layout->addWidget(search_edit);
+    search_group_layout->addWidget(search_edit, Qt::AlignRight);
     search_group_layout->addWidget(search_button, Qt::AlignCenter);
     settings_group_layout->addWidget(edit_scroll);
     settings_group_layout->addWidget(accept_button, Qt::AlignCenter);
@@ -150,7 +155,9 @@ App_page::App_page(QWidget *parent)
     director_group_layout->setContentsMargins(0,0,0,0);
     genre_group_layout->setContentsMargins(0,0,0,0);
     date_group_layout->setContentsMargins(0,0,0,0);
-
+    sort_group->setStyleSheet("QGroupBox{border: 0px;}");
+    navigation_group->setStyleSheet("QGroupBox{border: 0px;}");
+    search_group->setStyleSheet("QGroupBox{border: 0px;}");
     edit_group_layout->setVerticalSpacing(25);
     edit_group_layout->setColumnMinimumWidth(1, (width_window-l_margin-r_margin-v_spacing)*0.15);
     base_settings();
@@ -160,6 +167,8 @@ App_page::App_page(QWidget *parent)
 
     connect(back_button, SIGNAL(clicked()), this, SLOT(on_back_button_clicked()));
     connect(delete_button, SIGNAL(clicked()), this, SLOT(on_delete_button_clicked()));
+    connect(delete_button, SIGNAL(clicked()), this, SLOT(on_redact_button_clicked()));
+    connect(delete_button, SIGNAL(clicked()), this, SLOT(on_show_all_button_clicked()));
     connect(sort_button, SIGNAL(clicked()), this, SLOT(on_sort_button_clicked()));
     connect(search_button, SIGNAL(clicked()), this, SLOT(on_search_button_clicked()));
     connect(accept_button, SIGNAL(clicked()), this, SLOT(on_accept_button_clicked()));
@@ -211,10 +220,27 @@ void App_page::set_date_slider_position(){
 void App_page::on_delete_button_clicked(){
     int row=table->currentRow();
     QStringList delete_list=QStringList();
-    for(int i=0; i<table->columnCount();i++)
+    for(int i=1; i<table->columnCount();i++)
         delete_list<<table->item(row, i)->text();
     emit delete_request(&delete_list);
+}
+void App_page::on_redact_button_clicked(){//тут добавить перенос из таблицы в область редактирования
+    int row=table->currentRow();
+    redact_transfer_state=true;
+    QStringList redact_list=QStringList();//или row_data
+    for(int i=1; i<table->columnCount();i++)
+        redact_list<<table->item(row, i)->text();
+    name_edit->setText(redact_list.at(1));
+    director_edit->setText(redact_list.at(2));
+    genre_edit->setText(redact_list.at(3));
+    date_slider->setSliderPosition(redact_list.at(4).toInt());
+    rating_spin_box->setValue(redact_list.at(5).toInt());
+    status_combo_box->setPlaceholderText(redact_list.at(6));
+    accept_button->setText("Обновить");
 
+}
+void App_page::on_show_all_button_clicked(){
+    emit select_all_request(&this->email);
 }
 void App_page::on_search_button_clicked(){
 
@@ -225,17 +251,26 @@ void App_page::on_search_button_clicked(){
 }
 void App_page::on_accept_button_clicked(){
 
-    QStringList update_list= QStringList()   <<name_edit->placeholderText()
+    QStringList insert_list= QStringList()   <<name_edit->placeholderText()
                                              <<director_edit->placeholderText()
                                              <<genre_edit->placeholderText()
                                              <<date_edit->text()
                                              <<rating_spin_box->text()
                                              <<status_combo_box->currentText();
-    emit update_request(&update_list);
+    if(redact_transfer_state)
+        emit  update_request(&insert_list);
+    else
+        emit insert_request(&insert_list);
+    redact_transfer_state=false;
+    accept_button->setText("Добавить");
 
 }
 void App_page::on_table_row_selected(int){
     delete_button->setEnabled(true);
+    redact_button->setEnabled(true);
+    int row=table->currentRow();
+    for(int i=0; i<table->columnCount();i++)
+        this->row_data->push_back(table->item(row, i)->text());
 
 }
 void App_page::on_search_edit_edited(){
@@ -329,13 +364,16 @@ void App_page::base_settings(){
 }
 void App_page::main_buttons_settings(int w, int h){
     delete_button->setFixedSize(w, h);
+    redact_button->setFixedSize(w+25, h);
+    show_all_button->setFixedSize(w+15, h);
     sort_combo_box->setFixedSize(w, h);
-    sort_button->setFixedSize(w+10, h);
+    sort_button->setFixedSize(w+15, h);
     search_edit->setFixedSize((width_window-l_margin-r_margin-v_spacing)*0.6-2*w-50, h);
     search_button->setFixedSize(w, h);
     accept_button->setFixedSize(w, h);
     back_button->setFixedSize(w, h);
     delete_button->setEnabled(false);
+    redact_button->setEnabled(false);
     search_button->setEnabled(false);
     accept_button->setEnabled(false);
 }
