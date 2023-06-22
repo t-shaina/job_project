@@ -98,6 +98,6 @@ void Registration_page::on_registration_button_clicked(){
     else {
         QStringList registration_list=QStringList()<<edit_name->text()<<edit_email->text()<<edit_password->text();
 
-        emit registration_request(registration_list);
+        emit registration_request(&registration_list);
     }
 }

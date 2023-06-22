@@ -34,6 +34,7 @@ static int required_fields_flag =0;
 App_page::App_page(QWidget *parent)
     :QWidget(parent),
     //page_group(new QGroupBox(this)),
+    row_data(new QStringList()),
     redact_transfer_state(false),
     layout_page(new QGridLayout(this)),
     table_group(new QGroupBox(this)),
@@ -218,11 +219,11 @@ void App_page::set_date_slider_position(){
     else date_slider->setSliderPosition(current_year);
 }
 void App_page::on_delete_button_clicked(){
-    int row=table->currentRow();
+    /*int row=table->currentRow();
     QStringList delete_list=QStringList();
     for(int i=1; i<table->columnCount();i++)
-        delete_list<<table->item(row, i)->text();
-    emit delete_request(&delete_list);
+        delete_list<<table->item(row, i)->text();*/
+    emit delete_request(row_data);
 }
 void App_page::on_redact_button_clicked(){//тут добавить перенос из таблицы в область редактирования
     int row=table->currentRow();
@@ -240,25 +241,28 @@ void App_page::on_redact_button_clicked(){//тут добавить перено
 
 }
 void App_page::on_show_all_button_clicked(){
-    emit select_all_request(&this->email);
+    QStringList data=QStringList();
+    data<<this->email;
+    emit select_all_request(&data);
 }
 void App_page::on_search_button_clicked(){
-
-    QString* search_string=new QString(search_edit->text());
-    emit search_request(search_string);
-
-
+    QStringList data=QStringList();
+    data<<this->search_edit->text();
+    emit search_request(&data);
 }
 void App_page::on_accept_button_clicked(){
 
-    QStringList insert_list= QStringList()   <<name_edit->placeholderText()
-                                             <<director_edit->placeholderText()
-                                             <<genre_edit->placeholderText()
+    QStringList insert_list= QStringList()   <<this->email
+                                             <<name_edit->placeholderText()
+                                             <<encoding_data(director_edit->placeholderText())
+                                             <<encoding_data(genre_edit->placeholderText())
                                              <<date_edit->text()
                                              <<rating_spin_box->text()
                                              <<status_combo_box->currentText();
-    if(redact_transfer_state)
+    if(redact_transfer_state){
+        insert_list<<*row_data;
         emit  update_request(&insert_list);
+    }
     else
         emit insert_request(&insert_list);
     redact_transfer_state=false;
@@ -266,11 +270,20 @@ void App_page::on_accept_button_clicked(){
 
 }
 void App_page::on_table_row_selected(int){
+    row_data->clear();
     delete_button->setEnabled(true);
     redact_button->setEnabled(true);
     int row=table->currentRow();
-    for(int i=0; i<table->columnCount();i++)
-        this->row_data->push_back(table->item(row, i)->text());
+    QString cell_data;
+    for(int i=1; i<table->columnCount();i++){
+        if(i==2||i==3){//для режиссеров и жанров дополнительное кодирование
+            cell_data=encoding_data(table->item(row,i)->text());
+        }
+        else
+            cell_data=table->item(row,i)->text();
+        this->row_data->push_back(cell_data);
+        cell_data.clear();
+    }
 
 }
 void App_page::on_search_edit_edited(){
@@ -292,7 +305,24 @@ void App_page::on_name_edit_changed(){
     if(text_size.width()>name_edit->width())
         name_edit->setMinimumHeight(text_size.height()*text_size.width()/name_edit->width());
 }
-
+QString App_page::encoding_data(const QString& data){
+    QString encoded_data;
+    QString word;
+    int size=0;
+    for (int i=0;i<data.size();i++){
+        if(data.at(i)!=' '){
+            word+=data.at(i);
+            size++;
+        }
+        else{
+            encoded_data.push_back(static_cast<char>(size));
+            encoded_data.push_back(word);
+            size=0;
+            word.clear();
+        }
+    }
+    return encoded_data;
+}
 void App_page::base_settings(){
 
     layout_page->setAlignment(layout_page->parentWidget(), Qt::AlignHCenter|Qt::AlignVCenter);

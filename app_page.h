@@ -72,6 +72,7 @@ private:
 
     void base_settings();
     void main_buttons_settings(int w, int h);
+    QString encoding_data(const QString& data);
 public slots:
     //void set_app_page_visible(bool flag);
     void on_back_button_clicked();
@@ -92,8 +93,8 @@ private slots:
     void on_table_row_selected(int);
 signals:
     void step_back();
-    void search_request(QString*);
-    void select_all_request(QString*);
+    void search_request(QStringList*);
+    void select_all_request(QStringList*);
     void update_request(QStringList*);
     void insert_request(QStringList*);
     void delete_request(QStringList*);

@@ -22,6 +22,8 @@ set(PROJECT_SOURCES
         socket.cpp
         app_page.cpp
         registration_page.cpp
+        template_behavour.cpp
+        creator.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -29,7 +29,7 @@ private slots:
     void on_email_password_edit_edited();
 
 signals:
-    void entry_request(QStringList);
+    void entry_request(QStringList*);
     void create_registration_page();
 public slots:
     void on_button_entry_clicked();

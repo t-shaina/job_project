@@ -35,7 +35,7 @@ private slots:
     void on_registration_button_clicked();
 signals:
     void step_back();
-    void registration_request(QStringList);
+    void registration_request(QStringList*);
 
 
 };

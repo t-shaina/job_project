@@ -14,13 +14,15 @@ public:
 
 
 private:
-    QTcpSocket* client_socket; 
+    QTcpSocket* client_socket;
+    QString encoding_message(const QStringList* data);
+    static void  decoding_message(QStringList* data_list, const QString& message);
 public slots:
     //void newConnection();
     void readData();
-    void sendData(QString message);
+    void sendData(QStringList* data);
     //void on_new_data_received();
-//signals: void new_data_received(QString);
+signals: void new_data_received(QStringList*);
 };
 
 #endif // SOCKET_H

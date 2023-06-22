@@ -68,7 +68,7 @@ void Start_page::set_start_page_visible(bool flag){
 
 void Start_page::on_button_entry_clicked(){
     QStringList entry_list=QStringList()<<edit_email->text()<<edit_password->text();
-    emit entry_request(entry_list);
+    emit entry_request(&entry_list);
 
 }
 void Start_page::on_email_password_edit_edited(){

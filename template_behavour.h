@@ -1,0 +1,66 @@
+#ifndef Template_behavour_H
+#define Template_behavour_H
+
+#include <QObject>
+
+enum Behavour_id{entry_id=0, delete_id=1, select_id=2, insert_id=3, registration_id=4, select_all_id=5, update_id=6};
+
+class Template_behavour:public QObject
+{
+    Q_OBJECT
+public:
+    Template_behavour();
+    virtual ~Template_behavour();
+    virtual  void processing_of_behavour(QStringList* data)=0;
+    static void creating_specific_behavour(Template_behavour* Template_behavour, Behavour_id  id);
+};
+class Entry_behavour:public Template_behavour{
+    Q_OBJECT
+private:
+    void processing_of_behavour(QStringList* data);
+signals:
+    void user_not_exist();
+
+};
+class Delete_behavour:public Template_behavour{
+    Q_OBJECT
+private:
+    void processing_of_behavour(QStringList* data);
+signals:
+    void deletion_failed();
+    void deletion_successful();
+};
+class Select_behavour:public Template_behavour{
+    Q_OBJECT
+private:
+    void processing_of_behavour(QStringList* data);
+};
+class Insert_behavour:public Template_behavour{
+    Q_OBJECT
+private:
+    void processing_of_behavour(QStringList* data);
+signals:
+    void data_exist();
+    void insert_successful();
+};
+class Registration_behavour:public Template_behavour{
+    Q_OBJECT
+private:
+    void processing_of_behavour(QStringList* data);
+signals:
+    void user_exist();
+};
+class Select_all_behavour:public Template_behavour{
+    Q_OBJECT
+private:
+    void processing_of_behavour(QStringList* data);
+};
+class Update_behavour:public Template_behavour{
+    Q_OBJECT
+private:
+    void processing_of_behavour(QStringList* data);
+signals:
+    void updation_failed();
+    void updation_successful();
+};
+#endif // Template_behavour_H
