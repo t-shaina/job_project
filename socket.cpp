@@ -10,9 +10,9 @@ Socket::Socket(QObject* parent):
 void Socket::readData(){
     QByteArray message_array=client_socket->readAll();
     QString message=QString::fromStdString(message_array.data());
-    QStringList* data=new QStringList();
-    Socket::decoding_message(data, message);
-    emit new_data_received(data);
+    received_data=new QStringList();
+    Socket::decoding_message(received_data, message);
+    emit new_data_received();
 
 }
 void Socket::sendData(QStringList* data){
@@ -22,15 +22,16 @@ void Socket::sendData(QStringList* data){
     }
 }
 QString Socket::encoding_message(const QStringList* data){
-    QString encoded_message;
-    for (int i=0;i<data->size();i++){
-        encoded_message.push_back(static_cast<char>(data->at(i).size()));
-        encoded_message.push_back(data->at(i));
+    QString* encoded_message=new QString(data->at(0));
+    for (int i=1;i<data->size();i++){
+        encoded_message->push_back(static_cast<char>(data->at(i).size()));
+        encoded_message->push_back(data->at(i));
     }
-    return encoded_message;
+    return *encoded_message;
 }
 void  Socket::decoding_message(QStringList* data_list, const QString& message){
     int length=0;
+    data_list->push_back(message.at(0));
     for (int i=1; i<message.size()-length-1;i+=length){//мб тут с условием выхода из for
         length=message.at(i).digitValue();
         data_list->push_back(message.sliced(i+1, length));

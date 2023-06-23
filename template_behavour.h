@@ -12,6 +12,7 @@ public:
     Template_behavour();
     virtual ~Template_behavour();
     virtual  void processing_of_behavour(QStringList* data)=0;
+    void decoding_element(QStringList* data_list, const QStringList::iterator iter_to_element);
     static void creating_specific_behavour(Template_behavour* Template_behavour, Behavour_id  id);
 };
 class Entry_behavour:public Template_behavour{
@@ -20,6 +21,7 @@ private:
     void processing_of_behavour(QStringList* data);
 signals:
     void user_not_exist();
+    void user_exist(QStringList* data);
 
 };
 class Delete_behavour:public Template_behavour{

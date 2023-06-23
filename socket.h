@@ -11,8 +11,7 @@ class Socket: public QObject
     Q_OBJECT
 public:
     explicit Socket(QObject* parent=nullptr);
-
-
+    QStringList* received_data;
 private:
     QTcpSocket* client_socket;
     QString encoding_message(const QStringList* data);
@@ -22,7 +21,7 @@ public slots:
     void readData();
     void sendData(QStringList* data);
     //void on_new_data_received();
-signals: void new_data_received(QStringList*);
+signals: void new_data_received();
 };
 
 #endif // SOCKET_H

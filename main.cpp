@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setWindowIcon(QIcon("~/Qt/my/untitled2/icon.png"));
-    Creator c();
+    Creator c(&a);
 
     //w.setFixedSize(500,350);
     //Start_page start_page(&w);

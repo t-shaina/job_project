@@ -17,6 +17,7 @@
 #include <QSlider>
 #include<QSpinBox>
 #include<QStringList>
+#include<QStandardItemModel>
 class App_page:public QWidget
 {
     Q_OBJECT
@@ -43,7 +44,7 @@ private:
     QGroupBox* genre_group;
     QGroupBox* date_group;
 
-    QTableWidget* table;
+    QTableView* table;
     QPushButton* delete_button;
     QPushButton* redact_button;
     QPushButton* show_all_button;
@@ -72,6 +73,7 @@ private:
 
     void base_settings();
     void main_buttons_settings(int w, int h);
+    void main_table_settings();
     QString encoding_data(const QString& data);
 public slots:
     //void set_app_page_visible(bool flag);

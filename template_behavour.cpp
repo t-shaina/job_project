@@ -33,11 +33,28 @@ void Template_behavour::creating_specific_behavour(Template_behavour* behavour, 
     }
 
 }
+void Template_behavour::decoding_element(QStringList* data_list, const QStringList::iterator iter_to_element){
+    QString element;
+    int length=0;
+    for(int i=0; i<iter_to_element->size()-length-1; i+=length){
+        length=iter_to_element->at(i).digitValue();
+        element.push_back(iter_to_element->sliced(i+1, length));
+        element.push_back(' ');
+    }
+    const QStringList::iterator current_position=data_list->erase(iter_to_element);
+    data_list->insert(current_position, element);
+}
 void Entry_behavour::processing_of_behavour(QStringList* data){
     if (data->at(0)=="NO"){
         emit user_not_exist();
     }
-
+    else {
+        QStringList::iterator i=data->begin();
+        decoding_element(data, i++);// decoding name_email
+        decoding_element(data, i+=2);//decoding directors
+        decoding_element(data, i++);//decoding genres
+        emit user_exist(data);
+    }
 }
 void Delete_behavour::processing_of_behavour(QStringList* data){
     if (data->at(0)=="NO"){

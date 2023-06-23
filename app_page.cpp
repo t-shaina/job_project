@@ -50,7 +50,7 @@ App_page::App_page(QWidget *parent)
     director_group(new QGroupBox(edit_group)),
     genre_group(new QGroupBox(edit_group)),
     date_group(new QGroupBox(edit_group)),
-    table(new QTableWidget(scroll_table_group)),  
+    table(new QTableView(scroll_table_group)),
     delete_button(new QPushButton("Удалить", this)),
     redact_button(new QPushButton("Редактировать", this)),
     show_all_button(new QPushButton("Показать все", this)),
@@ -162,6 +162,7 @@ App_page::App_page(QWidget *parent)
     edit_group_layout->setVerticalSpacing(25);
     edit_group_layout->setColumnMinimumWidth(1, (width_window-l_margin-r_margin-v_spacing)*0.15);
     base_settings();
+    main_table_settings();
     //connect(sort_combo_box, SIGNAL(activated(int)), this, SLOT(set_search_edit(int)));
     connect(genre_combo_box, SIGNAL(activated(int)), this, SLOT(set_genre_edit(int)));
     connect(date_slider, SIGNAL(valueChanged(int)), this, SLOT(set_date_edit(int)));
@@ -183,7 +184,6 @@ App_page::App_page(QWidget *parent)
     connect(date_edit, SIGNAL(textChanged(QString)), this, SLOT(on_name_director_genre_data_edit_changed()));
     connect(date_edit, SIGNAL(textEdited(QString)), this, SLOT(set_date_slider_position()));
 
-
 }
 /*void App_page::set_app_page_visible(bool flag){
     table_group->setVisible(flag);
@@ -196,7 +196,7 @@ void App_page::on_back_button_clicked(){
 }
 void App_page::on_sort_button_clicked(){
     int sort_id=sort_combo_box->currentIndex();
-    table->sortItems(sort_id+4, Qt::AscendingOrder);
+    //table->sortItems(sort_id+4, Qt::AscendingOrder);
 
 }
 void App_page::set_search_edit(int search_id){
@@ -226,11 +226,14 @@ void App_page::on_delete_button_clicked(){
     emit delete_request(row_data);
 }
 void App_page::on_redact_button_clicked(){//тут добавить перенос из таблицы в область редактирования
-    int row=table->currentRow();
+    QItemSelectionModel* select_model=table->selectionModel();
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    QModelIndex index=select_model->currentIndex();
+    int row=index.row();
     redact_transfer_state=true;
     QStringList redact_list=QStringList();//или row_data
-    for(int i=1; i<table->columnCount();i++)
-        redact_list<<table->item(row, i)->text();
+    for(int i=1; i<model->columnCount();i++)
+        redact_list<<model->item(row, i)->data().toStringList();
     name_edit->setText(redact_list.at(1));
     director_edit->setText(redact_list.at(2));
     genre_edit->setText(redact_list.at(3));
@@ -273,14 +276,17 @@ void App_page::on_table_row_selected(int){
     row_data->clear();
     delete_button->setEnabled(true);
     redact_button->setEnabled(true);
-    int row=table->currentRow();
     QString cell_data;
-    for(int i=1; i<table->columnCount();i++){
+    QItemSelectionModel* select_model=table->selectionModel();
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    QModelIndex index=select_model->currentIndex();
+    int row=index.row();
+    for(int i=1; i<8;i++){
         if(i==2||i==3){//для режиссеров и жанров дополнительное кодирование
-            cell_data=encoding_data(table->item(row,i)->text());
+            cell_data=encoding_data(model->item(row,i)->data().toString());
         }
         else
-            cell_data=table->item(row,i)->text();
+            cell_data=model->item(row,i)->data().toString();
         this->row_data->push_back(cell_data);
         cell_data.clear();
     }
@@ -358,11 +364,11 @@ void App_page::base_settings(){
     status_combo_box->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.16);
 
     table->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.7, (height_window-t_margin-b_margin-h_spacing)-navigation_group_hight-main_buttons_height);
-    table->setColumnCount(7);
+
     table->setShowGrid(true);
     table->setSelectionMode(QAbstractItemView::SingleSelection);//мб несколько shift
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
-    table->setHorizontalHeaderLabels(headers);
+
     table->setColumnWidth(0, (width_window-l_margin-r_margin-v_spacing)*0.7*0.06);
     table->setColumnWidth(1, (width_window-l_margin-r_margin-v_spacing)*0.7*0.19);
     table->setColumnWidth(2, (width_window-l_margin-r_margin-v_spacing)*0.7*0.19);
@@ -406,4 +412,10 @@ void App_page::main_buttons_settings(int w, int h){
     redact_button->setEnabled(false);
     search_button->setEnabled(false);
     accept_button->setEnabled(false);
+}
+void App_page::main_table_settings(){
+    QStandardItemModel* model=new QStandardItemModel(1, 7, this);
+    this->table->setModel(model);
+    model->setColumnCount(7);
+    model->setHorizontalHeaderLabels(headers);
 }

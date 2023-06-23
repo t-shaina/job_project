@@ -6,6 +6,7 @@
 #include "template_behavour.h"
 #include <QObject>
 #include<QStringList>
+#include<QApplication>
 
 class Creator:public QObject
 {
@@ -15,11 +16,11 @@ private:
     Socket* socket;
     Template_behavour* behavour;
 public:
-    Creator();
+    Creator(QApplication *parent = nullptr);
     ~Creator();
 public slots:
     void create_query(QStringList* data);
-    void on_data_received(QStringList*);
+    void on_data_received();
 };
 
 #endif // CREATOR_H

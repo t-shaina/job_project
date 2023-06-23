@@ -41,20 +41,7 @@ void MainWindow::resize_window(){
     this->setSizeIncrement(8, 6);
     this->setFixedSize(1280, 800);
 }
-void MainWindow:: create_app_page(){
-    //App_page app_page=new App_page(this);
-    //this->start_page->set_start_page_visible(false);
-    this->app_page=new App_page(this);
-    this->resize_window();
-    QObject::connect(this->app_page, SIGNAL(step_back()), this, SLOT(destroy_app_page()));
-    QObject::connect(this->app_page, SIGNAL(search_request(QStringList*)), this, SLOT(on_search_request(QStringList*)));
-    QObject::connect(this->app_page, SIGNAL(select_all_request(QStringList*)), this, SLOT(on_select_all_request(QStringList*)));
-    QObject::connect(this->app_page, SIGNAL(delete_request(QStringList*)), this, SLOT(on_delete_request(QStringList*)));
-    QObject::connect(this->app_page, SIGNAL(update_request(QStringList*)), this, SLOT(on_update_request(QStringList*)));
-    QObject::connect(this->app_page, SIGNAL(insert_request(QStringList*)), this, SLOT(on_insertrequest(QStringList*)));
-    status.setText("Вы вошли как: ");
 
-}
 void MainWindow:: destroy_app_page(){
     this->app_page->~App_page();
     this->start_page->set_start_page_visible(true);
@@ -112,3 +99,22 @@ void MainWindow::on_registration_request(QStringList* registration_list){
     registration_list->push_front("4");
     emit have_request(registration_list);
 }
+void MainWindow::msg_such_user_not_exist(){
+    status.setText("Пользователя с таким email не существует или неверный пароль");
+}
+void MainWindow:: create_app_page(QStringList* data){
+    //App_page app_page=new App_page(this);
+    //this->start_page->set_start_page_visible(false);
+    this->app_page=new App_page(this);
+    this->resize_window();
+    QObject::connect(this->app_page, SIGNAL(step_back()), this, SLOT(destroy_app_page()));
+    QObject::connect(this->app_page, SIGNAL(search_request(QStringList*)), this, SLOT(on_search_request(QStringList*)));
+    QObject::connect(this->app_page, SIGNAL(select_all_request(QStringList*)), this, SLOT(on_select_all_request(QStringList*)));
+    QObject::connect(this->app_page, SIGNAL(delete_request(QStringList*)), this, SLOT(on_delete_request(QStringList*)));
+    QObject::connect(this->app_page, SIGNAL(update_request(QStringList*)), this, SLOT(on_update_request(QStringList*)));
+    QObject::connect(this->app_page, SIGNAL(insert_request(QStringList*)), this, SLOT(on_insertrequest(QStringList*)));
+    QString* service_msg=new QString("Вы вошли как: ");
+    status.setText(service_msg->append(data->at(1)));
+
+}
+
