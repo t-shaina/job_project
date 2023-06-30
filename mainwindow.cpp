@@ -112,9 +112,32 @@ void MainWindow:: create_app_page(QStringList* data){
     QObject::connect(this->app_page, SIGNAL(select_all_request(QStringList*)), this, SLOT(on_select_all_request(QStringList*)));
     QObject::connect(this->app_page, SIGNAL(delete_request(QStringList*)), this, SLOT(on_delete_request(QStringList*)));
     QObject::connect(this->app_page, SIGNAL(update_request(QStringList*)), this, SLOT(on_update_request(QStringList*)));
-    QObject::connect(this->app_page, SIGNAL(insert_request(QStringList*)), this, SLOT(on_insertrequest(QStringList*)));
+    QObject::connect(this->app_page, SIGNAL(insert_request(QStringList*)), this, SLOT(on_insert_request(QStringList*)));
     QString* service_msg=new QString("Вы вошли как: ");
     status.setText(service_msg->append(data->at(1)));
-
+    data->removeFirst();//подразумевается удаление личных данных пользователя
+    this->app_page->insert_rows_in_table(data);
 }
-
+void MainWindow::msg_deletion_failed(){
+    status.setText("Удаление строки не удалось");
+}
+void MainWindow::msg_deletion_successful(){
+    status.setText("Строка удалена");
+    this->app_page->remove_row_in_table();
+}
+void MainWindow::msg_records_not_exist(){
+    status.setText("По запросу ничего не найдено");
+}
+void MainWindow::msg_records_exist(QStringList* data){
+    this->app_page->insert_rows_in_table(data);
+}
+void MainWindow::msg_data_exist(){
+    status.setText("Такой фильм уже существует, проверьте корректность введенных данных");
+}
+void MainWindow::msg_insert_successful(QStringList* data){
+    status.setText("Вставка прошла успешно");
+    this->app_page->insert_row_in_table(data);
+}
+void MainWindow::msg_insert_failed(){
+    status.setText("Строка не была добавлена");
+}

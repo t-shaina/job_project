@@ -49,10 +49,7 @@ void Entry_behavour::processing_of_behavour(QStringList* data){
         emit user_not_exist();
     }
     else {
-        QStringList::iterator i=data->begin();
-        decoding_element(data, i++);// decoding name_email
-        decoding_element(data, i+=2);//decoding directors
-        decoding_element(data, i++);//decoding genres
+        data->removeFirst();//подразумевается удаление кода ошибки перепроверить состояние контейнера после
         emit user_exist(data);
     }
 }
@@ -64,19 +61,28 @@ void Delete_behavour::processing_of_behavour(QStringList* data){
 
 }
 void Select_behavour::processing_of_behavour(QStringList* data){
-
+    if (data->size()>1){
+        emit records_exist(data);
+    }
+    else
+        emit records_not_exist();
 }
 void Insert_behavour::processing_of_behavour(QStringList* data){
     if (data->at(0)=="EXIST"){
         emit data_exist();
     }
-    else if(data->at(0)=="OK")emit insert_successful();
+    else if(data->at(0)=="OK"){
+        data->removeFirst();
+        emit insert_successful(data);
+    }
+    else emit insert_failed();
 }
 
 void Registration_behavour::processing_of_behavour(QStringList* data){
     if (data->at(0)=="EXIST"){
-        emit user_exist();
+        emit registration_failed();
     }
+    else registration_successful();
 }
 void Select_all_behavour::processing_of_behavour(QStringList* data){
 

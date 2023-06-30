@@ -35,7 +35,11 @@ signals:
 class Select_behavour:public Template_behavour{
     Q_OBJECT
 private:
+
     void processing_of_behavour(QStringList* data);
+signals:
+    void records_exist(QStringList* data);
+    void records_not_exist();
 };
 class Insert_behavour:public Template_behavour{
     Q_OBJECT
@@ -43,14 +47,16 @@ private:
     void processing_of_behavour(QStringList* data);
 signals:
     void data_exist();
-    void insert_successful();
+    void insert_successful(QStringList* data);
+    void insert_failed();
 };
 class Registration_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QStringList* data);
 signals:
-    void user_exist();
+    void registration_failed();
+    void registration_successful();
 };
 class Select_all_behavour:public Template_behavour{
     Q_OBJECT

@@ -18,6 +18,7 @@
 #include<QSpinBox>
 #include<QStringList>
 #include<QStandardItemModel>
+#include<QStandardItem>
 class App_page:public QWidget
 {
     Q_OBJECT
@@ -26,6 +27,7 @@ public:
     App_page(QWidget* parent=nullptr);
     QString email;
     QStringList* row_data;
+    QModelIndex* model_index;
 private:
     //QGroupBox* page_group;
     bool redact_transfer_state;
@@ -75,7 +77,15 @@ private:
     void main_buttons_settings(int w, int h);
     void main_table_settings();
     QString encoding_data(const QString& data);
+    QString decoding_element(const QStringList::iterator iter_to_element);
+    void filling_in_table(QStringList* data, int row_position);
 public slots:
+    QStandardItemModel* get_table_model();
+    void remove_row_in_table();
+    void insert_rows_in_table(QStringList* data);
+    void insert_row_in_table(QStringList* data);
+
+private slots:
     //void set_app_page_visible(bool flag);
     void on_back_button_clicked();
     void on_delete_button_clicked();
@@ -84,7 +94,7 @@ public slots:
     void on_sort_button_clicked();
     void on_search_button_clicked();
     void on_accept_button_clicked();
-private slots:
+
     void set_search_edit(int search_id);//переименовать
     void set_date_edit(int data_value);
     void set_date_slider_position();

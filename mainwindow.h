@@ -52,6 +52,13 @@ public slots:
     // слоты обработки входящих сообщений
     void msg_such_user_not_exist();
     void create_app_page(QStringList*);
+    void msg_deletion_failed();
+    void msg_deletion_successful();
+    void msg_records_not_exist();
+    void msg_records_exist(QStringList* data);
+    void msg_data_exist();
+    void msg_insert_successful(QStringList* data);
+    void msg_insert_failed();
     //void data_decryption(QString);
     //void data_encoding(QStringList* data);
 

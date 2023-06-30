@@ -196,7 +196,8 @@ void App_page::on_back_button_clicked(){
 }
 void App_page::on_sort_button_clicked(){
     int sort_id=sort_combo_box->currentIndex();
-    //table->sortItems(sort_id+4, Qt::AscendingOrder);
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    model->sort(sort_id+4, Qt::AscendingOrder);
 
 }
 void App_page::set_search_edit(int search_id){
@@ -223,6 +224,8 @@ void App_page::on_delete_button_clicked(){
     QStringList delete_list=QStringList();
     for(int i=1; i<table->columnCount();i++)
         delete_list<<table->item(row, i)->text();*/
+    QItemSelectionModel* select_model=table->selectionModel();
+    *model_index=select_model->currentIndex();
     emit delete_request(row_data);
 }
 void App_page::on_redact_button_clicked(){//тут добавить перенос из таблицы в область редактирования
@@ -418,4 +421,60 @@ void App_page::main_table_settings(){
     this->table->setModel(model);
     model->setColumnCount(7);
     model->setHorizontalHeaderLabels(headers);
+}
+QStandardItemModel* App_page::get_table_model(){
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    return model;
+}
+void App_page::filling_in_table(QStringList* data, int row_position){
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    //int number_of_rows=(data->size()-2)/6;
+    QStringList::iterator i=data->begin();
+     //i+=2;
+    int counter=row_position;
+    QList<QStandardItem*>* row_of_item= new QList<QStandardItem*>(7);
+    while (i<data->end()){
+        for(int j=0; j<7;j++){
+            QString string_of_item= QString();
+            if(j==0){
+                string_of_item=QString::number(counter);
+            }
+            else if(j==2||j==3){
+                string_of_item=decoding_element(i);
+                i++;
+            }
+            else {
+                string_of_item=*i;
+                i++;
+            }
+            QStandardItem* item=new QStandardItem(string_of_item);
+            row_of_item->push_back(item);
+        }
+        model->appendRow(*row_of_item);
+        row_of_item->clear();
+        counter++;
+    }
+    delete row_of_item;
+}
+QString App_page::decoding_element(const QStringList::iterator iter_to_element){
+    QString element;
+    int length=0;
+    for(int i=0; i<iter_to_element->size()-length-1; i+=length){
+        length=iter_to_element->at(i).digitValue();
+        element.push_back(iter_to_element->sliced(i+1, length));
+        element.push_back(' ');
+    }
+    return element;
+}
+void App_page::remove_row_in_table(){
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    model->removeRow(model_index->row());
+}
+void App_page::insert_rows_in_table(QStringList* data){
+    filling_in_table(data, 1);
+}
+void App_page::insert_row_in_table(QStringList* data){//переделать два метода, код повторяется
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    int current_number_of_rows=model->rowCount();
+    filling_in_table(data, current_number_of_rows);
 }
