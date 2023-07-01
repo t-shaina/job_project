@@ -22,14 +22,12 @@
 class App_page:public QWidget
 {
     Q_OBJECT
-    //friend class MainWindow;
 public:
     App_page(QWidget* parent=nullptr);
     QString email;
     QStringList* row_data;
     QModelIndex* model_index;
 private:
-    //QGroupBox* page_group;
     bool redact_transfer_state;
     QGridLayout* layout_page;
     QGroupBox* table_group;
@@ -84,6 +82,7 @@ public slots:
     void remove_row_in_table();
     void insert_rows_in_table(QStringList* data);
     void insert_row_in_table(QStringList* data);
+    void update_row_in_table(QStringList* data);
 
 private slots:
     //void set_app_page_visible(bool flag);
@@ -104,7 +103,7 @@ private slots:
     void on_name_edit_changed();
     void on_table_row_selected(int);
 signals:
-    void step_back();
+    void step_out();
     void search_request(QStringList*);
     void select_all_request(QStringList*);
     void update_request(QStringList*);

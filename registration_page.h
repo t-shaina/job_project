@@ -24,7 +24,7 @@ private:
     QLineEdit* edit_password;
     QLineEdit* edit_repeat_password;
     QLabel* incorrect_repeated_password_msg;
-    QPushButton* button_entry;
+    //QPushButton* button_entry;
     QPushButton* button_registration;
     QGridLayout* layout_registration_page;
     QPushButton* back_button;

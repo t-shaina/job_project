@@ -17,11 +17,11 @@ MainWindow::MainWindow(QWidget *parent)
     statusBar()->addWidget(&status);
     status.setText("Войдите в систему");
     this->start_page=new Start_page(this);
-    QObject::connect(this->start_page, SIGNAL(entry_request(QStringList*)), this, SLOT(set_username(QString)));//
-    QObject::connect(this->start_page, SIGNAL(entry_request(QStringlist*)), this, SLOT(resize_window()));
-    QObject::connect(this->start_page, SIGNAL(entry_request(QStringList*)), this, SLOT(create_app_page()));
-    QObject::connect(this->start_page, SIGNAL(entry_request(QStringList*)), this, SLOT(on_entry_request(QStringList*)));
-    QObject::connect(this->start_page, SIGNAL(create_registration_page()), this, SLOT(on_create_registration_page()));
+    //QObject::connect(this->start_page, SIGNAL(entry_request(QStringList*)), this, SLOT(set_username(QString)));//
+    //QObject::connect(this->start_page, SIGNAL(entry_request(QStringlist*)), this, SLOT(resize_window()));
+    //QObject::connect(this->start_page, SIGNAL(entry_request(QStringList*)), this, SLOT(create_app_page()));
+    QObject::connect(this->start_page, SIGNAL(entry_request(QStringList*)), this, SLOT(processing_entry_request(QStringList*)));
+    QObject::connect(this->start_page, SIGNAL(create_registration_page()), this, SLOT(creating_registration_page()));
 
     //QObject::connect(this->app_page, SIGNAL(step_back()), this, SLOT(destroy_app_page()));
 }
@@ -48,36 +48,36 @@ void MainWindow:: destroy_app_page(){
     this->setFixedSize(500, 350);
     status.setText("Войдите в систему");
 }
-void MainWindow::on_create_registration_page(){
+void MainWindow::creating_registration_page(){
     this->start_page->set_start_page_visible(false);
     this->registration_page=new Registration_page(this);
-    QObject::connect(this->registration_page, SIGNAL(step_back()), this, SLOT(on_destroy_registration_page()));
-    QObject::connect(this->registration_page, SIGNAL(registration_request(QStringList*)), this, SLOT(on_registration_request(QStringList*)));
+    QObject::connect(this->registration_page, SIGNAL(step_back()), this, SLOT(breaking_registration_page()));
+    QObject::connect(this->registration_page, SIGNAL(registration_request(QStringList*)), this, SLOT(processing_registration_request(QStringList*)));
     status.setText("Зарегестрируйтесь");
 }
-void MainWindow:: on_destroy_registration_page(){
+void MainWindow:: breaking_registration_page(){
     this->registration_page->~Registration_page();
     this->start_page->set_start_page_visible(true);//need7
     this->setFixedSize(500, 350);
     status.setText("Войдите в систему");
 }
-void MainWindow::on_entry_request(QStringList* entry_list){
+void MainWindow::processing_entry_request(QStringList* entry_list){
     entry_list->push_front("0");
     emit have_request(entry_list);
 }
-void MainWindow::on_search_request(QStringList* search_list){
+void MainWindow::processing_search_request(QStringList* search_list){
     search_list->push_front("2");
     emit have_request(search_list);
 }
-void MainWindow::on_delete_request(QStringList* delete_list){
+void MainWindow::processing_delete_request(QStringList* delete_list){
     delete_list->push_front("1");
     emit have_request(delete_list);
 }
-void MainWindow::on_select_all_request(QStringList* email){
+void MainWindow::processing_select_all_request(QStringList* email){
     email->push_front("5");
     emit have_request(email);
 }
-void MainWindow::on_update_request(QStringList* update_list){//do
+void MainWindow::processing_update_request(QStringList* update_list){//do
     /*QString* encoded_update_list=new QString();
     for(int i=0; i<this->app_page->row_data->size();i++){
         *encoded_update_list+=static_cast<char>(this->app_page->row_data->at(i).size());
@@ -90,12 +90,12 @@ void MainWindow::on_update_request(QStringList* update_list){//do
     update_list->push_front("6");
     emit have_request(update_list);
 }
-void MainWindow::on_insert_request(QStringList* insert_list){
+void MainWindow::processing_insert_request(QStringList* insert_list){
     insert_list->push_front("3");
     emit have_request(insert_list);
 }
 
-void MainWindow::on_registration_request(QStringList* registration_list){
+void MainWindow::processing_registration_request(QStringList* registration_list){
     registration_list->push_front("4");
     emit have_request(registration_list);
 }
@@ -107,12 +107,12 @@ void MainWindow:: create_app_page(QStringList* data){
     //this->start_page->set_start_page_visible(false);
     this->app_page=new App_page(this);
     this->resize_window();
-    QObject::connect(this->app_page, SIGNAL(step_back()), this, SLOT(destroy_app_page()));
-    QObject::connect(this->app_page, SIGNAL(search_request(QStringList*)), this, SLOT(on_search_request(QStringList*)));
-    QObject::connect(this->app_page, SIGNAL(select_all_request(QStringList*)), this, SLOT(on_select_all_request(QStringList*)));
-    QObject::connect(this->app_page, SIGNAL(delete_request(QStringList*)), this, SLOT(on_delete_request(QStringList*)));
-    QObject::connect(this->app_page, SIGNAL(update_request(QStringList*)), this, SLOT(on_update_request(QStringList*)));
-    QObject::connect(this->app_page, SIGNAL(insert_request(QStringList*)), this, SLOT(on_insert_request(QStringList*)));
+    QObject::connect(this->app_page, SIGNAL(step_out()), this, SLOT(destroy_app_page()));
+    QObject::connect(this->app_page, SIGNAL(search_request(QStringList*)), this, SLOT(processing_search_request(QStringList*)));
+    QObject::connect(this->app_page, SIGNAL(select_all_request(QStringList*)), this, SLOT(processing_select_all_request(QStringList*)));
+    QObject::connect(this->app_page, SIGNAL(delete_request(QStringList*)), this, SLOT(processing_delete_request(QStringList*)));
+    QObject::connect(this->app_page, SIGNAL(update_request(QStringList*)), this, SLOT(processing_update_request(QStringList*)));
+    QObject::connect(this->app_page, SIGNAL(insert_request(QStringList*)), this, SLOT(processing_insert_request(QStringList*)));
     QString* service_msg=new QString("Вы вошли как: ");
     status.setText(service_msg->append(data->at(1)));
     data->removeFirst();//подразумевается удаление личных данных пользователя
@@ -140,4 +140,23 @@ void MainWindow::msg_insert_successful(QStringList* data){
 }
 void MainWindow::msg_insert_failed(){
     status.setText("Строка не была добавлена");
+}
+void MainWindow::msg_registration_failed(){
+    status.setText("Такой пользователь уже зарегестрирован");
+}
+void MainWindow::msg_registration_successful(QStringList* data){
+    create_app_page(data);
+}
+void MainWindow::msg_all_records_not_exist(){
+    status.setText("Ошибка обновления данных");
+}
+void MainWindow::msg_all_records_exist(QStringList* data){
+    this->app_page->insert_rows_in_table(data);
+}
+void MainWindow::msg_updation_failed(){
+    status.setText("Ошибка обновления записи");
+}
+void MainWindow::msg_updation_successful(QStringList* data){
+    status.setText("Запись обновлена");
+    this->app_page->update_row_in_table(data);
 }

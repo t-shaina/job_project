@@ -40,15 +40,15 @@ public slots:
     void resize_window();
 
     void destroy_app_page();
-    void on_create_registration_page();
-    void on_destroy_registration_page();
-    void on_search_request(QStringList*);
-    void on_delete_request(QStringList*);
-    void on_select_all_request(QStringList*);
-    void on_update_request(QStringList*);
-    void on_insert_request(QStringList*);
-    void on_entry_request(QStringList*);
-    void on_registration_request(QStringList*);
+    void creating_registration_page();
+    void breaking_registration_page();
+    void processing_search_request(QStringList*);
+    void processing_delete_request(QStringList*);
+    void processing_select_all_request(QStringList*);
+    void processing_update_request(QStringList*);
+    void processing_insert_request(QStringList*);
+    void processing_entry_request(QStringList*);
+    void processing_registration_request(QStringList*);
     // слоты обработки входящих сообщений
     void msg_such_user_not_exist();
     void create_app_page(QStringList*);
@@ -59,6 +59,12 @@ public slots:
     void msg_data_exist();
     void msg_insert_successful(QStringList* data);
     void msg_insert_failed();
+    void msg_registration_failed();
+    void msg_registration_successful(QStringList* data);
+    void msg_all_records_not_exist();
+    void msg_all_records_exist(QStringList* data);
+    void msg_updation_failed();
+    void msg_updation_successful(QStringList* data);
     //void data_decryption(QString);
     //void data_encoding(QStringList* data);
 

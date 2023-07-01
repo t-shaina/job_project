@@ -20,7 +20,7 @@ public:
     ~Creator();
 public slots:
     void create_query(QStringList* data);
-    void on_data_received();
+    void data_received();
 };
 
 #endif // CREATOR_H

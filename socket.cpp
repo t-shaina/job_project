@@ -4,21 +4,46 @@ Socket::Socket(QObject* parent):
     QObject(parent)
 {
     client_socket= new QTcpSocket();
-    connect(client_socket, SIGNAL(readyRead()), client_socket, SLOT(readData()));
+    received_data=new QStringList();
+    received_data->reserve(600);
+    connect(client_socket, SIGNAL(readyRead()), this, SLOT(read_data()));
     client_socket->connectToHost("127.0.0.1", 9000);
 }
-void Socket::readData(){
-    QByteArray message_array=client_socket->readAll();
-    QString message=QString::fromStdString(message_array.data());
-    received_data=new QStringList();
-    Socket::decoding_message(received_data, message);
+Socket::~Socket(){
+    delete client_socket;
+    delete received_data;
+}
+void Socket::read_data(){
+    QDataStream stream(client_socket);
+    stream.setVersion(QDataStream::Qt_4_0);
+    //QByteArray block_size_array=client_socket->read(sizeof(int));//считывание
+    //quint16 block_size;
+        //=block_size_array.toInt();
+    if (block_size==0){
+        if(client_socket->bytesAvailable()<(int)sizeof(quint16))
+            return;
+        stream>>block_size;
+    }
+    if(client_socket->bytesAvailable()<block_size)
+        return;
+
+    QString message;
+    stream>>message;
+    block_size=0;
+    //received_data=new QStringList();
+    Socket::decoding_message(message);
     emit new_data_received();
 
 }
 void Socket::sendData(QStringList* data){
     QString message=Socket::encoding_message(data);
+    QByteArray block;
+    QDataStream stream(&block, QIODevice::ReadWrite);
     if (client_socket->waitForConnected(1000)){
-        client_socket->write(message.toUtf8());
+        stream<<quint16(0)<<message;
+        stream.device()->seek(0);
+        stream<<(quint16)(block.size()-sizeof(quint16));
+        client_socket->write(block);
     }
 }
 QString Socket::encoding_message(const QStringList* data){
@@ -29,11 +54,12 @@ QString Socket::encoding_message(const QStringList* data){
     }
     return *encoded_message;
 }
-void  Socket::decoding_message(QStringList* data_list, const QString& message){
+void  Socket::decoding_message(const QString& message){
+    received_data->clear();
     int length=0;
-    data_list->push_back(message.at(0));
+    received_data->push_back(message.at(0));
     for (int i=1; i<message.size()-length-1;i+=length){//мб тут с условием выхода из for
         length=message.at(i).digitValue();
-        data_list->push_back(message.sliced(i+1, length));
+        received_data->push_back(message.sliced(i+1, length));
     }
 }

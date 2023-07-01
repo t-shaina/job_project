@@ -12,8 +12,8 @@ public:
     Template_behavour();
     virtual ~Template_behavour();
     virtual  void processing_of_behavour(QStringList* data)=0;
-    void decoding_element(QStringList* data_list, const QStringList::iterator iter_to_element);
-    static void creating_specific_behavour(Template_behavour* Template_behavour, Behavour_id  id);
+    //void decoding_element(QStringList* data_list, const QStringList::iterator iter_to_element);
+    static Template_behavour* creating_specific_behavour(Behavour_id  id);
 };
 class Entry_behavour:public Template_behavour{
     Q_OBJECT
@@ -56,12 +56,15 @@ private:
     void processing_of_behavour(QStringList* data);
 signals:
     void registration_failed();
-    void registration_successful();
+    void registration_successful(QStringList* data);
 };
 class Select_all_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QStringList* data);
+signals:
+    void all_records_not_exist();
+    void all_records_exist(QStringList* data);
 };
 class Update_behavour:public Template_behavour{
     Q_OBJECT
@@ -69,6 +72,6 @@ private:
     void processing_of_behavour(QStringList* data);
 signals:
     void updation_failed();
-    void updation_successful();
+    void updation_successful(QStringList* data);
 };
 #endif // Template_behavour_H

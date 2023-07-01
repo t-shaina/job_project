@@ -192,7 +192,7 @@ App_page::App_page(QWidget *parent)
     navigation_group->setVisible(flag);
 }*/
 void App_page::on_back_button_clicked(){
-    emit step_back();
+    emit step_out();
 }
 void App_page::on_sort_button_clicked(){
     int sort_id=sort_combo_box->currentIndex();
@@ -471,10 +471,36 @@ void App_page::remove_row_in_table(){
     model->removeRow(model_index->row());
 }
 void App_page::insert_rows_in_table(QStringList* data){
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    model->clear();
+    model->setColumnCount(7);
+    model->setHorizontalHeaderLabels(headers);
     filling_in_table(data, 1);
 }
-void App_page::insert_row_in_table(QStringList* data){//переделать два метода, код повторяется
+void App_page::insert_row_in_table(QStringList* data){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     int current_number_of_rows=model->rowCount();
     filling_in_table(data, current_number_of_rows);
+}
+void App_page::update_row_in_table(QStringList* data){
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    int counter= model_index->row();
+    QStringList::iterator i=data->begin();
+    for(int j=0; j<7;j++){
+        QString string_of_item= QString();
+        if(j==0){
+            string_of_item=QString::number(counter);
+        }
+        else if(j==2||j==3){
+            string_of_item=decoding_element(i);
+            i++;
+        }
+        else {
+            string_of_item=*i;
+            i++;
+        }
+        QStandardItem* item=new QStandardItem(string_of_item);
+        model->setItem(counter, j, item);
+        model->emit itemChanged(item);//проверить нужно ли
+    }
 }

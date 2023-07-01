@@ -5,22 +5,23 @@
 #include<QTcpSocket>
 #include<QStringList>
 #include<QString>
-#include <QWidget>
+#include <QDataStream>
+
 class Socket: public QObject
 {
     Q_OBJECT
 public:
     explicit Socket(QObject* parent=nullptr);
+    ~Socket();
     QStringList* received_data;
 private:
+    quint16 block_size;
     QTcpSocket* client_socket;
     QString encoding_message(const QStringList* data);
-    static void  decoding_message(QStringList* data_list, const QString& message);
+    void  decoding_message(const QString& message);
 public slots:
-    //void newConnection();
-    void readData();
+    void read_data();
     void sendData(QStringList* data);
-    //void on_new_data_received();
 signals: void new_data_received();
 };
 

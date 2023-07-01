@@ -4,7 +4,8 @@ Template_behavour::Template_behavour()
 {}
 Template_behavour::~Template_behavour()
 {}
-void Template_behavour::creating_specific_behavour(Template_behavour* behavour, Behavour_id  id){
+Template_behavour* Template_behavour::creating_specific_behavour( Behavour_id  id){
+    Template_behavour* behavour;
     switch(id){
     case entry_id:
         behavour=new Entry_behavour();
@@ -31,9 +32,10 @@ void Template_behavour::creating_specific_behavour(Template_behavour* behavour, 
         behavour=nullptr;
         break;
     }
-
+    return behavour;
 }
-void Template_behavour::decoding_element(QStringList* data_list, const QStringList::iterator iter_to_element){
+
+/*void Template_behavour::decoding_element(QStringList* data_list, const QStringList::iterator iter_to_element){
     QString element;
     int length=0;
     for(int i=0; i<iter_to_element->size()-length-1; i+=length){
@@ -43,7 +45,7 @@ void Template_behavour::decoding_element(QStringList* data_list, const QStringLi
     }
     const QStringList::iterator current_position=data_list->erase(iter_to_element);
     data_list->insert(current_position, element);
-}
+}*/
 void Entry_behavour::processing_of_behavour(QStringList* data){
     if (data->at(0)=="NO"){
         emit user_not_exist();
@@ -82,15 +84,19 @@ void Registration_behavour::processing_of_behavour(QStringList* data){
     if (data->at(0)=="EXIST"){
         emit registration_failed();
     }
-    else registration_successful();
+    else emit registration_successful(data);
 }
 void Select_all_behavour::processing_of_behavour(QStringList* data){
-
+    if (data->size()>1){
+        emit all_records_exist(data);
+    }
+    else
+        emit all_records_not_exist();
 }
 void Update_behavour::processing_of_behavour(QStringList* data){
     if (data->at(0)=="NO"){
         emit updation_failed();
     }
-    else emit updation_successful();
+    else emit updation_successful(data);
 
 }
