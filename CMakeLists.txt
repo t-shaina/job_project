@@ -20,6 +20,8 @@ set(PROJECT_SOURCES
         start_page.h
         start_page.cpp
         socket.cpp
+        socket_adapter.cpp
+        client_socket_adapter.cpp
         app_page.cpp
         registration_page.cpp
         template_behavour.cpp
