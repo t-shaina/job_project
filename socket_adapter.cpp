@@ -20,11 +20,6 @@ Socket_adapter::~Socket_adapter(){}
 void Socket_adapter::readyRead(){
     qDebug()<< "in readyRead";
     QString buf;
-    //QByteArray array;
-    //array=socket_->readAll();
-    //block_size_in=(int)array.at(0);
-    //qDebug()<<"block_size_in="<< block_size_in;
-    //qDebug()<<"array="<< array.toStdString();
     QDataStream in(socket_);
 
     while(true){
@@ -32,10 +27,7 @@ void Socket_adapter::readyRead(){
         if (block_size_in==0){
             if(socket_->bytesAvailable()<sizeof(int))
                 return;
-            //size_array=socket_->read((quint64)sizeof(int));
-            in>>block_size_in;//  тут нормально считать ращзмер
-            //block_size_in=(int)size_array.at(0);
-            qDebug()<<"block_size_in="<< block_size_in;
+            in>>block_size_in;
         }
         else{
             if(socket_->bytesAvailable()<block_size_in)

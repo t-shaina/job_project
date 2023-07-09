@@ -1,10 +1,10 @@
 #include "template_behavour.h"
-
+#include<QDebug>
 Template_behavour::Template_behavour()
 {}
 Template_behavour::~Template_behavour()
 {}
-Template_behavour* Template_behavour::creating_specific_behavour( Behavour_id  id){
+Template_behavour* Template_behavour::creating_specific_behavour(Behavour_id  id){
     Template_behavour* behavour;
     switch(id){
     case entry_id:
@@ -17,7 +17,7 @@ Template_behavour* Template_behavour::creating_specific_behavour( Behavour_id  i
         behavour=new Select_behavour();
         break;
     case insert_id:
-        behavour=new Update_behavour();
+        behavour=new Insert_behavour();
         break;
     case registration_id:
         behavour=new Registration_behavour();
@@ -46,15 +46,18 @@ Template_behavour* Template_behavour::creating_specific_behavour( Behavour_id  i
     const QStringList::iterator current_position=data_list->erase(iter_to_element);
     data_list->insert(current_position, element);
 }*/
-void Entry_behavour::processing_of_behavour(QStringList* data){
-    if (data->at(0)=="NO"){
+void Entry_behavour::processing_of_behavour(QStringList* data){   
+    if (data->at(0)=="1"){
+        qDebug()<<"in user_not_exist branch";
         emit user_not_exist();
     }
     else {
         data->removeFirst();//подразумевается удаление кода ошибки перепроверить состояние контейнера после
         emit user_exist(data);
+        qDebug()<<"in user_exist branch";
     }
 }
+
 void Delete_behavour::processing_of_behavour(QStringList* data){
     if (data->at(0)=="NO"){
         emit deletion_failed();
@@ -62,6 +65,7 @@ void Delete_behavour::processing_of_behavour(QStringList* data){
     else emit deletion_successful();
 
 }
+
 void Select_behavour::processing_of_behavour(QStringList* data){
     if (data->size()>1){
         emit records_exist(data);
@@ -69,6 +73,7 @@ void Select_behavour::processing_of_behavour(QStringList* data){
     else
         emit records_not_exist();
 }
+
 void Insert_behavour::processing_of_behavour(QStringList* data){
     if (data->at(0)=="EXIST"){
         emit data_exist();
@@ -86,6 +91,7 @@ void Registration_behavour::processing_of_behavour(QStringList* data){
     }
     else emit registration_successful(data);
 }
+
 void Select_all_behavour::processing_of_behavour(QStringList* data){
     if (data->size()>1){
         emit all_records_exist(data);
@@ -93,6 +99,7 @@ void Select_all_behavour::processing_of_behavour(QStringList* data){
     else
         emit all_records_not_exist();
 }
+
 void Update_behavour::processing_of_behavour(QStringList* data){
     if (data->at(0)=="NO"){
         emit updation_failed();
@@ -100,3 +107,4 @@ void Update_behavour::processing_of_behavour(QStringList* data){
     else emit updation_successful(data);
 
 }
+

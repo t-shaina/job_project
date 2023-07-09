@@ -12,13 +12,17 @@ public:
     Template_behavour();
     virtual ~Template_behavour();
     virtual  void processing_of_behavour(QStringList* data)=0;
+    //virtual void creating_connect(Template_behavour* behavour)=0;
     //void decoding_element(QStringList* data_list, const QStringList::iterator iter_to_element);
     static Template_behavour* creating_specific_behavour(Behavour_id  id);
+
 };
 class Entry_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QStringList* data);
+public slots:
+    //void creating_connect(Template_behavour* behavour);
 signals:
     void user_not_exist();
     void user_exist(QStringList* data);
@@ -28,15 +32,18 @@ class Delete_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QStringList* data);
-signals:
+public slots:
+    //void creating_connect(Template_behavour* behavour);
+signals:   
     void deletion_failed();
     void deletion_successful();
 };
 class Select_behavour:public Template_behavour{
     Q_OBJECT
 private:
-
     void processing_of_behavour(QStringList* data);
+public slots:
+    //void creating_connect(Template_behavour* behavour);
 signals:
     void records_exist(QStringList* data);
     void records_not_exist();
@@ -45,31 +52,43 @@ class Insert_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QStringList* data);
+public slots:
+    //void creating_connect(Template_behavour* behavour);
 signals:
     void data_exist();
     void insert_successful(QStringList* data);
     void insert_failed();
 };
+
 class Registration_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QStringList* data);
+public slots:
+    //void creating_connect(Template_behavour* behavour);
 signals:
     void registration_failed();
     void registration_successful(QStringList* data);
 };
+
 class Select_all_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QStringList* data);
+public slots:
+    //void creating_connect(Template_behavour* behavour);
 signals:
     void all_records_not_exist();
     void all_records_exist(QStringList* data);
+
 };
+
 class Update_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QStringList* data);
+public slots:
+    //void creating_connect(Template_behavour* behavour);
 signals:
     void updation_failed();
     void updation_successful(QStringList* data);

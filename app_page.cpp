@@ -176,7 +176,7 @@ App_page::App_page(QWidget *parent)
     connect(accept_button, SIGNAL(clicked()), this, SLOT(on_accept_button_clicked()));
 
 
-    connect(table, SIGNAL(itemClicked(int)), this, SLOT(on_table_row_selected(int)));
+    connect(table, SIGNAL(clicked(QModelIndex)), this, SLOT(on_table_row_selected(QModelIndex)));
     connect(search_edit, SIGNAL(textEdited(QString)), this, SLOT(on_search_edit_edited()));
     connect(name_edit, SIGNAL(textChanged()), this, SLOT(on_name_director_genre_data_edit_changed()));
     connect(director_edit, SIGNAL(textChanged()), this, SLOT(on_name_director_genre_data_edit_changed()));
@@ -275,14 +275,14 @@ void App_page::on_accept_button_clicked(){
     accept_button->setText("Добавить");
 
 }
-void App_page::on_table_row_selected(int){
+void App_page::on_table_row_selected(QModelIndex index){
     row_data->clear();
     delete_button->setEnabled(true);
     redact_button->setEnabled(true);
     QString cell_data;
-    QItemSelectionModel* select_model=table->selectionModel();
+    //QItemSelectionModel* select_model=table->selectionModel();
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
-    QModelIndex index=select_model->currentIndex();
+    //QModelIndex index=select_model->currentIndex();
     int row=index.row();
     for(int i=1; i<8;i++){
         if(i==2||i==3){//для режиссеров и жанров дополнительное кодирование
@@ -459,10 +459,11 @@ void App_page::filling_in_table(QStringList* data, int row_position){
 QString App_page::decoding_element(const QStringList::iterator iter_to_element){
     QString element;
     int length=0;
-    for(int i=0; i<iter_to_element->size()-length-1; i+=length){
+    for(int i=0; i<iter_to_element->size()-1-length; i++){
         length=iter_to_element->at(i).digitValue();
         element.push_back(iter_to_element->sliced(i+1, length));
         element.push_back(' ');
+        i+=length;
     }
     return element;
 }
@@ -471,6 +472,7 @@ void App_page::remove_row_in_table(){
     model->removeRow(model_index->row());
 }
 void App_page::insert_rows_in_table(QStringList* data){
+    qDebug()<<"in insert_rows_in_table";
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     model->clear();
     model->setColumnCount(7);
@@ -478,6 +480,7 @@ void App_page::insert_rows_in_table(QStringList* data){
     filling_in_table(data, 1);
 }
 void App_page::insert_row_in_table(QStringList* data){
+    //тут или в заполнении таблицв проверка кратности размра листа 6
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     int current_number_of_rows=model->rowCount();
     filling_in_table(data, current_number_of_rows);

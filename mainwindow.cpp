@@ -105,6 +105,7 @@ void MainWindow::msg_such_user_not_exist(){
 void MainWindow:: create_app_page(QStringList* data){
     //App_page app_page=new App_page(this);
     //this->start_page->set_start_page_visible(false);
+    qDebug()<<"in create_app_page";
     this->app_page=new App_page(this);
     this->resize_window();
     QObject::connect(this->app_page, SIGNAL(step_out()), this, SLOT(destroy_app_page()));
@@ -115,6 +116,7 @@ void MainWindow:: create_app_page(QStringList* data){
     QObject::connect(this->app_page, SIGNAL(insert_request(QStringList*)), this, SLOT(processing_insert_request(QStringList*)));
     QString* service_msg=new QString("Вы вошли как: ");
     status.setText(service_msg->append(data->at(1)));
+    qDebug()<<"Вы вошли как"<< data->at(1);
     data->removeFirst();//подразумевается удаление личных данных пользователя
     this->app_page->insert_rows_in_table(data);
 }

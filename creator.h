@@ -14,14 +14,17 @@ class Creator:public QObject
 {
     Q_OBJECT
 private:
-    MainWindow* main_window;
+
     //Socket* socket;
+
     QString encoding_message(const QStringList* data);
     QStringList decoding_message(const QString& message);
+    void creating_connect(Behavour_id behavour_id);
 protected:
     ISocket_adapter* i_adapter;
     Template_behavour* behavour;
 public:
+    MainWindow* main_window;
     Creator(QApplication *parent = nullptr);
     ~Creator();
 public slots:

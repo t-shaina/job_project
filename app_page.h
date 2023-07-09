@@ -101,7 +101,7 @@ private slots:
     void on_search_edit_edited();
     void on_name_director_genre_data_edit_changed();
     void on_name_edit_changed();
-    void on_table_row_selected(int);
+    void on_table_row_selected(QModelIndex index);
 signals:
     void step_out();
     void search_request(QStringList*);
