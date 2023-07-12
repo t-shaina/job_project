@@ -75,8 +75,9 @@ private:
     void main_buttons_settings(int w, int h);
     void main_table_settings();
     QString encoding_data(const QString& data);
-    QString decoding_element(const QStringList::iterator iter_to_element);
+    QString decoding_element(const QString encoding_element);
     void filling_in_table(QStringList* data, int row_position);
+    static int number_of_tens(int size);
 public slots:
     QStandardItemModel* get_table_model();
     void remove_row_in_table();

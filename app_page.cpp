@@ -324,13 +324,23 @@ QString App_page::encoding_data(const QString& data){
             size++;
         }
         else{
-            encoded_data.push_back(static_cast<char>(size));
-            encoded_data.push_back(word);
+            int size_length=App_page::number_of_tens(size);
+            encoded_data+=QString::number(size_length);
+            encoded_data+=QString::number(size);
+            encoded_data+=word;
             size=0;
             word.clear();
         }
     }
     return encoded_data;
+}
+int App_page::number_of_tens(int size){
+    int number_of_tens=1;
+    while(size>9){
+        size=size%10;
+        number_of_tens++;
+    }
+    return number_of_tens;
 }
 void App_page::base_settings(){
 
@@ -430,6 +440,7 @@ void App_page::filling_in_table(QStringList* data, int row_position){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     //int number_of_rows=(data->size()-2)/6;
     QStringList::iterator i=data->begin();
+    qDebug()<<"in fillin_in_table data begin is"<<*i;
      //i+=2;
     int counter=row_position;
     QList<QStandardItem*>* row_of_item= new QList<QStandardItem*>(7);
@@ -440,7 +451,7 @@ void App_page::filling_in_table(QStringList* data, int row_position){
                 string_of_item=QString::number(counter);
             }
             else if(j==2||j==3){
-                string_of_item=decoding_element(i);
+                string_of_item=decoding_element(*i);
                 i++;
             }
             else {
@@ -456,15 +467,19 @@ void App_page::filling_in_table(QStringList* data, int row_position){
     }
     delete row_of_item;
 }
-QString App_page::decoding_element(const QStringList::iterator iter_to_element){
+QString App_page::decoding_element(const QString encoding_element){
     QString element;
     int length=0;
-    for(int i=0; i<iter_to_element->size()-1-length; i++){
-        length=iter_to_element->at(i).digitValue();
-        element.push_back(iter_to_element->sliced(i+1, length));
-        element.push_back(' ');
-        i+=length;
-    }
+
+    qDebug()<<"in App::encoding_element element is"<<encoding_element;
+        for(int i=0; i<encoding_element.size()-1-length; i++){
+            length=encoding_element.at(i).digitValue();
+            element.push_back(encoding_element.sliced(i+1, length));
+            element.push_back(' ');
+            i+=length;
+        }
+
+    qDebug()<<"in App::decoding_element element is"<<element;
     return element;
 }
 void App_page::remove_row_in_table(){
@@ -483,7 +498,7 @@ void App_page::insert_row_in_table(QStringList* data){
     //тут или в заполнении таблицв проверка кратности размра листа 6
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     int current_number_of_rows=model->rowCount();
-    filling_in_table(data, current_number_of_rows);
+    filling_in_table(data, current_number_of_rows+1);//точно +1?
 }
 void App_page::update_row_in_table(QStringList* data){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
@@ -495,7 +510,7 @@ void App_page::update_row_in_table(QStringList* data){
             string_of_item=QString::number(counter);
         }
         else if(j==2||j==3){
-            string_of_item=decoding_element(i);
+            string_of_item=decoding_element(*i);
             i++;
         }
         else {

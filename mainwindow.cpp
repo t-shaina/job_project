@@ -63,6 +63,7 @@ void MainWindow:: breaking_registration_page(){
 }
 void MainWindow::processing_entry_request(QStringList* entry_list){
     entry_list->push_front("0");
+    qDebug()<< entry_list->at(0)<<entry_list->at(1)<<entry_list->at(2);
     emit have_request(entry_list);
 }
 void MainWindow::processing_search_request(QStringList* search_list){
@@ -117,7 +118,10 @@ void MainWindow:: create_app_page(QStringList* data){
     QString* service_msg=new QString("Вы вошли как: ");
     status.setText(service_msg->append(data->at(1)));
     qDebug()<<"Вы вошли как"<< data->at(1);
-    data->removeFirst();//подразумевается удаление личных данных пользователя
+     qDebug()<<"title"<< data->at(2);
+    this->app_page->email=data->at(0);
+    data->removeFirst();//подразумевается удаление личных данных пользователя email
+    data->removeFirst();//подразумевается удаление личных данных пользователя name
     this->app_page->insert_rows_in_table(data);
 }
 void MainWindow::msg_deletion_failed(){

@@ -16,7 +16,7 @@ class Creator:public QObject
 private:
 
     //Socket* socket;
-
+    static int number_of_tens(int size);
     QString encoding_message(const QStringList* data);
     QStringList decoding_message(const QString& message);
     void creating_connect(Behavour_id behavour_id);

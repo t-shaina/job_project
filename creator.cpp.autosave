@@ -96,6 +96,7 @@ QStringList Creator::decoding_message(const QString& message){
         }
         length=string_of_length.toInt();
         decoded_message.push_back(message.sliced(i+2, length));
+        
         i+=length;
         i+=number_of_tens;
     }

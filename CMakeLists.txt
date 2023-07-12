@@ -13,19 +13,19 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Gui Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Gui Network)
 
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
-        start_page.h
-        start_page.cpp
-        socket.cpp
-        socket_adapter.cpp
-        client_socket_adapter.cpp
-        app_page.cpp
-        registration_page.cpp
-        template_behavour.cpp
-        creator.cpp
+    main.cpp
+    mainwindow.cpp
+    mainwindow.h
+    mainwindow.ui
+    start_page.h
+    start_page.cpp
+    socket.cpp
+    socket_adapter.cpp
+    client_socket_adapter.cpp
+    app_page.cpp
+    registration_page.cpp
+    template_behavour.cpp
+    creator.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
