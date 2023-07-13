@@ -18,7 +18,7 @@ private:
     //Socket* socket;
     static int number_of_tens(int size);
     QString encoding_message(const QStringList* data);
-    QStringList decoding_message(const QString& message);
+    QStringList decoding_message(QJsonObject* object);
     void creating_connect(Behavour_id behavour_id);
 protected:
     ISocket_adapter* i_adapter;
@@ -29,7 +29,7 @@ public:
     ~Creator();
 public slots:
     void create_query(QStringList* data);
-    void data_received(QString data);
+    void data_received(QByteArray data);
 };
 
 #endif // CREATOR_H

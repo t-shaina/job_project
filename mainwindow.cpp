@@ -103,7 +103,7 @@ void MainWindow::processing_registration_request(QStringList* registration_list)
 void MainWindow::msg_such_user_not_exist(){
     status.setText("Пользователя с таким email не существует или неверный пароль");
 }
-void MainWindow:: create_app_page(QStringList* data){
+void MainWindow:: create_app_page(QVariantMap* data){
     //App_page app_page=new App_page(this);
     //this->start_page->set_start_page_visible(false);
     qDebug()<<"in create_app_page";
@@ -116,12 +116,10 @@ void MainWindow:: create_app_page(QStringList* data){
     QObject::connect(this->app_page, SIGNAL(update_request(QStringList*)), this, SLOT(processing_update_request(QStringList*)));
     QObject::connect(this->app_page, SIGNAL(insert_request(QStringList*)), this, SLOT(processing_insert_request(QStringList*)));
     QString* service_msg=new QString("Вы вошли как: ");
-    status.setText(service_msg->append(data->at(1)));
-    qDebug()<<"Вы вошли как"<< data->at(1);
-     qDebug()<<"title"<< data->at(2);
-    this->app_page->email=data->at(0);
-    data->removeFirst();//подразумевается удаление личных данных пользователя email
-    data->removeFirst();//подразумевается удаление личных данных пользователя name
+    service_msg->append(data->take("Name").toString());
+    service_msg->append(" ");
+    status.setText(service_msg->append(data->take("Email").toString()));
+    this->app_page->email=status.text();
     this->app_page->insert_rows_in_table(data);
 }
 void MainWindow::msg_deletion_failed(){
@@ -134,13 +132,13 @@ void MainWindow::msg_deletion_successful(){
 void MainWindow::msg_records_not_exist(){
     status.setText("По запросу ничего не найдено");
 }
-void MainWindow::msg_records_exist(QStringList* data){
+void MainWindow::msg_records_exist(QVariantMap* data){
     this->app_page->insert_rows_in_table(data);
 }
 void MainWindow::msg_data_exist(){
     status.setText("Такой фильм уже существует, проверьте корректность введенных данных");
 }
-void MainWindow::msg_insert_successful(QStringList* data){
+void MainWindow::msg_insert_successful(QVariantMap* data){
     status.setText("Вставка прошла успешно");
     this->app_page->insert_row_in_table(data);
 }
@@ -150,19 +148,19 @@ void MainWindow::msg_insert_failed(){
 void MainWindow::msg_registration_failed(){
     status.setText("Такой пользователь уже зарегестрирован");
 }
-void MainWindow::msg_registration_successful(QStringList* data){
+void MainWindow::msg_registration_successful(QVariantMap* data){
     create_app_page(data);
 }
 void MainWindow::msg_all_records_not_exist(){
     status.setText("Ошибка обновления данных");
 }
-void MainWindow::msg_all_records_exist(QStringList* data){
+void MainWindow::msg_all_records_exist(QVariantMap* data){
     this->app_page->insert_rows_in_table(data);
 }
 void MainWindow::msg_updation_failed(){
     status.setText("Ошибка обновления записи");
 }
-void MainWindow::msg_updation_successful(QStringList* data){
+void MainWindow::msg_updation_successful(QVariantMap* data){
     status.setText("Запись обновлена");
     this->app_page->update_row_in_table(data);
 }

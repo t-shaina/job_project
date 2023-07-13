@@ -75,15 +75,14 @@ private:
     void main_buttons_settings(int w, int h);
     void main_table_settings();
     QString encoding_data(const QString& data);
-    QString decoding_element(const QString encoding_element);
-    void filling_in_table(QStringList* data, int row_position);
-    static int number_of_tens(int size);
+    QString decoding_element(const QJsonArray& array_object);
+    void filling_in_table(QVariantMap* data, int row_position);
 public slots:
     QStandardItemModel* get_table_model();
     void remove_row_in_table();
-    void insert_rows_in_table(QStringList* data);
-    void insert_row_in_table(QStringList* data);
-    void update_row_in_table(QStringList* data);
+    void insert_rows_in_table(QVariantMap* data);
+    void insert_row_in_table(QVariantMap* data);
+    void update_row_in_table(QVariantMap* data);
 
 private slots:
     //void set_app_page_visible(bool flag);

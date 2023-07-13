@@ -3,12 +3,11 @@
 #include"start_page.h"
 #include"registration_page.h"
 #include"app_page.h"
-#include"socket.h"
 #include <QMainWindow>
 #include <QString>
 #include<QStringList>
 #include<QLabel>
-
+#include<QVariantMap>
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -51,20 +50,20 @@ public slots:
     void processing_registration_request(QStringList*);
     // слоты обработки входящих сообщений
     void msg_such_user_not_exist();
-    void create_app_page(QStringList*);
+    void create_app_page(QVariantMap* data);
     void msg_deletion_failed();
     void msg_deletion_successful();
     void msg_records_not_exist();
-    void msg_records_exist(QStringList* data);
+    void msg_records_exist(QVariantMap* data);
     void msg_data_exist();
-    void msg_insert_successful(QStringList* data);
+    void msg_insert_successful(QVariantMap* data);
     void msg_insert_failed();
     void msg_registration_failed();
-    void msg_registration_successful(QStringList* data);
+    void msg_registration_successful(QVariantMap* data);
     void msg_all_records_not_exist();
-    void msg_all_records_exist(QStringList* data);
+    void msg_all_records_exist(QVariantMap* data);
     void msg_updation_failed();
-    void msg_updation_successful(QStringList* data);
+    void msg_updation_successful(QVariantMap* data);
     //void data_decryption(QString);
     //void data_encoding(QStringList* data);
 

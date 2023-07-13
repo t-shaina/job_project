@@ -35,7 +35,7 @@ Template_behavour* Template_behavour::creating_specific_behavour(Behavour_id  id
     return behavour;
 }
 
-/*void Template_behavour::decoding_element(QStringList* data_list, const QStringList::iterator iter_to_element){
+/*void Template_behavour::decoding_element(QVariantMap* data_list, const QStringList::iterator iter_to_element){
     QString element;
     int length=0;
     for(int i=0; i<iter_to_element->size()-length-1; i+=length){
@@ -46,62 +46,60 @@ Template_behavour* Template_behavour::creating_specific_behavour(Behavour_id  id
     const QStringList::iterator current_position=data_list->erase(iter_to_element);
     data_list->insert(current_position, element);
 }*/
-void Entry_behavour::processing_of_behavour(QStringList* data){   
-    if (data->at(0)=="1"){
+void Entry_behavour::processing_of_behavour(QVariantMap* data, int error_code){
+    if (error_code==1){
         qDebug()<<"in user_not_exist branch";
         emit user_not_exist();
     }
     else {
-        data->removeFirst();//подразумевается удаление кода ошибки перепроверить состояние контейнера после
         emit user_exist(data);
         qDebug()<<"in user_exist branch";
     }
 }
 
-void Delete_behavour::processing_of_behavour(QStringList* data){
-    if (data->at(0)=="NO"){
+void Delete_behavour::processing_of_behavour(QVariantMap* data, int error_code){
+    if (error_code==1){
         emit deletion_failed();
     }
     else emit deletion_successful();
 
 }
 
-void Select_behavour::processing_of_behavour(QStringList* data){
-    if (data->size()>1){
+void Select_behavour::processing_of_behavour(QVariantMap* data, int error_code){
+    if (error_code==0 /*&& data->size()>1*/){
         emit records_exist(data);
     }
     else
         emit records_not_exist();
 }
 
-void Insert_behavour::processing_of_behavour(QStringList* data){
-    if (data->at(0)=="EXIST"){
+void Insert_behavour::processing_of_behavour(QVariantMap* data, int error_code){
+    if (error_code==1){
         emit data_exist();
     }
-    else if(data->at(0)=="OK"){
-        data->removeFirst();
+    else if(error_code==0){
         emit insert_successful(data);
     }
     else emit insert_failed();
 }
 
-void Registration_behavour::processing_of_behavour(QStringList* data){
-    if (data->at(0)=="EXIST"){
+void Registration_behavour::processing_of_behavour(QVariantMap* data, int error_code){
+    if (error_code==1){
         emit registration_failed();
     }
     else emit registration_successful(data);
 }
 
-void Select_all_behavour::processing_of_behavour(QStringList* data){
-    if (data->size()>1){
+void Select_all_behavour::processing_of_behavour(QVariantMap* data, int error_code){
+    if (error_code==0 /*&& data->size()>1*/){
         emit all_records_exist(data);
     }
     else
         emit all_records_not_exist();
 }
 
-void Update_behavour::processing_of_behavour(QStringList* data){
-    if (data->at(0)=="NO"){
+void Update_behavour::processing_of_behavour(QVariantMap* data, int error_code){
+    if (error_code==1){
         emit updation_failed();
     }
     else emit updation_successful(data);

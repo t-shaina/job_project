@@ -1,8 +1,11 @@
 #include "creator.h"
 #include "template_behavour.h"
+#include"json_creator.h"
 #include<QChar>
 #include<QString>
-#include<QRegularExpression>>
+#include<QJsonDocument>
+#include<QJsonParseError>
+#include<QVariantMap>
 Creator::Creator(QApplication* parent)
 {
     main_window=new MainWindow ();
@@ -11,7 +14,7 @@ Creator::Creator(QApplication* parent)
     i_adapter= new Client_socket_adapter(this);
 
     QObject::connect(this->main_window, SIGNAL(have_request(QStringList*)), this, SLOT(create_query(QStringList*)));//
-    QObject::connect(this->i_adapter, SIGNAL(have_new_message(QString)), this, SLOT(data_received(QString)));
+    QObject::connect(this->i_adapter, SIGNAL(have_new_message(QByteArray)), this, SLOT(data_received(QByteArray)));
 
 }
 Creator::~Creator()
@@ -22,18 +25,32 @@ Creator::~Creator()
     delete behavour;
 }
 void Creator::create_query(QStringList* data){
-    QString string_data=encoding_message(data);
-    qDebug()<<string_data;
-    i_adapter->sendData(string_data);
+    //QString string_data=encoding_message(data);
+    //qDebug()<<string_data;
+    QByteArray array_data=QJsonDocument(Json_creator(data).get_json_data()).toJson();
+    i_adapter->sendData(array_data);
 }
-void Creator::data_received(QString received_data){
+void Creator::data_received(QByteArray received_data){
+    QJsonParseError parse_error;
+    QByteArray data_array;
+    QJsonObject object;
+    QJsonDocument json_doc=QJsonDocument::fromJson(received_data, &parse_error);
+    if (parse_error.error != QJsonParseError::NoError) {
+        qWarning() << "Parse error at" << parse_error.offset << ":" << parse_error.errorString();
+    }
+    else{
+        object=json_doc.object();
+    }
+    int request_code=object.take("RequestCode").toInt();
+    int error_code=object.take("ErrorCode").toInt();
     qDebug()<<"in data_received";
-    Behavour_id behavour_id=static_cast<Behavour_id>(received_data.at(0).digitValue());
-    QStringList list_data=decoding_message(received_data);
-    qDebug()<<"zero list_data is"<< list_data.at(0);
+    Behavour_id behavour_id=static_cast<Behavour_id>(request_code);
+    QVariantMap data_map=object.toVariantMap();
+    //QStringList list_data=decoding_message(&object);
+    //qDebug()<<"zero list_data is"<< list_data.at(0);
     behavour=Template_behavour::creating_specific_behavour(behavour_id);
     creating_connect(behavour_id);
-    behavour->processing_of_behavour(&list_data);
+    behavour->processing_of_behavour(&data_map, error_code);
 
 
     /*
@@ -83,21 +100,11 @@ QString Creator::encoding_message(const QStringList* data_list){
     }
     return encoded_message;
 }
-QStringList Creator::decoding_message(const QString& message){
+QStringList Creator::decoding_message(QJsonObject* object){
     QStringList decoded_message;
-    int length=0;
-    int number_of_tens=0;
-    for (int i=2; i<message.size()-1-length;i++){//мб тут с условием выхода из for
-        number_of_tens=message.at(i).digitValue();
-        QString string_of_length;
-        for(int k=0;k<number_of_tens;k++){
-            string_of_length+=message.at(i+1);
-            i++;
-        }
-        length=string_of_length.toInt();
-        decoded_message.push_back(message.sliced(i+2, length));
-        i+=length;
-        i+=number_of_tens;
+    //decoded_message.push_front(object.take("RequestCode").toString());
+    for(int i=2; i<object->size();i++){
+        decoded_message.push_front(object->take("Title").toString());
     }
     return decoded_message;
 }
@@ -106,7 +113,7 @@ void Creator::creating_connect(Behavour_id behavour_id){
     switch(behavour_id){
     case entry_id:
         QObject::connect(this->behavour, SIGNAL(user_not_exist()), this->main_window, SLOT(msg_such_user_not_exist()));
-        QObject::connect(this->behavour, SIGNAL(user_exist(QStringList*)), this->main_window, SLOT(create_app_page(QStringList*)));
+        QObject::connect(this->behavour, SIGNAL(user_exist(QVariantMap*)), this->main_window, SLOT(create_app_page(QVariantMap*)));
         break;
     case delete_id:
         QObject::connect(this->behavour, SIGNAL(deletion_failed()), this->main_window, SLOT(msg_deletion_failed()));
@@ -114,24 +121,24 @@ void Creator::creating_connect(Behavour_id behavour_id){
         break;
     case select_id:
         QObject::connect(this->behavour, SIGNAL(records_not_exist()), this->main_window, SLOT(msg_records_not_exist()));
-        QObject::connect(this->behavour, SIGNAL(records_exist(QStringlist*)), this->main_window, SLOT(msg_records_exist(QStringList*)));
+        QObject::connect(this->behavour, SIGNAL(records_exist(QVariantMap*)), this->main_window, SLOT(msg_records_exist(QVariantMap*)));
         break;
     case insert_id:
         QObject::connect(this->behavour, SIGNAL(data_exist()), this->main_window, SLOT(msg_data_exist()));
-        QObject::connect(this->behavour, SIGNAL(insert_successful(data)), this->main_window, SLOT(msg_insert_successful(data)));
+        QObject::connect(this->behavour, SIGNAL(insert_successful(QVariantMap*)), this->main_window, SLOT(msg_insert_successful(QVariantMap*)));
         QObject::connect(this->behavour, SIGNAL(insert_failed()), this->main_window, SLOT(msg_insert_failed()));
         break;
     case registration_id:
         QObject::connect(this->behavour, SIGNAL(registration_failed()), this->main_window, SLOT(msg_registration_failed()));
-        QObject::connect(this->behavour, SIGNAL(registration_successful(QStringlist*)), this->main_window, SLOT(msg_registration_successful(QStringList*)));
+        QObject::connect(this->behavour, SIGNAL(registration_successful(QVariantMap*)), this->main_window, SLOT(msg_registration_successful(QVariantMap*)));
         break;
     case select_all_id:
         QObject::connect(this->behavour, SIGNAL(all_records_not_exist()), this->main_window, SLOT(msg_all_records_not_exist()));
-        QObject::connect(this->behavour, SIGNAL(all_records_exist(QStringlist*)), this->main_window, SLOT(msg_all_records_exist(QStringList*)));
+        QObject::connect(this->behavour, SIGNAL(all_records_exist(QVariantMap*)), this->main_window, SLOT(msg_all_records_exist(QVariantMap*)));
         break;
     case update_id:
         QObject::connect(this->behavour, SIGNAL(updation_failed()), this->main_window, SLOT(msg_updation_failed()));
-        QObject::connect(this->behavour, SIGNAL(updation_successful(QStringlist*)), this->main_window, SLOT(msg_updation_successful(QStringList*)));
+        QObject::connect(this->behavour, SIGNAL(updation_successful(QVariantMap*)), this->main_window, SLOT(msg_updation_successful(QVariantMap*)));
         break;
     default:
         break;

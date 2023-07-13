@@ -9,8 +9,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Gui Network)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Gui Network)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core Gui Network)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS  Widgets Core Gui Network)
 
 set(PROJECT_SOURCES
     main.cpp
@@ -26,6 +26,7 @@ set(PROJECT_SOURCES
     registration_page.cpp
     template_behavour.cpp
     creator.cpp
+    json_creator.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -51,7 +52,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(untitled2 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt6::Gui Qt6::Network)
+target_link_libraries(untitled2 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt6::Core  Qt6::Gui Qt6::Network)
 
 set_target_properties(untitled2 PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

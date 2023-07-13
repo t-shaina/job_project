@@ -1,5 +1,4 @@
 #include "socket_adapter.h"
-#include<QByteArray>
 #include<QDataStream>
 ISocket_adapter::ISocket_adapter(QObject* parent){}
 ISocket_adapter:: ~ISocket_adapter(){}
@@ -19,7 +18,7 @@ Socket_adapter::Socket_adapter(QObject* parent, QTcpSocket* p_socket)
 Socket_adapter::~Socket_adapter(){}
 void Socket_adapter::readyRead(){
     qDebug()<< "in readyRead";
-    QString buf;
+    QByteArray buf;
     QDataStream in(socket_);
 
     while(true){
@@ -34,7 +33,7 @@ void Socket_adapter::readyRead(){
             return;
 
             in>>buf;
-            block_size_in=0;
+            block_size_in=0; // тут добавить прорверку, что все блоки пришли
             qDebug() <<buf;
             emit have_new_message(buf);
         }
@@ -45,8 +44,8 @@ void Socket_adapter::on_disconnected(){
     emit disconnected();
 }
 
-void Socket_adapter::sendData(const QString& message){
-    QByteArray block;
+void Socket_adapter::sendData(const QByteArray& message){
+    QByteArray block=message;
     QDataStream sendStream(&block, QIODevice::ReadWrite);
     sendStream << quint16(0) << message;
     sendStream.device()->seek(0);
