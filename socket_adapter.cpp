@@ -45,7 +45,7 @@ void Socket_adapter::on_disconnected(){
 }
 
 void Socket_adapter::sendData(const QByteArray& message){
-    QByteArray block=message;
+    QByteArray block;
     QDataStream sendStream(&block, QIODevice::ReadWrite);
     sendStream << quint16(0) << message;
     sendStream.device()->seek(0);

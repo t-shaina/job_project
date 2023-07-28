@@ -3,6 +3,7 @@
 #include <QFont>
 #include<QStatusBar>
 #include<QString>
+#include<QJsonArray>
 #include <stdlib.h>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -120,7 +121,8 @@ void MainWindow:: create_app_page(QVariantMap* data){
     service_msg->append(" ");
     status.setText(service_msg->append(data->take("Email").toString()));
     this->app_page->email=status.text();
-    this->app_page->insert_rows_in_table(data);
+    QJsonArray data_array=data->take("Rows").toJsonArray();
+    this->app_page->insert_rows_in_table(&data_array);
 }
 void MainWindow::msg_deletion_failed(){
     status.setText("Удаление строки не удалось");
@@ -133,14 +135,16 @@ void MainWindow::msg_records_not_exist(){
     status.setText("По запросу ничего не найдено");
 }
 void MainWindow::msg_records_exist(QVariantMap* data){
-    this->app_page->insert_rows_in_table(data);
+    QJsonArray data_array=data->take("Rows").toJsonArray();
+    this->app_page->insert_rows_in_table(&data_array);
 }
 void MainWindow::msg_data_exist(){
     status.setText("Такой фильм уже существует, проверьте корректность введенных данных");
 }
 void MainWindow::msg_insert_successful(QVariantMap* data){
     status.setText("Вставка прошла успешно");
-    this->app_page->insert_row_in_table(data);
+    QJsonArray data_array=data->take("Rows").toJsonArray();
+    this->app_page->insert_row_in_table(&data_array);
 }
 void MainWindow::msg_insert_failed(){
     status.setText("Строка не была добавлена");
@@ -155,12 +159,14 @@ void MainWindow::msg_all_records_not_exist(){
     status.setText("Ошибка обновления данных");
 }
 void MainWindow::msg_all_records_exist(QVariantMap* data){
-    this->app_page->insert_rows_in_table(data);
+    QJsonArray data_array=data->take("Rows").toJsonArray();
+    this->app_page->insert_rows_in_table(&data_array);
 }
 void MainWindow::msg_updation_failed(){
     status.setText("Ошибка обновления записи");
 }
 void MainWindow::msg_updation_successful(QVariantMap* data){
     status.setText("Запись обновлена");
-    this->app_page->update_row_in_table(data);
+    QJsonArray data_array=data->take("Rows").toJsonArray();
+    this->app_page->update_row_in_table(&data_array);
 }

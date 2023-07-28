@@ -76,13 +76,13 @@ private:
     void main_table_settings();
     QString encoding_data(const QString& data);
     QString decoding_element(const QJsonArray& array_object);
-    void filling_in_table(QVariantMap* data, int row_position);
+    void filling_in_table(QJsonArray* data, int row_position);
 public slots:
     QStandardItemModel* get_table_model();
     void remove_row_in_table();
-    void insert_rows_in_table(QVariantMap* data);
-    void insert_row_in_table(QVariantMap* data);
-    void update_row_in_table(QVariantMap* data);
+    void insert_rows_in_table(QJsonArray* data);
+    void insert_row_in_table(QJsonArray* data);
+    void update_row_in_table(QJsonArray* data);
 
 private slots:
     //void set_app_page_visible(bool flag);

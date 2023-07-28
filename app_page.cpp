@@ -11,7 +11,7 @@
 #include<QStringList>
 #include<QString>
 #include<QJsonObject>
-#include<QJsonArray>>
+#include<QJsonArray>
 const int width_window=1280;
 const int height_window=800;
 const int l_margin=10;
@@ -27,7 +27,7 @@ const int main_buttons_height=30;
 const QStringList genre_list=QStringList()<<"Комедия"<<"Мелодрама"<<"Мультфильм"<<"Ужасы"<<"Фантастика"<<"Триллер"
                                               <<"Боевик"<<"Детектив"<<"Фентези"<<"Исторический"<<"Драма"<<"Документальный"
                                               <<"Криминал"<<"Биография"<<"Вестерн"<<"Мюзиклы"<<"Короткометражка";
-const QStringList headers= QStringList()<<"№"<<"Название"<<"Режиссер"<<"Жанр"<<"Год"<<"Рейтинг"<<"Статус";
+const QStringList headers= QStringList()<<"Название"<<"Режиссер"<<"Жанр"<<"Год"<<"Рейтинг"<<"Статус";
 const QStringList sort_list=QStringList()<<"Год"<<"Рейтинг"<<"Статус";
 const QStringList status_list=QStringList()<<"Просмотрено"<<"Собираюсь смотреть"<<"Не рекомендую";
 static int required_fields_flag =0;
@@ -186,12 +186,7 @@ App_page::App_page(QWidget *parent)
     connect(date_edit, SIGNAL(textEdited(QString)), this, SLOT(set_date_slider_position()));
 
 }
-/*void App_page::set_app_page_visible(bool flag){
-    table_group->setVisible(flag);
-    search_group->setVisible(flag);
-    settings_group->setVisible(flag);
-    navigation_group->setVisible(flag);
-}*/
+
 void App_page::on_back_button_clicked(){
     emit step_out();
 }
@@ -379,13 +374,12 @@ void App_page::base_settings(){
     table->setSelectionMode(QAbstractItemView::SingleSelection);//мб несколько shift
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    table->setColumnWidth(0, (width_window-l_margin-r_margin-v_spacing)*0.7*0.06);
+    table->setColumnWidth(0, (width_window-l_margin-r_margin-v_spacing)*0.7*0.19);
     table->setColumnWidth(1, (width_window-l_margin-r_margin-v_spacing)*0.7*0.19);
-    table->setColumnWidth(2, (width_window-l_margin-r_margin-v_spacing)*0.7*0.19);
-    table->setColumnWidth(3, (width_window-l_margin-r_margin-v_spacing)*0.7*0.17);
-    table->setColumnWidth(4, (width_window-l_margin-r_margin-v_spacing)*0.7*0.08);
-    table->setColumnWidth(5, (width_window-l_margin-r_margin-v_spacing)*0.7*0.11);
-    table->setColumnWidth(6, (width_window-l_margin-r_margin-v_spacing)*0.7*0.2);
+    table->setColumnWidth(2, (width_window-l_margin-r_margin-v_spacing)*0.7*0.17);
+    table->setColumnWidth(3, (width_window-l_margin-r_margin-v_spacing)*0.7*0.08);
+    table->setColumnWidth(4, (width_window-l_margin-r_margin-v_spacing)*0.7*0.11);
+    table->setColumnWidth(5, (width_window-l_margin-r_margin-v_spacing)*0.7*0.2);
 
     main_buttons_settings(main_buttons_width,main_buttons_height);
 
@@ -424,149 +418,134 @@ void App_page::main_buttons_settings(int w, int h){
     accept_button->setEnabled(false);
 }
 void App_page::main_table_settings(){
-    QStandardItemModel* model=new QStandardItemModel(0, 7, this);
+    QStandardItemModel* model=new QStandardItemModel(0, 6, this);
     this->table->setModel(model);
-    model->setColumnCount(7);
+    model->setColumnCount(6);
     model->setHorizontalHeaderLabels(headers);
+    table->resizeColumnToContents(4);
+    table->setColumnWidth(0, table_group->width()*0.25);
+    table->setColumnWidth(1, table_group->width()*0.20);
+    table->setColumnWidth(2, table_group->width()*0.20);
+    table->setColumnWidth(0, table_group->width()*0.10);
+    table->setColumnWidth(0, table_group->width()*0.10);
+    table->setColumnWidth(0, table_group->width()*0.15);
 }
 QStandardItemModel* App_page::get_table_model(){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     return model;
 }
-void App_page::filling_in_table(QVariantMap* map_data, int row_position){
+void App_page::filling_in_table(QJsonArray* array_data, int row_position){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
-
-    //QStringList::iterator i=data->begin();
-    //qDebug()<<"in fillin_in_table data begin is"<<*i;
-     //i+=2;
     int counter=row_position;
-    QList<QStandardItem*>* row_of_item= new QList<QStandardItem*>(7);
-    QVariantMap::const_iterator map_iter=map_data->begin();
-    for(;map_iter!=map_data->end();map_iter++){
-
-        QJsonObject row_object= map_iter->toJsonObject();
+    //QList<QStandardItem*>* row_of_item= new QList<QStandardItem*>(7);
+    QJsonArray::iterator array_iter=array_data->begin();
+    for(;array_iter!=array_data->end();array_iter++){
+        QJsonObject row_object= array_iter->toObject();
         QVariantMap row_data=row_object.toVariantMap();
-        for(int j=0; j<7;j++){
+
+        for(int column=0; column<model->columnCount();column++){
             QString string_of_item= QString();
             //QVariantMap::const_iterator iter;
-            QJsonArray array_object;
-            switch (j) {
+            QJsonArray array_object; 
+            switch (column) {
             case 0:
-                string_of_item=QString::number(counter++);
+                string_of_item=row_data.take("Title").toString();
                 break;
             case 1:
-                //iter=row_data.lowerBound("Title");
-                string_of_item=row_data.take("Title").toString();
-                //row_data.erase(iter);
-                break;
-            case 2:
-                //iter=row_data.lowerBound("Directors");
                 array_object=row_data.take("Directors").toJsonArray();
                 string_of_item=decoding_element(array_object);
-                //row_data.erase(iter);
                 break;
-            case 3:
-                //iter=row_data.lowerBound("Genres");
+            case 2:
                 array_object=row_data.take("Genres").toJsonArray();
                 string_of_item=decoding_element(array_object);
-                //row_data.erase(iter);
+                break;
+            case 3:
+                string_of_item=row_data.take("Year").toString();
                 break;
             case 4:
-                //iter=row_data.lowerBound("Year");
-                string_of_item=row_data.take("Year").toString();
-                //row_data.erase(iter);
+                string_of_item=row_data.take("Rating").toString();
                 break;
             case 5:
-                //iter=row_data.lowerBound("Rating");
-                string_of_item=row_data.take("Rating").toString();
-                //row_data.erase(iter);
-                break;
-            case 6:
-                //iter=row_data.lowerBound("Status");
                 string_of_item=row_data.take("Status").toString();
-                //row_data.erase(iter);
                 break;
             default:
                 break;
             }
             qDebug()<<string_of_item;
             QStandardItem* item=new QStandardItem(string_of_item);
-            row_of_item->push_back(item);
+            model->setItem(row_position, column, item);
+            //row_of_item->push_back(item);
         }
-        model->insertRow(row_position, *row_of_item);
-        row_of_item->clear();
+        //model->appendRow(*row_of_item);
+        //row_of_item->clear();
         counter++;
+        row_position++;
     }
-    delete row_of_item;
+    //delete row_of_item;
 }
 QString App_page::decoding_element(const QJsonArray& array_object){
     QString element;
     for(int i=0; i<array_object.size();i++){
         element+=array_object.at(i).toString();
+        element+=" ";
     }
+    element.removeLast();
     return element;
 }
 void App_page::remove_row_in_table(){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     model->removeRow(model_index->row());
 }
-void App_page::insert_rows_in_table(QVariantMap* data){
+void App_page::insert_rows_in_table(QJsonArray* data){
     qDebug()<<"in insert_rows_in_table";
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     model->clear();
-    model->setColumnCount(7);
+    model->setColumnCount(6);
     model->setHorizontalHeaderLabels(headers);
-    filling_in_table(data, 2);
+    filling_in_table(data, 0);
 }
-void App_page::insert_row_in_table(QVariantMap* data){
+void App_page::insert_row_in_table(QJsonArray* data){
     //тут или в заполнении таблицв проверка кратности размра листа 6
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     int current_number_of_rows=model->rowCount();
     filling_in_table(data, current_number_of_rows+1);//точно +1?
 }
-void App_page::update_row_in_table(QVariantMap* data){
+void App_page::update_row_in_table(QJsonArray* array_data){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
-    int counter= model_index->row();
-    //QStringList::iterator i=data->begin();
-    for(int j=0; j<7;j++){
+    int row= model_index->row();
+    QJsonArray::iterator array_iter=array_data->begin();
+    QJsonObject row_object= array_iter->toObject();
+    QVariantMap row_data=row_object.toVariantMap();
+    for(int column=0; column<model->columnCount();column++){
         QString string_of_item= QString();
-        QVariantMap::const_iterator iter;
-        switch (j){
+        QJsonArray::const_iterator iter;
+        QJsonArray array_object;
+        switch (column){
         case 0:
-            iter=data->lowerBound("Title");
-            string_of_item=iter->toString();
-            data->erase(iter);
+            string_of_item=row_data.take("Title").toString();
             break;
         case 1:
-            iter=data->lowerBound("Directors");
-            string_of_item=iter->toString();
-            data->erase(iter);
+            array_object=row_data.take("Directors").toJsonArray();
+            string_of_item=decoding_element(array_object);
             break;
         case 2:
-            iter=data->lowerBound("Genres");
-            string_of_item=iter->toString();
-            data->erase(iter);
+            array_object=row_data.take("Genres").toJsonArray();
+            string_of_item=decoding_element(array_object);
             break;
         case 3:
-            iter=data->lowerBound("Years");
-            string_of_item=iter->toString();
-            data->erase(iter);
+            string_of_item=row_data.take("Year").toString();
             break;
         case 4:
-            iter=data->lowerBound("Rating");
-            string_of_item=iter->toString();
-            data->erase(iter);
+            string_of_item=row_data.take("Rating").toString();
             break;
         case 5:
-            iter=data->lowerBound("Status");
-            string_of_item=iter->toString();
-            data->erase(iter);
+            string_of_item=row_data.take("Status").toString();
             break;
         default:
             break;
             }
         QStandardItem* item=new QStandardItem(string_of_item);
-        model->setItem(counter, j, item);
+        model->setItem(row, column, item);
         model->emit itemChanged(item);//проверить нужно ли
     }
 }
