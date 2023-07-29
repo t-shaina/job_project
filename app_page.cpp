@@ -51,6 +51,7 @@ App_page::App_page(QWidget *parent)
     director_group(new QGroupBox(edit_group)),
     genre_group(new QGroupBox(edit_group)),
     date_group(new QGroupBox(edit_group)),
+    clear_group(new QGroupBox(this)),
     table(new QTableView(scroll_table_group)),
     delete_button(new QPushButton("Удалить", this)),
     redact_button(new QPushButton("Редактировать", this)),
@@ -76,6 +77,7 @@ App_page::App_page(QWidget *parent)
     status_label (new QLabel("Статус", this)),
     status_combo_box(new QComboBox(this)),
     accept_button (new QPushButton("Добавить", this)),
+    clear_button(new QPushButton("Очистить", this)),
     back_button (new QPushButton("Выйти", this))
 {
 
@@ -90,6 +92,7 @@ App_page::App_page(QWidget *parent)
     QVBoxLayout* director_group_layout=new QVBoxLayout;
     QVBoxLayout* genre_group_layout=new QVBoxLayout;
     QVBoxLayout* date_group_layout=new QVBoxLayout;
+    QHBoxLayout* clear_group_layout=new QHBoxLayout;
 
     table_group_layout->addWidget(table_scroll);
     delete_sort_group_layout->addWidget(delete_button, Qt::AlignLeft);
@@ -103,7 +106,7 @@ App_page::App_page(QWidget *parent)
     search_group_layout->addWidget(search_edit, Qt::AlignRight);
     search_group_layout->addWidget(search_button, Qt::AlignCenter);
     settings_group_layout->addWidget(edit_scroll);
-    settings_group_layout->addWidget(accept_button, Qt::AlignCenter);
+    settings_group_layout->addWidget(clear_group);
     edit_group_layout->addWidget(name_label, 0,0, Qt::AlignLeft|Qt::AlignTop);
     edit_group_layout->addWidget(name_edit, 0,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(director_label, 1,0, Qt::AlignLeft|Qt::AlignTop);
@@ -122,6 +125,8 @@ App_page::App_page(QWidget *parent)
     genre_group_layout->addWidget(genre_edit, Qt::AlignCenter);
     date_group_layout->addWidget(date_slider, Qt::AlignCenter);
     date_group_layout->addWidget(date_edit, Qt::AlignRight);
+    clear_group_layout->addWidget(accept_button, Qt::AlignCenter);
+    clear_group_layout->addWidget(clear_button, Qt::AlignCenter);
     navigation_group_layout->addWidget(back_button, Qt::AlignRight);
 
     table_group->setLayout(table_group_layout);
@@ -134,6 +139,7 @@ App_page::App_page(QWidget *parent)
     director_group->setLayout(director_group_layout);
     genre_group->setLayout(genre_group_layout);
     date_group->setLayout(date_group_layout);
+    clear_group->setLayout(clear_group_layout);
     navigation_group->setLayout(navigation_group_layout);
 
     table_scroll->setWidget(scroll_table_group);
@@ -170,12 +176,12 @@ App_page::App_page(QWidget *parent)
 
     connect(back_button, SIGNAL(clicked()), this, SLOT(on_back_button_clicked()));
     connect(delete_button, SIGNAL(clicked()), this, SLOT(on_delete_button_clicked()));
-    connect(delete_button, SIGNAL(clicked()), this, SLOT(on_redact_button_clicked()));
-    connect(delete_button, SIGNAL(clicked()), this, SLOT(on_show_all_button_clicked()));
+    connect(redact_button, SIGNAL(clicked()), this, SLOT(on_redact_button_clicked()));
+    connect(show_all_button, SIGNAL(clicked()), this, SLOT(on_show_all_button_clicked()));
     connect(sort_button, SIGNAL(clicked()), this, SLOT(on_sort_button_clicked()));
     connect(search_button, SIGNAL(clicked()), this, SLOT(on_search_button_clicked()));
     connect(accept_button, SIGNAL(clicked()), this, SLOT(on_accept_button_clicked()));
-
+    connect(clear_button, SIGNAL(clicked()), this, SLOT(on_clear_button_clicked()));
 
     connect(table, SIGNAL(clicked(QModelIndex)), this, SLOT(on_table_row_selected(QModelIndex)));
     connect(search_edit, SIGNAL(textEdited(QString)), this, SLOT(on_search_edit_edited()));
@@ -188,12 +194,13 @@ App_page::App_page(QWidget *parent)
 }
 
 void App_page::on_back_button_clicked(){
-    emit step_out();
+    //email.clear();
+    emit step_out();    
 }
 void App_page::on_sort_button_clicked(){
     int sort_id=sort_combo_box->currentIndex();
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
-    model->sort(sort_id+4, Qt::AscendingOrder);
+    model->sort(sort_id+3, Qt::AscendingOrder);
 
 }
 void App_page::set_search_edit(int search_id){
@@ -223,25 +230,28 @@ void App_page::on_delete_button_clicked(){
         delete_list<<table->item(row, i)->text();*/
     //QItemSelectionModel* select_model=table->selectionModel();
     //*model_index=select_model->currentIndex();
+    name_edit->clear();
+    director_edit->clear();
+    genre_edit->clear();
     delete_list=*row_data;
     delete_list.push_front(this->email);
     emit delete_request(&delete_list);
 }
 void App_page::on_redact_button_clicked(){//тут добавить перенос из таблицы в область редактирования
     QItemSelectionModel* select_model=table->selectionModel();
-    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
-    QModelIndex index=select_model->currentIndex();
-    int row=index.row();
+    //QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    //QModelIndex index=select_model->currentIndex();
+    //int row=index.row();
     redact_transfer_state=true;
-    QStringList redact_list=QStringList();//или row_data
-    for(int i=1; i<model->columnCount();i++)
-        redact_list<<model->item(row, i)->data().toStringList();
-    name_edit->setText(redact_list.at(1));
-    director_edit->setText(redact_list.at(2));
-    genre_edit->setText(redact_list.at(3));
-    date_slider->setSliderPosition(redact_list.at(4).toInt());
-    rating_spin_box->setValue(redact_list.at(5).toInt());
-    status_combo_box->setPlaceholderText(redact_list.at(6));
+    //QStringList redact_list=QStringList();//или row_data
+    //for(int i=1; i<model->columnCount();i++)
+        //redact_list<<model->item(row, i)->data().toStringList();
+    name_edit->setText(row_data->at(0));
+    director_edit->setText(row_data->at(1));
+    genre_edit->setText(row_data->at(2));
+    date_slider->setSliderPosition(row_data->at(3).toInt());
+    rating_spin_box->setValue(row_data->at(4).toInt());
+    status_combo_box->setPlaceholderText(row_data->at(5));
     accept_button->setText("Обновить");
 
 }
@@ -259,8 +269,8 @@ void App_page::on_accept_button_clicked(){
 
     QStringList insert_list= QStringList()   <<this->email
                                              <<name_edit->placeholderText()
-                                             <<encoding_data(director_edit->placeholderText())
-                                             <<encoding_data(genre_edit->placeholderText())
+                                             <<director_edit->placeholderText()
+                                             <<genre_edit->placeholderText()
                                              <<date_edit->text()
                                              <<rating_spin_box->text()
                                              <<status_combo_box->currentText();
@@ -274,24 +284,30 @@ void App_page::on_accept_button_clicked(){
     accept_button->setText("Добавить");
 
 }
+void App_page::on_clear_button_clicked(){
+    name_edit->clear();
+    director_edit->clear();
+    genre_edit->clear();
+    redact_transfer_state=false;
+    accept_button->setText("Добавить");
+}
 void App_page::on_table_row_selected(QModelIndex index){
+    qDebug()<<"in table row selected";
     row_data->clear();
     delete_button->setEnabled(true);
     redact_button->setEnabled(true);
-    QString cell_data;
+    //QString cell_data;
     //QItemSelectionModel* select_model=table->selectionModel();
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
-    //QModelIndex index=select_model->currentIndex();
     int row=index.row();
-    for(int i=1; i<8;i++){
-        if(i==2||i==3){//для режиссеров и жанров дополнительное кодирование
-            cell_data=encoding_data(model->item(row,i)->data().toString());
-        }
-        else
-            cell_data=model->item(row,i)->data().toString();
-        this->row_data->push_back(cell_data);
-        cell_data.clear();
+    for(int i=0; i<model->columnCount();i++){
+        QModelIndex column_index=model->index(row, i);
+        //cell_data=column_index.data().toString();
+        //qDebug()<< cell_data;
+        this->row_data->push_back(column_index.data().toString());
+        //cell_data.clear();
     }
+    qDebug()<<"row data 0 is"<<row_data->at(0);
 
 }
 void App_page::on_search_edit_edited(){
@@ -303,36 +319,21 @@ void App_page::on_name_director_genre_data_edit_changed(){
     if(name_edit->toPlainText().isEmpty()||
         director_edit->toPlainText().isEmpty()||
         genre_edit->toPlainText().isEmpty()||
-        date_edit->text().isEmpty())
+        date_edit->text().isEmpty()){
         accept_button->setEnabled(false);
-    else accept_button->setEnabled(true);
-
+        clear_button->setEnabled(false);
+    }
+    else{
+        accept_button->setEnabled(true);
+        clear_button->setEnabled(true);
+    }
 }
 void App_page::on_name_edit_changed(){
     QSize text_size=name_edit->fontMetrics().size(Qt::TextWordWrap, name_edit->placeholderText());
     if(text_size.width()>name_edit->width())
         name_edit->setMinimumHeight(text_size.height()*text_size.width()/name_edit->width());
 }
-QString App_page::encoding_data(const QString& data){
-    QString encoded_data;
-    /*QString word;
-    int size=0;
-    for (int i=0;i<data.size();i++){
-        if(data.at(i)!=' '){
-            word+=data.at(i);
-            size++;
-        }
-        else{
-            int size_length=App_page::number_of_tens(size);
-            encoded_data+=QString::number(size_length);
-            encoded_data+=QString::number(size);
-            encoded_data+=word;
-            size=0;
-            word.clear();
-        }
-    }*/
-    return encoded_data;
-}
+
 
 void App_page::base_settings(){
 
@@ -350,6 +351,7 @@ void App_page::base_settings(){
     layout_page->setRowStretch(1, 2);
 
     table_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.7, (height_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
+    delete_sort_group->setMinimumSize( table_scroll->width(), navigation_group_hight);
     sort_group->setFixedWidth((width_window-l_margin-r_margin-v_spacing)*0.7*0.5);
     settings_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.3, (height_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
     search_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.7, navigation_group_hight);
@@ -358,6 +360,7 @@ void App_page::base_settings(){
     director_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
     genre_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
     date_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
+    clear_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.15, navigation_group_hight);
     name_edit->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
     name_edit->setMaximumHeight(100);
     date_edit->setFixedWidth((date_group->width())*0.25);
@@ -368,7 +371,7 @@ void App_page::base_settings(){
     rating_spin_box->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.06);
     status_combo_box->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.16);
 
-    table->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.7, (height_window-t_margin-b_margin-h_spacing)-navigation_group_hight-main_buttons_height);
+    table->setMinimumSize(table_scroll->width(), (height_window-t_margin-b_margin-h_spacing)-navigation_group_hight-main_buttons_height);
 
     table->setShowGrid(true);
     table->setSelectionMode(QAbstractItemView::SingleSelection);//мб несколько shift
@@ -411,11 +414,13 @@ void App_page::main_buttons_settings(int w, int h){
     search_edit->setFixedSize((width_window-l_margin-r_margin-v_spacing)*0.6-2*w-50, h);
     search_button->setFixedSize(w, h);
     accept_button->setFixedSize(w, h);
+    clear_button->setFixedSize(w, h);
     back_button->setFixedSize(w, h);
     delete_button->setEnabled(false);
     redact_button->setEnabled(false);
     search_button->setEnabled(false);
     accept_button->setEnabled(false);
+    clear_button->setEnabled(false);
 }
 void App_page::main_table_settings(){
     QStandardItemModel* model=new QStandardItemModel(0, 6, this);
@@ -437,7 +442,6 @@ QStandardItemModel* App_page::get_table_model(){
 void App_page::filling_in_table(QJsonArray* array_data, int row_position){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     int counter=row_position;
-    //QList<QStandardItem*>* row_of_item= new QList<QStandardItem*>(7);
     QJsonArray::iterator array_iter=array_data->begin();
     for(;array_iter!=array_data->end();array_iter++){
         QJsonObject row_object= array_iter->toObject();
@@ -506,9 +510,10 @@ void App_page::insert_rows_in_table(QJsonArray* data){
 }
 void App_page::insert_row_in_table(QJsonArray* data){
     //тут или в заполнении таблицв проверка кратности размра листа 6
+    qDebug()<<"in insert_row_in_table";
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     int current_number_of_rows=model->rowCount();
-    filling_in_table(data, current_number_of_rows+1);//точно +1?
+    filling_in_table(data, current_number_of_rows);//точно +1?
 }
 void App_page::update_row_in_table(QJsonArray* array_data){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());

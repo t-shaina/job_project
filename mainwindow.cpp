@@ -102,7 +102,7 @@ void MainWindow::processing_registration_request(QStringList* registration_list)
     emit have_request(registration_list);
 }
 void MainWindow::msg_such_user_not_exist(){
-    status.setText("Пользователя с таким email не существует или неверный пароль");
+    status.setText("Неверный  email или пароль");
 }
 void MainWindow:: create_app_page(QVariantMap* data){
     //App_page app_page=new App_page(this);
@@ -119,8 +119,9 @@ void MainWindow:: create_app_page(QVariantMap* data){
     QString* service_msg=new QString("Вы вошли как: ");
     service_msg->append(data->take("Name").toString());
     service_msg->append(" ");
-    status.setText(service_msg->append(data->take("Email").toString()));
-    this->app_page->email=status.text();
+    QString email_value=data->take("Email").toString();
+    status.setText(service_msg->append(email_value));
+    this->app_page->email=email_value;
     QJsonArray data_array=data->take("Rows").toJsonArray();
     this->app_page->insert_rows_in_table(&data_array);
 }
@@ -139,7 +140,7 @@ void MainWindow::msg_records_exist(QVariantMap* data){
     this->app_page->insert_rows_in_table(&data_array);
 }
 void MainWindow::msg_data_exist(){
-    status.setText("Такой фильм уже существует, проверьте корректность введенных данных");
+    status.setText("Такой фильм уже существует");
 }
 void MainWindow::msg_insert_successful(QVariantMap* data){
     status.setText("Вставка прошла успешно");

@@ -14,11 +14,8 @@ class Creator:public QObject
 {
     Q_OBJECT
 private:
-
-    //Socket* socket;
-    static int number_of_tens(int size);
-    QString encoding_message(const QStringList* data);
-    QStringList decoding_message(QJsonObject* object);
+    //QString encoding_message(const QStringList* data);
+    //QStringList decoding_message(QJsonObject* object);
     void creating_connect(Behavour_id behavour_id);
 protected:
     ISocket_adapter* i_adapter;

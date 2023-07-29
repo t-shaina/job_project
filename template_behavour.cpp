@@ -76,9 +76,11 @@ void Select_behavour::processing_of_behavour(QVariantMap* data, int error_code){
 void Insert_behavour::processing_of_behavour(QVariantMap* data, int error_code){
     if (error_code==1){
         emit data_exist();
+        qDebug()<<"in data_exist branch";
     }
     else if(error_code==0){
         emit insert_successful(data);
+        qDebug()<<"in insert_successful branch";
     }
     else emit insert_failed();
 }

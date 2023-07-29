@@ -36,13 +36,14 @@ private:
     QGroupBox* sort_group;
     QGroupBox* search_group;
     QGroupBox* settings_group;
-    QGroupBox* edit_group;
+    QGroupBox* edit_group;    
     QGroupBox* navigation_group;
     QScrollArea* table_scroll;
     QScrollArea* edit_scroll;
     QGroupBox* director_group;
     QGroupBox* genre_group;
     QGroupBox* date_group;
+    QGroupBox* clear_group;
 
     QTableView* table;
     QPushButton* delete_button;
@@ -69,12 +70,13 @@ private:
     QLabel* status_label;
     QComboBox* status_combo_box;
     QPushButton* accept_button;
+    QPushButton* clear_button;
     QPushButton* back_button;
 
     void base_settings();
     void main_buttons_settings(int w, int h);
     void main_table_settings();
-    QString encoding_data(const QString& data);
+    //QString encoding_data(const QString& data);
     QString decoding_element(const QJsonArray& array_object);
     void filling_in_table(QJsonArray* data, int row_position);
 public slots:
@@ -93,6 +95,7 @@ private slots:
     void on_sort_button_clicked();
     void on_search_button_clicked();
     void on_accept_button_clicked();
+    void on_clear_button_clicked();
 
     void set_search_edit(int search_id);//переименовать
     void set_date_edit(int data_value);

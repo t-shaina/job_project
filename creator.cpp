@@ -25,8 +25,6 @@ Creator::~Creator()
     delete behavour;
 }
 void Creator::create_query(QStringList* data){
-    //QString string_data=encoding_message(data);
-    //qDebug()<<string_data;
     QByteArray array_data=QJsonDocument(Json_creator(data).get_json_data()).toJson();
     i_adapter->sendData(array_data);
 }
@@ -41,8 +39,8 @@ void Creator::data_received(QByteArray received_data){
     else{
         object=json_doc.object();
     }
-    int request_code=object.take("RequestCode").toInt();
-    int error_code=object.take("ErrorCode").toInt();
+    int request_code=object.take("RequestCode").toString().toInt();
+    int error_code=object.take("ErrorCode").toString().toInt();//сразу в int не работает
     qDebug()<<"in data_received";
     Behavour_id behavour_id=static_cast<Behavour_id>(request_code);
     QVariantMap data_map=object.toVariantMap();
@@ -50,6 +48,7 @@ void Creator::data_received(QByteArray received_data){
     //qDebug()<<"zero list_data is"<< list_data.at(0);
     behavour=Template_behavour::creating_specific_behavour(behavour_id);
     creating_connect(behavour_id);
+    qDebug()<<error_code;
     behavour->processing_of_behavour(&data_map, error_code);
 
 
@@ -79,15 +78,8 @@ void Creator::data_received(QByteArray received_data){
     */
 
 }
-int Creator::number_of_tens(int size){
-    int number_of_tens=1;
-    while(size>9){
-        size=size%10;
-        number_of_tens++;
-    }
-    return number_of_tens;
-}
-QString Creator::encoding_message(const QStringList* data_list){
+
+/*QString Creator::encoding_message(const QStringList* data_list){
     QString encoded_message;
     encoded_message+=data_list->at(0);
     for (int i=1;i<data_list->size();i++){
@@ -107,7 +99,7 @@ QStringList Creator::decoding_message(QJsonObject* object){
         decoded_message.push_front(object->take("Title").toString());
     }
     return decoded_message;
-}
+}*/
 
 void Creator::creating_connect(Behavour_id behavour_id){
     switch(behavour_id){
