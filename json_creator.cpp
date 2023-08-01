@@ -10,7 +10,8 @@ Json_creator::Json_creator(QStringList* data)
         break;
     case 1:
         json_data["RequestCode"]=data->at(0);
-        json_data["Row"]=Json_creator::creating_row_object(data, 1);
+        json_data["Email"]=data->at(1);
+        json_data["Row"]=Json_creator::creating_row_object(data, 2);
         break;
     case 2:
         json_data["RequestCode"]=data->at(0);
@@ -49,11 +50,14 @@ QJsonObject Json_creator::get_json_data(){
 }
 QJsonArray Json_creator::creating_directors_or_genre_array(QString data){
     QJsonArray data_array;
-    int length=0;
-    for(int i=0;i<data.size()-1-length;i++){
-        length=data.at(i).digitValue();
-        data_array.push_back(data.sliced(i+1, length));
-        i+=length;
+    QString word;
+    for(int i=0;i<data.size();i++){
+        if(data.at(i)==' '){
+            data_array.push_back(word);
+            word.clear();
+        }
+        else word+=data.at(i);
+
     }
     return data_array;
 }

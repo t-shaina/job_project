@@ -36,7 +36,7 @@ public slots:
     //void creating_connect(Template_behavour* behavour);
 signals:   
     void deletion_failed();
-    void deletion_successful();
+    void deletion_successful(QVariantMap* data);
 };
 class Select_behavour:public Template_behavour{
     Q_OBJECT

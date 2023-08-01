@@ -52,7 +52,7 @@ public slots:
     void msg_such_user_not_exist();
     void create_app_page(QVariantMap* data);
     void msg_deletion_failed();
-    void msg_deletion_successful();
+    void msg_deletion_successful(QVariantMap* data);
     void msg_records_not_exist();
     void msg_records_exist(QVariantMap* data);
     void msg_data_exist();

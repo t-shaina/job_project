@@ -72,7 +72,9 @@ void MainWindow::processing_search_request(QStringList* search_list){
     emit have_request(search_list);
 }
 void MainWindow::processing_delete_request(QStringList* delete_list){
+    qDebug()<<"in processing delete_request";
     delete_list->push_front("1");
+    qDebug()<< delete_list->at(0)<<delete_list->at(1)<<delete_list->at(2);
     emit have_request(delete_list);
 }
 void MainWindow::processing_select_all_request(QStringList* email){
@@ -128,9 +130,10 @@ void MainWindow:: create_app_page(QVariantMap* data){
 void MainWindow::msg_deletion_failed(){
     status.setText("Удаление строки не удалось");
 }
-void MainWindow::msg_deletion_successful(){
+void MainWindow::msg_deletion_successful(QVariantMap* data){
     status.setText("Строка удалена");
-    this->app_page->remove_row_in_table();
+    QJsonArray data_array=data->take("Rows").toJsonArray();
+    this->app_page->remove_row_in_table(&data_array);
 }
 void MainWindow::msg_records_not_exist(){
     status.setText("По запросу ничего не найдено");

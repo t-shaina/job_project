@@ -36,6 +36,7 @@ App_page::App_page(QWidget *parent)
     :QWidget(parent),
     //page_group(new QGroupBox(this)),
     row_data(new QStringList()),
+    delete_rows_list(new QList<int>),
     redact_transfer_state(false),
     layout_page(new QGridLayout(this)),
     table_group(new QGroupBox(this)),
@@ -129,11 +130,11 @@ App_page::App_page(QWidget *parent)
     clear_group_layout->addWidget(clear_button, Qt::AlignCenter);
     navigation_group_layout->addWidget(back_button, Qt::AlignRight);
 
-    table_group->setLayout(table_group_layout);
     scroll_table_group->setLayout(scroll_table_group_layout);
     delete_sort_group->setLayout(delete_sort_group_layout);
     sort_group->setLayout(sort_group_layout);
     search_group->setLayout(search_group_layout);
+    table_group->setLayout(table_group_layout);
     settings_group->setLayout(settings_group_layout);
     edit_group->setLayout(edit_group_layout);
     director_group->setLayout(director_group_layout);
@@ -222,17 +223,40 @@ void App_page::set_date_slider_position(){
         date_slider->setSliderPosition(year);
     else date_slider->setSliderPosition(current_year);
 }
+void App_page::add_to_delete_list(){
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    QItemSelectionModel* select_model=table->selectionModel();
+    QModelIndex current_index=select_model->currentIndex();
+    int row=current_index.row();
+    for(int i=0;i<model->columnCount();i++){
+        QStandardItem* item=model->item(row, i);
+        item->setEnabled(false);
+    }
+        delete_rows_list->push_back(row);
+}
+void App_page::remove_from_delete_list(int row){
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    for(int i=0;i<model->columnCount();i++){
+        QStandardItem* item=model->item(row, i);
+        item->setEnabled(true);
+    }
+    delete_rows_list->removeOne(row);
+
+}
 void App_page::on_delete_button_clicked(){
-    //int row=table->currentRow();
     QStringList delete_list;
-    /*
-    for(int i=1; i<table->columnCount();i++)
-        delete_list<<table->item(row, i)->text();*/
-    //QItemSelectionModel* select_model=table->selectionModel();
-    //*model_index=select_model->currentIndex();
-    name_edit->clear();
-    director_edit->clear();
-    genre_edit->clear();
+
+      qDebug()<<"after select_model";
+    this->add_to_delete_list();
+        qDebug()<<"after delete_model_index";
+    //* model=static_cast<QStandardItemModel*>(table->model());
+    qDebug()<<"after model";
+   // Qt::ItemFlags f=model->flags(*delete_model_index);
+
+    //f.setFlag(Qt::ItemIsEnabled, false);
+    //name_edit->clear();
+    //director_edit->clear();
+    //genre_edit->clear();
     delete_list=*row_data;
     delete_list.push_front(this->email);
     emit delete_request(&delete_list);
@@ -275,6 +299,8 @@ void App_page::on_accept_button_clicked(){
                                              <<rating_spin_box->text()
                                              <<status_combo_box->currentText();
     if(redact_transfer_state){
+        QItemSelectionModel* select_model=table->selectionModel();
+        *update_model_index=select_model->currentIndex();
         insert_list<<*row_data;
         emit  update_request(&insert_list);
     }
@@ -423,7 +449,9 @@ void App_page::main_buttons_settings(int w, int h){
     clear_button->setEnabled(false);
 }
 void App_page::main_table_settings(){
+    //proxy_model= new ModifyEditabilityModel(table);
     QStandardItemModel* model=new QStandardItemModel(0, 6, this);
+    //proxy_model->setSourceModel(model);
     this->table->setModel(model);
     model->setColumnCount(6);
     model->setHorizontalHeaderLabels(headers);
@@ -496,9 +524,25 @@ QString App_page::decoding_element(const QJsonArray& array_object){
     element.removeLast();
     return element;
 }
-void App_page::remove_row_in_table(){
+void App_page::remove_row_in_table(QJsonArray* data){
+    qDebug()<<"in remove row in table";
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
-    model->removeRow(model_index->row());
+    QJsonObject row_object= data->at(0).toObject();
+    QVariantMap row_data=row_object.toVariantMap();
+    int row;
+    QList<int>::iterator end=delete_rows_list->end();
+    for(QList<int>::iterator i=delete_rows_list->begin(); i<end;i++){
+        if(model->item(*i, 0)->text()==row_data.take("Title")&&
+           model->item(*i, 1)->text()==row_data.take("Directors")&&
+           model->item(*i, 3)->text()==row_data.take("Year")){
+            row=*i;
+            break;
+        }
+    }
+    qDebug()<<row;
+    this->remove_from_delete_list(row);
+    qDebug()<<"after remove from delete_list";
+    model->removeRow(row);
 }
 void App_page::insert_rows_in_table(QJsonArray* data){
     qDebug()<<"in insert_rows_in_table";
@@ -517,7 +561,7 @@ void App_page::insert_row_in_table(QJsonArray* data){
 }
 void App_page::update_row_in_table(QJsonArray* array_data){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
-    int row= model_index->row();
+    int row= update_model_index->row();
     QJsonArray::iterator array_iter=array_data->begin();
     QJsonObject row_object= array_iter->toObject();
     QVariantMap row_data=row_object.toVariantMap();

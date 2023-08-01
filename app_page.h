@@ -1,6 +1,8 @@
 #ifndef APP_PAGE_H
 #define APP_PAGE_H
 
+//#include"modify_editability_model.h"
+
 #include <QObject>
 #include <QWidget>
 #include<QGridLayout>
@@ -26,7 +28,10 @@ public:
     App_page(QWidget* parent=nullptr);
     QString email;
     QStringList* row_data;
-    QModelIndex* model_index;
+    QList<int>* delete_rows_list;
+    QModelIndex* update_model_index;
+    //ModifyEditabilityModel* proxy_model;
+
 private:
     bool redact_transfer_state;
     QGridLayout* layout_page;
@@ -76,12 +81,14 @@ private:
     void base_settings();
     void main_buttons_settings(int w, int h);
     void main_table_settings();
+    void add_to_delete_list();
+    void remove_from_delete_list(int row);
     //QString encoding_data(const QString& data);
     QString decoding_element(const QJsonArray& array_object);
     void filling_in_table(QJsonArray* data, int row_position);
 public slots:
     QStandardItemModel* get_table_model();
-    void remove_row_in_table();
+    void remove_row_in_table(QJsonArray* data);
     void insert_rows_in_table(QJsonArray* data);
     void insert_row_in_table(QJsonArray* data);
     void update_row_in_table(QJsonArray* data);

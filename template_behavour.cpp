@@ -59,9 +59,13 @@ void Entry_behavour::processing_of_behavour(QVariantMap* data, int error_code){
 
 void Delete_behavour::processing_of_behavour(QVariantMap* data, int error_code){
     if (error_code==1){
+        qDebug()<<"in deletion failed branch";
         emit deletion_failed();
     }
-    else emit deletion_successful();
+    else {
+        qDebug()<<"in deletion successful branch";
+        emit deletion_successful(data);
+    }
 
 }
 

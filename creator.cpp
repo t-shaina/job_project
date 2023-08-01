@@ -25,6 +25,7 @@ Creator::~Creator()
     delete behavour;
 }
 void Creator::create_query(QStringList* data){
+    qDebug()<<"in create_query";
     QByteArray array_data=QJsonDocument(Json_creator(data).get_json_data()).toJson();
     i_adapter->sendData(array_data);
 }
@@ -109,7 +110,7 @@ void Creator::creating_connect(Behavour_id behavour_id){
         break;
     case delete_id:
         QObject::connect(this->behavour, SIGNAL(deletion_failed()), this->main_window, SLOT(msg_deletion_failed()));
-        QObject::connect(this->behavour, SIGNAL(deletion_successful()), this->main_window, SLOT(msg_deletion_successful()));
+        QObject::connect(this->behavour, SIGNAL(deletion_successful(QVariantMap*)), this->main_window, SLOT(msg_deletion_successful(QVariantMap*)));
         break;
     case select_id:
         QObject::connect(this->behavour, SIGNAL(records_not_exist()), this->main_window, SLOT(msg_records_not_exist()));
