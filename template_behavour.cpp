@@ -106,9 +106,12 @@ void Select_all_behavour::processing_of_behavour(QVariantMap* data, int error_co
 
 void Update_behavour::processing_of_behavour(QVariantMap* data, int error_code){
     if (error_code==1){
+        qDebug()<<"updation failed";
         emit updation_failed();
     }
-    else emit updation_successful(data);
-
+    else{
+        qDebug()<<"updation successful";
+        emit updation_successful(data);
+    }
 }
 

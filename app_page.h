@@ -27,9 +27,11 @@ class App_page:public QWidget
 public:
     App_page(QWidget* parent=nullptr);
     QString email;
-    QStringList* row_data;
+    QStringList* row_to_update;
+    QModelIndex update_model_index;
     QList<int>* delete_rows_list;
-    QModelIndex* update_model_index;
+    QList<int>* update_rows_list;
+
     //ModifyEditabilityModel* proxy_model;
 
 private:
@@ -83,15 +85,18 @@ private:
     void main_table_settings();
     void add_to_delete_list();
     void remove_from_delete_list(int row);
+    void add_to_update_list();
+    void remove_from_update_list(int row);
+    //int finding_row_in_list();
     //QString encoding_data(const QString& data);
-    QString decoding_element(const QJsonArray& array_object);
+    QString jsonarray_to_str(const QJsonArray& array_object);
     void filling_in_table(QJsonArray* data, int row_position);
 public slots:
     QStandardItemModel* get_table_model();
     void remove_row_in_table(QJsonArray* data);
-    void insert_rows_in_table(QJsonArray* data);
+    void filling_page_with_data(QJsonArray* data);
     void insert_row_in_table(QJsonArray* data);
-    void update_row_in_table(QJsonArray* data);
+    void update_row_in_table(QJsonObject* data_new_object, QJsonObject* data_old_object);
 
 private slots:
     //void set_app_page_visible(bool flag);

@@ -4,6 +4,7 @@
 #include<QStatusBar>
 #include<QString>
 #include<QJsonArray>
+#include<QJsonObject>
 #include <stdlib.h>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -125,7 +126,7 @@ void MainWindow:: create_app_page(QVariantMap* data){
     status.setText(service_msg->append(email_value));
     this->app_page->email=email_value;
     QJsonArray data_array=data->take("Rows").toJsonArray();
-    this->app_page->insert_rows_in_table(&data_array);
+    this->app_page->filling_page_with_data(&data_array);
 }
 void MainWindow::msg_deletion_failed(){
     status.setText("Удаление строки не удалось");
@@ -140,7 +141,7 @@ void MainWindow::msg_records_not_exist(){
 }
 void MainWindow::msg_records_exist(QVariantMap* data){
     QJsonArray data_array=data->take("Rows").toJsonArray();
-    this->app_page->insert_rows_in_table(&data_array);
+    this->app_page->filling_page_with_data(&data_array);
 }
 void MainWindow::msg_data_exist(){
     status.setText("Такой фильм уже существует");
@@ -164,13 +165,14 @@ void MainWindow::msg_all_records_not_exist(){
 }
 void MainWindow::msg_all_records_exist(QVariantMap* data){
     QJsonArray data_array=data->take("Rows").toJsonArray();
-    this->app_page->insert_rows_in_table(&data_array);
+    this->app_page->filling_page_with_data(&data_array);
 }
 void MainWindow::msg_updation_failed(){
     status.setText("Ошибка обновления записи");
 }
 void MainWindow::msg_updation_successful(QVariantMap* data){
     status.setText("Запись обновлена");
-    QJsonArray data_array=data->take("Rows").toJsonArray();
-    this->app_page->update_row_in_table(&data_array);
+    QJsonObject data_new_object=data->take("Row_new").toJsonObject();
+    QJsonObject data_old_object=data->take("Row_old").toJsonObject();
+    this->app_page->update_row_in_table(&data_new_object, &data_old_object);
 }

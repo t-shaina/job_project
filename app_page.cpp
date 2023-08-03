@@ -27,6 +27,7 @@ const int main_buttons_height=30;
 const QStringList genre_list=QStringList()<<"Комедия"<<"Мелодрама"<<"Мультфильм"<<"Ужасы"<<"Фантастика"<<"Триллер"
                                               <<"Боевик"<<"Детектив"<<"Фентези"<<"Исторический"<<"Драма"<<"Документальный"
                                               <<"Криминал"<<"Биография"<<"Вестерн"<<"Мюзиклы"<<"Короткометражка";
+
 const QStringList headers= QStringList()<<"Название"<<"Режиссер"<<"Жанр"<<"Год"<<"Рейтинг"<<"Статус";
 const QStringList sort_list=QStringList()<<"Год"<<"Рейтинг"<<"Статус";
 const QStringList status_list=QStringList()<<"Просмотрено"<<"Собираюсь смотреть"<<"Не рекомендую";
@@ -35,8 +36,9 @@ static int required_fields_flag =0;
 App_page::App_page(QWidget *parent)
     :QWidget(parent),
     //page_group(new QGroupBox(this)),
-    row_data(new QStringList()),
+    row_to_update(new QStringList()),
     delete_rows_list(new QList<int>),
+    update_rows_list(new QList<int>),
     redact_transfer_state(false),
     layout_page(new QGridLayout(this)),
     table_group(new QGroupBox(this)),
@@ -160,6 +162,7 @@ App_page::App_page(QWidget *parent)
     this->setMaximumHeight(height_window);
     this->setMaximumWidth(width_window);
     //edit_group_layout->setRowMinimumHeight(6, 30);
+
     delete_sort_group_layout->setContentsMargins(0,0,0,0);
     director_group_layout->setContentsMargins(0,0,0,0);
     genre_group_layout->setContentsMargins(0,0,0,0);
@@ -241,43 +244,64 @@ void App_page::remove_from_delete_list(int row){
         item->setEnabled(true);
     }
     delete_rows_list->removeOne(row);
-
+}
+void App_page::add_to_update_list(){
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    //QItemSelectionModel* select_model=table->selectionModel();
+    //QModelIndex current_index=select_model->currentIndex();
+    int row=update_model_index.row();
+    for(int i=0;i<model->columnCount();i++){
+        QStandardItem* item=model->item(row, i);
+        item->setSelectable(false);
+        //item->setBackground();
+    }
+    update_rows_list->push_back(row);
+}
+void App_page::remove_from_update_list(int row){
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    for(int i=0;i<model->columnCount();i++){
+        QStandardItem* item=model->item(row, i);
+        item->setSelectable(true);
+    }
+    update_rows_list->removeOne(row);
 }
 void App_page::on_delete_button_clicked(){
+    //selected_row->clear();
     QStringList delete_list;
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    QItemSelectionModel* select_model=table->selectionModel();
+    QModelIndex index=select_model->currentIndex();
+    int row=index.row();
+    for(int i=0; i<model->columnCount();i++){
+        QModelIndex column_index=model->index(row, i);
+        delete_list.push_back(column_index.data().toString());
+    }
 
-      qDebug()<<"after select_model";
     this->add_to_delete_list();
-        qDebug()<<"after delete_model_index";
-    //* model=static_cast<QStandardItemModel*>(table->model());
-    qDebug()<<"after model";
-   // Qt::ItemFlags f=model->flags(*delete_model_index);
-
-    //f.setFlag(Qt::ItemIsEnabled, false);
-    //name_edit->clear();
-    //director_edit->clear();
-    //genre_edit->clear();
-    delete_list=*row_data;
+    //delete_list=*selected_row;
     delete_list.push_front(this->email);
     emit delete_request(&delete_list);
 }
-void App_page::on_redact_button_clicked(){//тут добавить перенос из таблицы в область редактирования
+void App_page::on_redact_button_clicked(){
+    row_to_update->clear();
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     QItemSelectionModel* select_model=table->selectionModel();
-    //QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
-    //QModelIndex index=select_model->currentIndex();
-    //int row=index.row();
+    QModelIndex index=select_model->currentIndex();
+    int row=index.row();
+    update_model_index=index;
+    for(int i=0; i<model->columnCount();i++){
+        QModelIndex column_index=model->index(row, i);
+        this->row_to_update->push_back(column_index.data().toString());
+    }
+    //this->add_to_update_list();
     redact_transfer_state=true;
-    //QStringList redact_list=QStringList();//или row_data
-    //for(int i=1; i<model->columnCount();i++)
-        //redact_list<<model->item(row, i)->data().toStringList();
-    name_edit->setText(row_data->at(0));
-    director_edit->setText(row_data->at(1));
-    genre_edit->setText(row_data->at(2));
-    date_slider->setSliderPosition(row_data->at(3).toInt());
-    rating_spin_box->setValue(row_data->at(4).toInt());
-    status_combo_box->setPlaceholderText(row_data->at(5));
+    name_edit->setText(row_to_update->at(0));
+    director_edit->setText(row_to_update->at(1));
+    genre_edit->setText(row_to_update->at(2));
+    date_slider->setSliderPosition(row_to_update->at(3).toInt());
+    rating_spin_box->setValue(row_to_update->at(4).toInt());
+    status_combo_box->setPlaceholderText(row_to_update->at(5));
     accept_button->setText("Обновить");
-
 }
 void App_page::on_show_all_button_clicked(){
     QStringList data=QStringList();
@@ -299,18 +323,20 @@ void App_page::on_accept_button_clicked(){
                                              <<rating_spin_box->text()
                                              <<status_combo_box->currentText();
     if(redact_transfer_state){
-        QItemSelectionModel* select_model=table->selectionModel();
-        *update_model_index=select_model->currentIndex();
-        insert_list<<*row_data;
+        this->add_to_update_list();
+        insert_list<<*row_to_update;
         emit  update_request(&insert_list);
     }
     else
         emit insert_request(&insert_list);
+    name_edit->clear();
+    director_edit->clear();
+    genre_edit->clear();
     redact_transfer_state=false;
     accept_button->setText("Добавить");
-
 }
 void App_page::on_clear_button_clicked(){
+    update_model_index=QModelIndex();//имеется ввиду сброс индекса  установкой недопустимного индекса
     name_edit->clear();
     director_edit->clear();
     genre_edit->clear();
@@ -318,23 +344,17 @@ void App_page::on_clear_button_clicked(){
     accept_button->setText("Добавить");
 }
 void App_page::on_table_row_selected(QModelIndex index){
-    qDebug()<<"in table row selected";
-    row_data->clear();
+    qDebug()<<"in table row selected";   
     delete_button->setEnabled(true);
     redact_button->setEnabled(true);
-    //QString cell_data;
-    //QItemSelectionModel* select_model=table->selectionModel();
+
+    /*selected_row->clear();
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     int row=index.row();
     for(int i=0; i<model->columnCount();i++){
         QModelIndex column_index=model->index(row, i);
-        //cell_data=column_index.data().toString();
-        //qDebug()<< cell_data;
-        this->row_data->push_back(column_index.data().toString());
-        //cell_data.clear();
-    }
-    qDebug()<<"row data 0 is"<<row_data->at(0);
-
+        this->selected_row->push_back(column_index.data().toString());
+    }*/
 }
 void App_page::on_search_edit_edited(){
     if(search_edit->text().isEmpty())
@@ -377,6 +397,7 @@ void App_page::base_settings(){
     layout_page->setRowStretch(1, 2);
 
     table_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.7, (height_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
+    table->setFixedWidth(table_scroll->width());
     delete_sort_group->setMinimumSize( table_scroll->width(), navigation_group_hight);
     sort_group->setFixedWidth((width_window-l_margin-r_margin-v_spacing)*0.7*0.5);
     settings_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.3, (height_window-t_margin-b_margin-h_spacing)-navigation_group_hight);
@@ -478,18 +499,18 @@ void App_page::filling_in_table(QJsonArray* array_data, int row_position){
         for(int column=0; column<model->columnCount();column++){
             QString string_of_item= QString();
             //QVariantMap::const_iterator iter;
-            QJsonArray array_object; 
+            QJsonArray array_object;
             switch (column) {
             case 0:
                 string_of_item=row_data.take("Title").toString();
                 break;
             case 1:
                 array_object=row_data.take("Directors").toJsonArray();
-                string_of_item=decoding_element(array_object);
+                string_of_item=jsonarray_to_str(array_object);
                 break;
             case 2:
                 array_object=row_data.take("Genres").toJsonArray();
-                string_of_item=decoding_element(array_object);
+                string_of_item=jsonarray_to_str(array_object);
                 break;
             case 3:
                 string_of_item=row_data.take("Year").toString();
@@ -515,7 +536,7 @@ void App_page::filling_in_table(QJsonArray* array_data, int row_position){
     }
     //delete row_of_item;
 }
-QString App_page::decoding_element(const QJsonArray& array_object){
+QString App_page::jsonarray_to_str(const QJsonArray& array_object){
     QString element;
     for(int i=0; i<array_object.size();i++){
         element+=array_object.at(i).toString();
@@ -529,12 +550,15 @@ void App_page::remove_row_in_table(QJsonArray* data){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     QJsonObject row_object= data->at(0).toObject();
     QVariantMap row_data=row_object.toVariantMap();
-    int row;
+    int row=-1;
     QList<int>::iterator end=delete_rows_list->end();
-    for(QList<int>::iterator i=delete_rows_list->begin(); i<end;i++){
-        if(model->item(*i, 0)->text()==row_data.take("Title")&&
-           model->item(*i, 1)->text()==row_data.take("Directors")&&
-           model->item(*i, 3)->text()==row_data.take("Year")){
+    QString deleted_title=row_data.take("Title").toString();
+    QString deleted_directors=jsonarray_to_str(row_data.take("Directors").toJsonArray());
+    QString deleted_year=row_data.take("Year").toString();
+    for(QList<int>::iterator i=delete_rows_list->begin(); i<end;i++){//считается, что пул режиссеров мог снять один title за один год
+        if(model->item(*i, 0)->text()==deleted_title&&
+           model->item(*i, 1)->text()==deleted_directors&&
+           model->item(*i, 3)->text()==deleted_year){
             row=*i;
             break;
         }
@@ -544,12 +568,25 @@ void App_page::remove_row_in_table(QJsonArray* data){
     qDebug()<<"after remove from delete_list";
     model->removeRow(row);
 }
-void App_page::insert_rows_in_table(QJsonArray* data){
+void App_page::filling_page_with_data(QJsonArray* data){
     qDebug()<<"in insert_rows_in_table";
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    QJsonArray::iterator array_iter=data->begin();
+    QStringList directors_list;
     model->clear();
     model->setColumnCount(6);
     model->setHorizontalHeaderLabels(headers);
+
+    for(;array_iter!=data->end();array_iter++){
+        QJsonObject row_object= array_iter->toObject();
+        QVariantMap row_data=row_object.toVariantMap();
+        QString director= QString();
+        QJsonArray array_object;
+        array_object=row_data.take("Directors").toJsonArray();
+        director=jsonarray_to_str(array_object);
+        directors_list.push_back(director);
+    }
+    director_combo_box->addItems(directors_list);
     filling_in_table(data, 0);
 }
 void App_page::insert_row_in_table(QJsonArray* data){
@@ -559,36 +596,51 @@ void App_page::insert_row_in_table(QJsonArray* data){
     int current_number_of_rows=model->rowCount();
     filling_in_table(data, current_number_of_rows);//точно +1?
 }
-void App_page::update_row_in_table(QJsonArray* array_data){
-    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
-    int row= update_model_index->row();
-    QJsonArray::iterator array_iter=array_data->begin();
-    QJsonObject row_object= array_iter->toObject();
-    QVariantMap row_data=row_object.toVariantMap();
+void App_page::update_row_in_table(QJsonObject* data_new_object, QJsonObject* data_old_object){
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());    
+    int row=-1;
+    //QJsonObject row_old_object= array_data->take("").toObject();
+    QVariantMap row_old_data=data_old_object->toVariantMap();
+    QList<int>::iterator end=update_rows_list->end();
+    QString deleted_title=row_old_data.take("Title").toString();
+    QString deleted_directors=jsonarray_to_str(row_old_data.take("Directors").toJsonArray());
+    QString deleted_year=row_old_data.take("Year").toString();
+    for(QList<int>::iterator i=update_rows_list->begin(); i<end;i++){//считается, что пул режиссеров мог снять один title за один год
+        if(model->item(*i, 0)->text()==deleted_title&&
+            model->item(*i, 1)->text()==deleted_directors&&
+            model->item(*i, 3)->text()==deleted_year){
+            row=*i;
+            break;
+        }
+    }
+    qDebug()<<row;
+    this->remove_from_update_list(row);
+    //QJsonObject row_new_object= array_data->at(1).toObject();
+    QVariantMap row_new_data=data_new_object->toVariantMap();
     for(int column=0; column<model->columnCount();column++){
         QString string_of_item= QString();
-        QJsonArray::const_iterator iter;
+        //QJsonArray::const_iterator iter;
         QJsonArray array_object;
         switch (column){
         case 0:
-            string_of_item=row_data.take("Title").toString();
+            string_of_item=row_new_data.take("Title").toString();
             break;
         case 1:
-            array_object=row_data.take("Directors").toJsonArray();
-            string_of_item=decoding_element(array_object);
+            array_object=row_new_data.take("Directors").toJsonArray();
+            string_of_item=jsonarray_to_str(array_object);
             break;
         case 2:
-            array_object=row_data.take("Genres").toJsonArray();
-            string_of_item=decoding_element(array_object);
+            array_object=row_new_data.take("Genres").toJsonArray();
+            string_of_item=jsonarray_to_str(array_object);
             break;
         case 3:
-            string_of_item=row_data.take("Year").toString();
+            string_of_item=row_new_data.take("Year").toString();
             break;
         case 4:
-            string_of_item=row_data.take("Rating").toString();
+            string_of_item=row_new_data.take("Rating").toString();
             break;
         case 5:
-            string_of_item=row_data.take("Status").toString();
+            string_of_item=row_new_data.take("Status").toString();
             break;
         default:
             break;

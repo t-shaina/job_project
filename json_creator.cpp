@@ -15,7 +15,8 @@ Json_creator::Json_creator(QStringList* data)
         break;
     case 2:
         json_data["RequestCode"]=data->at(0);
-        json_data["SearchWord"]=data->at(1);
+         json_data["Email"]=data->at(1);
+        json_data["SearchWord"]=data->at(2);
         break;
     case 3:
         json_data["RequestCode"]=data->at(0);
@@ -34,8 +35,9 @@ Json_creator::Json_creator(QStringList* data)
         break;
     case 6:
         json_data["RequestCode"]=data->at(0);
-        json_data["Row"]=Json_creator::creating_row_object(data, 1);
-        json_data["Row"]=Json_creator::creating_row_object(data, 7);// с седьмого элемента начинается строка старых данных
+        json_data["Email"]=data->at(1);
+        json_data["Row_new"]=Json_creator::creating_row_object(data, 1);
+        json_data["Row_old"]=Json_creator::creating_row_object(data, 8);// с седьмого элемента начинается строка старых данных
         break;
     default:
         break;
