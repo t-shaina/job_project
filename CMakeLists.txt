@@ -27,6 +27,7 @@ set(PROJECT_SOURCES
     template_behavour.cpp
     creator.cpp
     json_creator.cpp
+    billet_widget.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

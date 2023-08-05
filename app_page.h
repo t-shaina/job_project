@@ -31,22 +31,19 @@ public:
     QModelIndex update_model_index;
     QList<int>* delete_rows_list;
     QList<int>* update_rows_list;
-
-    //ModifyEditabilityModel* proxy_model;
-
 private:
     bool redact_transfer_state;
     QGridLayout* layout_page;
     QGroupBox* table_group;
-    QGroupBox* scroll_table_group;
+    //QGroupBox* scroll_table_group;
     QGroupBox* delete_sort_group;
     QGroupBox* sort_group;
     QGroupBox* search_group;
     QGroupBox* settings_group;
-    QGroupBox* edit_group;    
+    QGroupBox* edit_group;
     QGroupBox* navigation_group;
-    QScrollArea* table_scroll;
-    QScrollArea* edit_scroll;
+    //QScrollArea* table_scroll;
+    //QScrollArea* edit_scroll;
     QGroupBox* director_group;
     QGroupBox* genre_group;
     QGroupBox* date_group;
@@ -112,6 +109,7 @@ private slots:
     void set_search_edit(int search_id);//переименовать
     void set_date_edit(int data_value);
     void set_date_slider_position();
+    void set_director_edit(int director_id);
     void set_genre_edit(int genre_id);
     void on_search_edit_edited();
     void on_name_director_genre_data_edit_changed();
