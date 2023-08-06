@@ -1,7 +1,7 @@
 #ifndef APP_PAGE_H
 #define APP_PAGE_H
 
-//#include"modify_editability_model.h"
+#include"billet_widget.h"
 
 #include <QObject>
 #include <QWidget>
@@ -16,6 +16,7 @@
 #include<QGroupBox>
 #include<QComboBox>
 #include<QScrollArea>
+#include<QScrollBar>
 #include <QSlider>
 #include<QSpinBox>
 #include<QStringList>
@@ -27,6 +28,7 @@ class App_page:public QWidget
 public:
     App_page(QWidget* parent=nullptr);
     QString email;
+    QList<Billet_widget*>* genre_billet_widgets;
     QStringList* row_to_update;
     QModelIndex update_model_index;
     QList<int>* delete_rows_list;
@@ -65,7 +67,8 @@ private:
     QTextEdit* director_edit;
     QLabel* genre_label;
     QComboBox* genre_combo_box;
-    QTextEdit* genre_edit;
+    QScrollArea* genre_edit;
+    QGroupBox* genre_scroll_group;
     QLineEdit* date_edit;
     QLabel* date_label;
     QSlider* date_slider;
@@ -105,6 +108,7 @@ private slots:
     void on_search_button_clicked();
     void on_accept_button_clicked();
     void on_clear_button_clicked();
+    void on_widget_was_deleted(QString text);
 
     void set_search_edit(int search_id);//переименовать
     void set_date_edit(int data_value);

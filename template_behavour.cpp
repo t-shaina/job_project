@@ -70,11 +70,14 @@ void Delete_behavour::processing_of_behavour(QVariantMap* data, int error_code){
 }
 
 void Select_behavour::processing_of_behavour(QVariantMap* data, int error_code){
-    if (error_code==0 /*&& data->size()>1*/){
+    if (error_code==0){
         emit records_exist(data);
+        qDebug()<<"in records exist branch";
     }
-    else
+    else{
+        qDebug()<<"in records not exist branch";
         emit records_not_exist();
+    }
 }
 
 void Insert_behavour::processing_of_behavour(QVariantMap* data, int error_code){

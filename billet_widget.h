@@ -18,8 +18,9 @@ public:
     ~Billet_widget();
     QString text();
 private slots:
-     void on_delete_button_clicked();
+    void on_delete_button_clicked();
 signals:
+    void widget_was_deleted(QString text);
 
 };
 

@@ -1,5 +1,5 @@
 #include "app_page.h"
-#include"billet_widget.h""
+
 #include<QGridLayout>
 #include<QHBoxLayout>
 #include<QVBoxLayout>
@@ -13,8 +13,7 @@
 #include<QString>
 #include<QJsonObject>
 #include<QJsonArray>
-#include<QIcon>
-#include <QtGlobal>
+#include<QStringListModel>
 const int width_window=1280;
 const int height_window=800;
 const int l_margin=10;
@@ -25,6 +24,7 @@ const int inside_margin=10;
 const int inside_spacing=10;
 const int v_spacing=30;
 const int h_spacing=30;
+const int edit_group_v_spacing=25;
 const int navigation_group_hight=50;
 const int table_magrin=5;
 const int main_buttons_width=100;
@@ -41,6 +41,7 @@ static int required_fields_flag =0;
 App_page::App_page(QWidget *parent)
     :QWidget(parent),
     //page_group(new QGroupBox(this)),
+    genre_billet_widgets(new QList<Billet_widget*>),
     row_to_update(new QStringList()),
     delete_rows_list(new QList<int>),
     update_rows_list(new QList<int>),
@@ -75,7 +76,8 @@ App_page::App_page(QWidget *parent)
     director_combo_box(new QComboBox(this)),
     director_edit(new QTextEdit(this)),
     genre_label (new QLabel("Жанр", this)),
-    genre_edit(new QTextEdit(this)),
+    genre_edit(new QScrollArea(this)),
+    genre_scroll_group(new QGroupBox(genre_edit)),
     genre_combo_box(new QComboBox(this)),
     date_edit(new QLineEdit(this)),
     date_label (new QLabel("Год создания", this)),
@@ -99,6 +101,7 @@ App_page::App_page(QWidget *parent)
     QGridLayout* edit_group_layout=new QGridLayout;
     QVBoxLayout* director_group_layout=new QVBoxLayout;
     QVBoxLayout* genre_group_layout=new QVBoxLayout;
+    QVBoxLayout* genre_scroll_layout=new QVBoxLayout;//this
     QVBoxLayout* date_group_layout=new QVBoxLayout;
     QHBoxLayout* clear_group_layout=new QHBoxLayout;
 
@@ -138,7 +141,6 @@ App_page::App_page(QWidget *parent)
     clear_group_layout->addWidget(clear_button, Qt::AlignCenter);
     navigation_group_layout->addWidget(back_button, Qt::AlignRight);
 
-    //scroll_table_group->setLayout(scroll_table_group_layout);
     delete_sort_group->setLayout(delete_sort_group_layout);
     sort_group->setLayout(sort_group_layout);
     search_group->setLayout(search_group_layout);
@@ -147,15 +149,10 @@ App_page::App_page(QWidget *parent)
     edit_group->setLayout(edit_group_layout);
     director_group->setLayout(director_group_layout);
     genre_group->setLayout(genre_group_layout);
+    genre_edit->setLayout(genre_scroll_layout);// this
     date_group->setLayout(date_group_layout);
     clear_group->setLayout(clear_group_layout);
     navigation_group->setLayout(navigation_group_layout);
-
-    //table_scroll->setWidget(table);
-    //table_scroll->setWidgetResizable(true);
-    //table_scroll->setAlignment(Qt::AlignCenter);
-    //edit_group->setLayout(edit_group_layout);
-    //edit_scroll->setWidgetResizable(true);
 
     layout_page->addWidget(table_group, 0,0, Qt::AlignLeft|Qt::AlignTop);
     layout_page->addWidget(search_group, 1,0, Qt::AlignLeft|Qt::AlignBottom);
@@ -181,8 +178,19 @@ App_page::App_page(QWidget *parent)
     navigation_group->setStyleSheet("QGroupBox{border: 0px;}");
     search_group->setStyleSheet("QGroupBox{border: 0px;}");
 
-    edit_group_layout->setVerticalSpacing(25);
+    edit_group_layout->setVerticalSpacing(edit_group_v_spacing);
     edit_group_layout->setColumnMinimumWidth(1, (width_window-l_margin-r_margin-v_spacing)*0.15);
+    genre_edit->setWidgetResizable(false);
+    genre_edit->setAlignment(Qt::AlignLeft);
+    genre_edit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    genre_edit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    //genre_scroll_bar->setFixedWidth(15);
+    //genre_scroll_bar->setFixedHeight(genre_edit->height());
+    //genre_edit->setVerticalScrollBar(genre_scroll_bar);
+    genre_scroll_group->setFixedSize(genre_edit->width(), genre_edit->height());
+    genre_scroll_group->setLayout(genre_scroll_layout);
+    genre_scroll_group->setStyleSheet("QGroupBox{border: 0px;}");
+    genre_edit->setWidget(genre_scroll_group);
     base_settings();
 
     //connect(sort_combo_box, SIGNAL(activated(int)), this, SLOT(set_search_edit(int)));
@@ -207,7 +215,9 @@ App_page::App_page(QWidget *parent)
     connect(date_edit, SIGNAL(textChanged(QString)), this, SLOT(on_name_director_genre_data_edit_changed()));
     connect(date_edit, SIGNAL(textEdited(QString)), this, SLOT(set_date_slider_position()));
 
-    Billet_widget* w=new Billet_widget(genre_edit, "Это я");
+
+
+    //Billet_widget* w=new Billet_widget(genre_edit, "Это я");
 
 }
 
@@ -236,7 +246,13 @@ void App_page::set_director_edit(int director_id){
 void App_page::set_genre_edit(int genre_id){
 
     QString text=genre_list.at(genre_id);
-    genre_edit->setText(genre_edit->toPlainText()+" "+text);
+    QStandardItemModel* genre_model=static_cast<QStandardItemModel*>(genre_combo_box->model());
+    genre_model->item(genre_id)->setEnabled(false);
+    Billet_widget* widget=new Billet_widget(genre_edit, text);
+    genre_scroll_group->layout()->addWidget(widget);
+    genre_billet_widgets->push_back(widget);
+    QObject::connect(widget, SIGNAL(widget_was_deleted(QString)), this, SLOT(on_widget_was_deleted(QString)));
+    //genre_edit->setText(genre_edit->toPlainText()+" "+text);
 }
 void App_page::set_date_slider_position(){
     int year=date_edit->text().toInt();
@@ -244,6 +260,15 @@ void App_page::set_date_slider_position(){
     if(year<=current_year)
         date_slider->setSliderPosition(year);
     else date_slider->setSliderPosition(current_year);
+}
+void App_page::on_widget_was_deleted(QString text){
+    qDebug()<<"in widget was deleted text is"<<text;
+    QStandardItemModel* genre_model=static_cast<QStandardItemModel*>(genre_combo_box->model());
+    QList<QStandardItem*> items=genre_model->findItems(text);
+    genre_billet_widgets->removeOne(sender());
+    for(QStandardItem* item:items){
+        item->setEnabled(true);
+    }
 }
 void App_page::add_to_delete_list(){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
@@ -313,10 +338,32 @@ void App_page::on_redact_button_clicked(){
         this->row_to_update->push_back(column_index.data().toString());
     }
     //this->add_to_update_list();
+    QString genres=row_to_update->at(2);
+    QString genre;
+    genre_billet_widgets->clear();
+    qDebug()<<"genre_billet_widget clear";
+    //
+    QStandardItemModel* genre_model=static_cast<QStandardItemModel*>(genre_combo_box->model());
+    for(int i=0; i<genres.size();i++){
+        if(genres.at(i)==' '){
+            QList<QStandardItem*> items=genre_model->findItems(genre);
+            for(QStandardItem* item:items){
+                item->setEnabled(false);
+            }
+            Billet_widget* widget=new Billet_widget(genre_edit, genre);
+            genre_edit->layout()->addWidget(widget);//что-то с этой строкой
+            qDebug()<<"add one widget to genre_edit";
+            genre_billet_widgets->push_back(widget);
+            genre.clear();
+        }
+        else
+            genre+=genres.at(i);
+    }
     redact_transfer_state=true;
     name_edit->setText(row_to_update->at(0));
     director_edit->setText(row_to_update->at(1));
-    genre_edit->setText(row_to_update->at(2));
+    //genre_edit->setText(row_to_update->at(2));
+
     date_slider->setSliderPosition(row_to_update->at(3).toInt());
     rating_spin_box->setValue(row_to_update->at(4).toInt());
     status_combo_box->setPlaceholderText(row_to_update->at(5));
@@ -329,15 +376,21 @@ void App_page::on_show_all_button_clicked(){
 }
 void App_page::on_search_button_clicked(){
     QStringList data=QStringList();
+    data<<this->email;
     data<<this->search_edit->text();
     emit search_request(&data);
 }
 void App_page::on_accept_button_clicked(){
-
+    QString genres;
+    for(int i=0;i<genre_billet_widgets->size();i++){
+        genres+=genre_billet_widgets->at(i)->text();
+        genres+=" ";
+    }
+    genres.removeLast();
     QStringList insert_list= QStringList()   <<this->email
                                              <<name_edit->placeholderText()
                                              <<director_edit->placeholderText()
-                                             <<genre_edit->placeholderText()
+                                             <<genres
                                              <<date_edit->text()
                                              <<rating_spin_box->text()
                                              <<status_combo_box->currentText();
@@ -347,10 +400,10 @@ void App_page::on_accept_button_clicked(){
         emit  update_request(&insert_list);
     }
     else
-        emit insert_request(&insert_list);
+    emit insert_request(&insert_list);
     name_edit->clear();
     director_edit->clear();
-    genre_edit->clear();
+    genre_billet_widgets->clear();
     redact_transfer_state=false;
     accept_button->setText("Добавить");
 }
@@ -358,7 +411,7 @@ void App_page::on_clear_button_clicked(){
     update_model_index=QModelIndex();//имеется ввиду сброс индекса  установкой недопустимного индекса
     name_edit->clear();
     director_edit->clear();
-    genre_edit->clear();
+    genre_billet_widgets->clear();
     redact_transfer_state=false;
     accept_button->setText("Добавить");
 }
@@ -383,7 +436,7 @@ void App_page::on_search_edit_edited(){
 void App_page::on_name_director_genre_data_edit_changed(){
     if(name_edit->toPlainText().isEmpty()||
         director_edit->toPlainText().isEmpty()||
-        genre_edit->toPlainText().isEmpty()||
+        genre_edit->children().isEmpty()||
         date_edit->text().isEmpty()){
         accept_button->setEnabled(false);
         clear_button->setEnabled(false);
@@ -439,9 +492,11 @@ void App_page::base_settings(){
     main_buttons_settings(main_buttons_width,main_buttons_height);
     this->main_table_settings();
     sort_combo_box->addItems(sort_list);
+    QStandardItemModel* genre_model=new QStandardItemModel(genre_combo_box);
+    genre_combo_box->setModel(genre_model);
     genre_combo_box->addItems(genre_list);
     date_slider->setOrientation(Qt::Horizontal);
-    genre_edit->setReadOnly(true);
+    //genre_edit->setReadOnly(true);
 
     date_slider->setMaximum(QDate().currentDate().year());
     date_slider->setMinimum(1895);
@@ -579,11 +634,13 @@ void App_page::remove_row_in_table(QJsonArray* data){
     model->removeRow(row);
 }
 void App_page::filling_page_with_data(QJsonArray* data){
-    qDebug()<<"in insert_rows_in_table";
+    qDebug()<<"in filing page with data";
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
     QJsonArray::iterator array_iter=data->begin();
     QStringList directors_list;
-    //model->clear();
+
+    model->clear();
+    main_table_settings();
     //model->setColumnCount(6);
     //model->setHorizontalHeaderLabels(headers);
 

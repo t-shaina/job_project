@@ -158,6 +158,7 @@ void MainWindow::msg_registration_failed(){
     status.setText("Такой пользователь уже зарегестрирован");
 }
 void MainWindow::msg_registration_successful(QVariantMap* data){
+    breaking_registration_page();
     create_app_page(data);
 }
 void MainWindow::msg_all_records_not_exist(){
