@@ -15,8 +15,11 @@ class Billet_widget:public QGroupBox
     QPushButton* delete_button;
 public:
     explicit Billet_widget(QWidget* parent=nullptr, const QString& data="");
+    Billet_widget(const Billet_widget& b_w);
+    Billet_widget& operator=(const Billet_widget& b_w);
+    bool operator==(const Billet_widget& b_w)const;
     ~Billet_widget();
-    QString text();
+    QString text()const;
 private slots:
     void on_delete_button_clicked();
 signals:

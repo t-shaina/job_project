@@ -41,7 +41,7 @@ static int required_fields_flag =0;
 App_page::App_page(QWidget *parent)
     :QWidget(parent),
     //page_group(new QGroupBox(this)),
-    genre_billet_widgets(new QList<Billet_widget*>),
+    genre_billet_widgets(new QList<QSharedPointer<Billet_widget>>),
     row_to_update(new QStringList()),
     delete_rows_list(new QList<int>),
     update_rows_list(new QList<int>),
@@ -248,11 +248,14 @@ void App_page::set_genre_edit(int genre_id){
     QString text=genre_list.at(genre_id);
     QStandardItemModel* genre_model=static_cast<QStandardItemModel*>(genre_combo_box->model());
     genre_model->item(genre_id)->setEnabled(false);
+    //genre_billet_widgets->clear();
     Billet_widget* widget=new Billet_widget(genre_edit, text);
+    QSharedPointer<Billet_widget> widget_ptr(widget);
     genre_scroll_group->layout()->addWidget(widget);
-    genre_billet_widgets->push_back(widget);
+    genre_billet_widgets->push_back(widget_ptr);
     QObject::connect(widget, SIGNAL(widget_was_deleted(QString)), this, SLOT(on_widget_was_deleted(QString)));
     //genre_edit->setText(genre_edit->toPlainText()+" "+text);
+    qDebug()<<"in set genre edit size of list is"<<genre_billet_widgets->size();
 }
 void App_page::set_date_slider_position(){
     int year=date_edit->text().toInt();
@@ -262,13 +265,16 @@ void App_page::set_date_slider_position(){
     else date_slider->setSliderPosition(current_year);
 }
 void App_page::on_widget_was_deleted(QString text){
-    qDebug()<<"in widget was deleted text is"<<text;
+    qDebug()<<"in widget was X clicked"<<text;
     QStandardItemModel* genre_model=static_cast<QStandardItemModel*>(genre_combo_box->model());
     QList<QStandardItem*> items=genre_model->findItems(text);
-    genre_billet_widgets->removeOne(sender());
+    QSharedPointer<Billet_widget> widget_ptr=static_cast<QSharedPointer<Billet_widget>>(static_cast<Billet_widget*>(sender()));
+    //genre_billet_widgets->removeOne(widget_ptr);
+    widget_ptr.reset();
     for(QStandardItem* item:items){
         item->setEnabled(true);
     }
+    qDebug()<<"in widget was deleted size of list is"<<genre_billet_widgets->size();
 }
 void App_page::add_to_delete_list(){
     QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
@@ -339,10 +345,15 @@ void App_page::on_redact_button_clicked(){
     }
     //this->add_to_update_list();
     QString genres=row_to_update->at(2);
+    genres.push_back(' ');
+    qDebug()<<"in redact_button second row is"<< genres;
     QString genre;
-    genre_billet_widgets->clear();
-    qDebug()<<"genre_billet_widget clear";
-    //
+
+    QSharedPointer<Billet_widget> widget_ptr;
+    foreach(widget_ptr, *genre_billet_widgets){
+        widget_ptr.reset();
+    }
+    //genre_billet_widgets->clear();
     QStandardItemModel* genre_model=static_cast<QStandardItemModel*>(genre_combo_box->model());
     for(int i=0; i<genres.size();i++){
         if(genres.at(i)==' '){
@@ -350,10 +361,13 @@ void App_page::on_redact_button_clicked(){
             for(QStandardItem* item:items){
                 item->setEnabled(false);
             }
+
             Billet_widget* widget=new Billet_widget(genre_edit, genre);
-            genre_edit->layout()->addWidget(widget);//что-то с этой строкой
-            qDebug()<<"add one widget to genre_edit";
-            genre_billet_widgets->push_back(widget);
+            QSharedPointer<Billet_widget> widget_ptr(widget);
+            genre_scroll_group->layout()->addWidget(widget);
+            qDebug()<<"add one widget to genre_edit"<<widget->text();
+            genre_billet_widgets->push_back(widget_ptr);
+            QObject::connect(widget, SIGNAL(widget_was_deleted(QString)), this, SLOT(on_widget_was_deleted(QString)));
             genre.clear();
         }
         else
@@ -362,12 +376,11 @@ void App_page::on_redact_button_clicked(){
     redact_transfer_state=true;
     name_edit->setText(row_to_update->at(0));
     director_edit->setText(row_to_update->at(1));
-    //genre_edit->setText(row_to_update->at(2));
-
     date_slider->setSliderPosition(row_to_update->at(3).toInt());
     rating_spin_box->setValue(row_to_update->at(4).toInt());
     status_combo_box->setPlaceholderText(row_to_update->at(5));
     accept_button->setText("Обновить");
+    qDebug()<<"in redact button size of list is"<<genre_billet_widgets->size();
 }
 void App_page::on_show_all_button_clicked(){
     QStringList data=QStringList();
@@ -406,14 +419,20 @@ void App_page::on_accept_button_clicked(){
     genre_billet_widgets->clear();
     redact_transfer_state=false;
     accept_button->setText("Добавить");
+    qDebug()<<"in accept button size of list is"<<genre_billet_widgets->size();
 }
 void App_page::on_clear_button_clicked(){
+    QSharedPointer<Billet_widget> widget_ptr;
+    foreach(widget_ptr, *genre_billet_widgets){
+        widget_ptr.clear();
+    }
     update_model_index=QModelIndex();//имеется ввиду сброс индекса  установкой недопустимного индекса
     name_edit->clear();
     director_edit->clear();
-    genre_billet_widgets->clear();
+    //genre_billet_widgets->clear();//нужно ли?
     redact_transfer_state=false;
     accept_button->setText("Добавить");
+    qDebug()<<"in clear button size of list is"<<genre_billet_widgets->size();
 }
 void App_page::on_table_row_selected(QModelIndex index){
     qDebug()<<"in table row selected";   

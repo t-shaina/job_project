@@ -22,13 +22,15 @@
 #include<QStringList>
 #include<QStandardItemModel>
 #include<QStandardItem>
+#include<QSharedPointer>
+#include<QScopedPointer>
 class App_page:public QWidget
 {
     Q_OBJECT
 public:
     App_page(QWidget* parent=nullptr);
     QString email;
-    QList<Billet_widget*>* genre_billet_widgets;
+    QList<QSharedPointer<Billet_widget>>* genre_billet_widgets;
     QStringList* row_to_update;
     QModelIndex update_model_index;
     QList<int>* delete_rows_list;

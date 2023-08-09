@@ -29,13 +29,31 @@ Billet_widget::Billet_widget(QWidget* parent, const QString& data)
     connect(delete_button, SIGNAL(clicked()), this, SLOT(on_delete_button_clicked()));
     qDebug()<<"in billet_widget constructor";
 }
+Billet_widget::Billet_widget(const Billet_widget& b_w){
+    text_label=b_w.text_label;
+    delete_button=b_w.delete_button;
+}
+Billet_widget &Billet_widget::operator =(const Billet_widget& b_w){
+    if(&b_w != this){
+        text_label=b_w.text_label;
+        delete_button=b_w.delete_button;
+    }
+    return *this;
+}
+bool Billet_widget::operator==(const Billet_widget& b_w)const{
+    if (text_label==b_w.text_label||delete_button==b_w.delete_button)
+        return true;
+    else return false;
+}
 void Billet_widget::on_delete_button_clicked(){
-    this->~Billet_widget();
+    emit widget_was_deleted(this->text());
+    qDebug()<<"in billet_widget delete_button_clicked";
+    //this->~Billet_widget();
 }
 Billet_widget::~Billet_widget(){
-    emit widget_was_deleted(this->text());
+    //emit widget_was_deleted(this->text());
     qDebug()<<"in billet_widget destructor";
 }
-QString Billet_widget::text(){
+QString Billet_widget::text()const{
     return text_label->text();
 }
