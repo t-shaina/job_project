@@ -23,7 +23,7 @@
 #include<QStandardItemModel>
 #include<QStandardItem>
 #include<QSharedPointer>
-#include<QScopedPointer>
+
 class App_page:public QWidget
 {
     Q_OBJECT
@@ -89,6 +89,10 @@ private:
     void remove_from_delete_list(int row);
     void add_to_update_list();
     void remove_from_update_list(int row);
+    void set_genre_combo_box_enabled(QString genre, bool enabled);
+    void set_all_genre_combo_box_enabled();
+    bool find_invalid_symbols(const QString&);
+
     //int finding_row_in_list();
     //QString encoding_data(const QString& data);
     QString jsonarray_to_str(const QJsonArray& array_object);
@@ -128,6 +132,7 @@ signals:
     void update_request(QStringList*);
     void insert_request(QStringList*);
     void delete_request(QStringList*);
+    void genre_scroll_was_changed();
 
 };
 

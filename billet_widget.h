@@ -24,6 +24,7 @@ private slots:
     void on_delete_button_clicked();
 signals:
     void widget_was_deleted(QString text);
+    void widget_was_constructed();
 
 };
 
