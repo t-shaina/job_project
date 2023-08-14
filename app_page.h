@@ -23,7 +23,7 @@
 #include<QStandardItemModel>
 #include<QStandardItem>
 #include<QSharedPointer>
-
+#include<QVector>
 class App_page:public QWidget
 {
     Q_OBJECT
@@ -48,6 +48,7 @@ private:
     QGroupBox* navigation_group;
     //QScrollArea* table_scroll;
     //QScrollArea* edit_scroll;
+    QGroupBox* name_group;
     QGroupBox* director_group;
     QGroupBox* genre_group;
     QGroupBox* date_group;
@@ -63,8 +64,10 @@ private:
     QLineEdit* search_edit;
     QPushButton* search_button;
     QLabel* name_label;
+    QLabel* name_invalid_symbol_label;
     QTextEdit* name_edit;
     QLabel* director_label;
+    QLabel* director_invalid_symbol_label;
     QComboBox* director_combo_box;
     QTextEdit* director_edit;
     QLabel* genre_label;
@@ -91,7 +94,9 @@ private:
     void remove_from_update_list(int row);
     void set_genre_combo_box_enabled(QString genre, bool enabled);
     void set_all_genre_combo_box_enabled();
-    bool find_invalid_symbols(const QString&);
+    bool finding_invalid_symbols();
+    void removing_extra_spacing(QTextEdit* text_edit);
+    void uppercase_setting(QTextEdit* text_edit, const QRegularExpression& expression);
 
     //int finding_row_in_list();
     //QString encoding_data(const QString& data);

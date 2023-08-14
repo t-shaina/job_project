@@ -26,7 +26,7 @@ const int inside_margin=10;
 const int inside_spacing=10;
 const int v_spacing=30;
 const int h_spacing=30;
-const int edit_group_v_spacing=25;
+const int edit_group_v_spacing=20;
 const int navigation_group_hight=50;
 const int table_magrin=5;
 const int main_buttons_width=100;
@@ -59,6 +59,7 @@ App_page::App_page(QWidget *parent)
     navigation_group(new QGroupBox(this)),
     /*table_scroll(new QScrollArea(table_group)),*/
     /*edit_scroll(new QScrollArea()),*/
+    name_group(new QGroupBox(edit_group)),
     director_group(new QGroupBox(edit_group)),
     genre_group(new QGroupBox(edit_group)),
     date_group(new QGroupBox(edit_group)),
@@ -73,8 +74,10 @@ App_page::App_page(QWidget *parent)
     search_edit(new QLineEdit(this)),
     search_button(new QPushButton("Поиск", this)),
     name_label (new QLabel("Название", this)),
+    name_invalid_symbol_label(new QLabel("Введен недопустимый символ",this)),
     name_edit (new QTextEdit(this)),
     director_label (new QLabel("Режиссер", this)),
+    director_invalid_symbol_label(new QLabel("Введен недопустимый символ",this)),
     director_combo_box(new QComboBox(this)),
     director_edit(new QTextEdit(this)),
     genre_label (new QLabel("Жанр", this)),
@@ -101,6 +104,7 @@ App_page::App_page(QWidget *parent)
     QHBoxLayout* navigation_group_layout=new QHBoxLayout;
     QVBoxLayout* settings_group_layout=new QVBoxLayout;
     QGridLayout* edit_group_layout=new QGridLayout;
+    QVBoxLayout* name_group_layout=new QVBoxLayout;
     QVBoxLayout* director_group_layout=new QVBoxLayout;
     QVBoxLayout* genre_group_layout=new QVBoxLayout;
     QVBoxLayout* genre_scroll_layout=new QVBoxLayout;//this
@@ -122,7 +126,7 @@ App_page::App_page(QWidget *parent)
     settings_group_layout->addWidget(edit_group);
     settings_group_layout->addWidget(clear_group);
     edit_group_layout->addWidget(name_label, 0,0, Qt::AlignLeft|Qt::AlignTop);
-    edit_group_layout->addWidget(name_edit, 0,1, Qt::AlignCenter|Qt::AlignTop);
+    edit_group_layout->addWidget(name_group, 0,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(director_label, 1,0, Qt::AlignLeft|Qt::AlignTop);
     edit_group_layout->addWidget(director_group, 1,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(genre_label, 2,0, Qt::AlignLeft|Qt::AlignTop);
@@ -133,12 +137,17 @@ App_page::App_page(QWidget *parent)
     edit_group_layout->addWidget(rating_spin_box, 4,1, Qt::AlignCenter|Qt::AlignTop);
     edit_group_layout->addWidget(status_label, 5,0, Qt::AlignLeft|Qt::AlignTop);
     edit_group_layout->addWidget(status_combo_box, 5,1, Qt::AlignCenter|Qt::AlignTop);
+
+    name_group_layout->addWidget(name_edit, Qt::AlignCenter);
+    name_group_layout->addWidget(name_invalid_symbol_label, Qt::AlignCenter);
+
     director_group_layout->addWidget(director_combo_box, Qt::AlignCenter);
     director_group_layout->addWidget(director_edit, Qt::AlignCenter);
+     director_group_layout->addWidget(director_invalid_symbol_label, Qt::AlignCenter);
     genre_group_layout->addWidget(genre_combo_box, Qt::AlignCenter);
     genre_group_layout->addWidget(genre_edit, Qt::AlignCenter);
     date_group_layout->addWidget(date_slider, Qt::AlignCenter);
-    date_group_layout->addWidget(date_edit, Qt::AlignRight);
+    date_group_layout->addWidget(date_edit, Qt::AlignCenter);
     clear_group_layout->addWidget(accept_button, Qt::AlignCenter);
     clear_group_layout->addWidget(clear_button, Qt::AlignCenter);
     navigation_group_layout->addWidget(back_button, Qt::AlignRight);
@@ -149,9 +158,10 @@ App_page::App_page(QWidget *parent)
     table_group->setLayout(table_group_layout);
     settings_group->setLayout(settings_group_layout);
     edit_group->setLayout(edit_group_layout);
+    name_group->setLayout(name_group_layout);
     director_group->setLayout(director_group_layout);
     genre_group->setLayout(genre_group_layout);
-    genre_edit->setLayout(genre_scroll_layout);// this
+    genre_edit->setLayout(genre_scroll_layout);
     date_group->setLayout(date_group_layout);
     clear_group->setLayout(clear_group_layout);
     navigation_group->setLayout(navigation_group_layout);
@@ -173,22 +183,23 @@ App_page::App_page(QWidget *parent)
     settings_group_layout->setContentsMargins(inside_margin, inside_margin, inside_margin, inside_margin);
     settings_group_layout->insertSpacing(1, inside_spacing);
     delete_sort_group_layout->setContentsMargins(0,0,0,0);
+    name_group_layout->setContentsMargins(0,0,0,0);
     director_group_layout->setContentsMargins(0,0,0,0);
     genre_group_layout->setContentsMargins(0,0,0,0);
     date_group_layout->setContentsMargins(0,0,0,0);
     sort_group->setStyleSheet("QGroupBox{border: 0px;}");
     navigation_group->setStyleSheet("QGroupBox{border: 0px;}");
     search_group->setStyleSheet("QGroupBox{border: 0px;}");
+    date_group->setStyleSheet("QGroupBox{border: 0px;}");
 
     edit_group_layout->setVerticalSpacing(edit_group_v_spacing);
     edit_group_layout->setColumnMinimumWidth(1, (width_window-l_margin-r_margin-v_spacing)*0.15);
+
+
     genre_edit->setWidgetResizable(false);
     genre_edit->setAlignment(Qt::AlignLeft);
     genre_edit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     genre_edit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    //genre_scroll_bar->setFixedWidth(15);
-    //genre_scroll_bar->setFixedHeight(genre_edit->height());
-    //genre_edit->setVerticalScrollBar(genre_scroll_bar);
     genre_scroll_group->setFixedSize(genre_edit->width(), genre_edit->height());
     genre_scroll_group->setLayout(genre_scroll_layout);
     genre_scroll_group->setStyleSheet("QGroupBox{border: 0px;}");
@@ -377,7 +388,9 @@ void App_page::on_redact_button_clicked(){
             genre+=genres.at(i);
     }
     redact_transfer_state=true;
+    name_invalid_symbol_label->setVisible(false);
     name_edit->setText(row_to_update->at(0));
+    director_invalid_symbol_label->setVisible(false);
     director_edit->setText(row_to_update->at(1));
     date_slider->setSliderPosition(row_to_update->at(3).toInt());
     rating_spin_box->setValue(row_to_update->at(4).toInt());
@@ -396,18 +409,25 @@ void App_page::on_search_button_clicked(){
     emit search_request(&data);
 }
 void App_page::on_accept_button_clicked(){
-    QString genres;
-    for(int i=0;i<genre_billet_widgets->size();i++){
-        genres+=genre_billet_widgets->at(i)->text();
-        genres+=" ";
-    }
-    genres.removeLast();
-    if(find_invalid_symbols(name_edit->placeholderText())||find_invalid_symbols(director_edit->placeholderText())){
+
+    if(finding_invalid_symbols()){
         qDebug()<<"in invalid symbol founded branch";
-        name_edit->setStyleSheet("QTextEdit {color:red}");
-        director_edit->setStyleSheet("QTextEdit {color:red}");
+
+        /*name_invalid_symbol_label->setVisible(true);
+        director_invalid_symbol_label->setVisible(true);*/
     }
+
     else{
+        removing_extra_spacing(name_edit);
+        removing_extra_spacing(director_edit);
+        uppercase_setting(name_edit, QRegularExpression("^([a-zа-яё]{1})", QRegularExpression::NoPatternOption));
+        uppercase_setting(director_edit, QRegularExpression("^([a-zа-яё]{1})|(\b[a-zа-яё]{1})", QRegularExpression::NoPatternOption));
+        QString genres;
+        for(int i=0;i<genre_billet_widgets->size();i++){
+            genres+=genre_billet_widgets->at(i)->text();
+            genres+=" ";
+        }
+        genres.removeLast();
         QStringList insert_list= QStringList()<<this->email
                                              <<name_edit->placeholderText()
                                              <<director_edit->placeholderText()
@@ -424,7 +444,9 @@ void App_page::on_accept_button_clicked(){
             emit insert_request(&insert_list);
         }
         this->set_all_genre_combo_box_enabled();
+        name_invalid_symbol_label->setVisible(false);
         name_edit->clear();
+        director_invalid_symbol_label->setVisible(false);
         director_edit->clear();
         genre_billet_widgets->clear();
         redact_transfer_state=false;
@@ -432,17 +454,50 @@ void App_page::on_accept_button_clicked(){
         emit genre_scroll_was_changed();
     }
 }
-bool App_page::find_invalid_symbols(const QString& text){
-    QRegularExpression r_expr("[\s]{2,}|[^0-9a-zа-яё-]+", QRegularExpression::CaseInsensitiveOption);
-    if(r_expr.globalMatch(text, 0, QRegularExpression::NormalMatch, QRegularExpression::NoMatchOption).isValid())
-        return true;
-    else return false;
-}
+bool App_page::finding_invalid_symbols(){
+    bool state=false;
+    QString name=name_edit->placeholderText();
+    QString directors=director_edit->placeholderText();
 
+    QRegularExpression name_r_expr("([^0-9a-zа-яё!\\&:\\.,'\"«»-]+)", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression directors_r_expr("([^a-zа-яё-]+)", QRegularExpression::CaseInsensitiveOption);
+    if(name_r_expr.globalMatch(name, 0, QRegularExpression::NormalMatch, QRegularExpression::NoMatchOption).isValid()){
+        state=true;
+        name_invalid_symbol_label->setVisible(true);
+    }
+    if(directors_r_expr.globalMatch(directors, 0, QRegularExpression::NormalMatch, QRegularExpression::NoMatchOption).isValid()){
+        state=true;
+        director_invalid_symbol_label->setVisible(true);
+    }
+    return state;
+}
+void App_page::removing_extra_spacing(QTextEdit* text_edit){
+    QString text=text_edit->placeholderText();
+    text.remove(QRegularExpression ("^(?<begin>[\\s.,]+)|(?<inside>[\\s]{2,})|(?<end>[\\s.,]+)$", QRegularExpression::CaseInsensitiveOption));
+    text.squeeze();
+
+    text_edit->setText(text);
+}
+void App_page::uppercase_setting(QTextEdit* text_edit, const QRegularExpression& expression){
+    QString text=text_edit->placeholderText();
+    QRegularExpressionMatchIterator match_iter=expression.globalMatch(text, 0, QRegularExpression::NormalMatch, QRegularExpression::NoMatchOption);
+    qsizetype position=-1;
+    QString symbol;
+    if(match_iter.hasNext()){
+        QRegularExpressionMatch match=match_iter.next();
+        position=match.capturedStart();
+        symbol=match.captured().toUpper();
+        text.replace(position, 1, symbol);
+    }
+
+    text_edit->setText(text);
+}
 void App_page::on_clear_button_clicked(){
     this->set_all_genre_combo_box_enabled();
     update_model_index=QModelIndex();//имеется ввиду сброс индекса  установкой недопустимного индекса
+    name_invalid_symbol_label->setVisible(false);
     name_edit->clear();
+    director_invalid_symbol_label->setVisible(false);
     director_edit->clear();
     genre_billet_widgets->clear();//нужно ли?
     redact_transfer_state=false;
@@ -468,9 +523,11 @@ void App_page::on_search_edit_edited(){
     else search_button->setEnabled(true);
 }
 void App_page::on_name_director_genre_data_edit_changed(){
-    if(qobject_cast<QTextEdit*>(sender())){
-        name_edit->setStyleSheet("QTextEdit {color: gray}");
-        director_edit->setStyleSheet("QTextEdit {color:gray}");
+    QTextEdit* sender_;
+    if(sender_==qobject_cast<QTextEdit*>(sender())){
+        qDebug()<<"sender is text_edit";
+        name_invalid_symbol_label->setVisible(false);
+        director_invalid_symbol_label->setVisible(false);
     }
     if(name_edit->toPlainText().isEmpty()||
         director_edit->toPlainText().isEmpty()||
@@ -516,6 +573,8 @@ void App_page::base_settings(){
     search_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.7, navigation_group_hight);
     navigation_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.3, navigation_group_hight);
     //edit_group->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.3, (hight_window-t_margin-b_margin-h_spacing)-navigation_group_hight-main_buttons_hight-h_spacing);
+    name_invalid_symbol_label->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.15, 20);
+    director_invalid_symbol_label->setMinimumSize((width_window-l_margin-r_margin-v_spacing)*0.15, 20);
     director_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
     genre_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
     date_group->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.15);
@@ -527,6 +586,14 @@ void App_page::base_settings(){
     date_edit->setAlignment(Qt::AlignCenter);
     rating_spin_box->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.06);
     status_combo_box->setMinimumWidth((width_window-l_margin-r_margin-v_spacing)*0.16);
+
+    //QPalette data_slider_palette=date_slider->palette();
+    //QColor data_slider_color=date_slider->palette().color(QPalette::ColorRole());
+    //QString data_slider_color=date_slider->palette().color(QPalette::ColorRole()).name();
+    name_invalid_symbol_label->setVisible(false);
+    name_invalid_symbol_label->setStyleSheet("color: darkCyan; font-size: 12px");
+    director_invalid_symbol_label->setVisible(false);
+    director_invalid_symbol_label->setStyleSheet("color: darkCyan; font-size: 12px");
 
     main_buttons_settings(main_buttons_width,main_buttons_height);
     this->main_table_settings();
