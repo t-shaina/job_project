@@ -94,9 +94,11 @@ private:
     void remove_from_update_list(int row);
     void set_genre_combo_box_enabled(QString genre, bool enabled);
     void set_all_genre_combo_box_enabled();
-    bool finding_invalid_symbols();
-    void removing_extra_spacing(QTextEdit* text_edit);
-    void uppercase_setting(QTextEdit* text_edit, const QRegularExpression& expression);
+    bool has_invalid_symbols();
+    bool finding_invalid_symbols(QTextEdit* text_edit, const QRegularExpression& expression);
+    bool finding_invalid_symbols(QLineEdit* line_edit, const QRegularExpression& expression);
+    void removing_extra_symbols(QTextEdit* text_edit);
+    void set_uppercase(QTextEdit* text_edit, const QRegularExpression& expression);
 
     //int finding_row_in_list();
     //QString encoding_data(const QString& data);

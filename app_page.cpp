@@ -410,7 +410,7 @@ void App_page::on_search_button_clicked(){
 }
 void App_page::on_accept_button_clicked(){
 
-    if(finding_invalid_symbols()){
+    if(has_invalid_symbols()){
         qDebug()<<"in invalid symbol founded branch";
 
         /*name_invalid_symbol_label->setVisible(true);
@@ -418,10 +418,10 @@ void App_page::on_accept_button_clicked(){
     }
 
     else{
-        removing_extra_spacing(name_edit);
-        removing_extra_spacing(director_edit);
-        uppercase_setting(name_edit, QRegularExpression("^([a-zа-яё]{1})", QRegularExpression::NoPatternOption));
-        uppercase_setting(director_edit, QRegularExpression("^([a-zа-яё]{1})|(\b[a-zа-яё]{1})", QRegularExpression::NoPatternOption));
+        removing_extra_symbols(name_edit);
+        removing_extra_symbols(director_edit);
+        set_uppercase(name_edit, QRegularExpression("^([a-zа-яё]{1})|(?<=[!\\.\\:\'\"«]{1}\\s*)[a-zа-яё]{1}", QRegularExpression::NoPatternOption));//проверка двойных слэш и  "
+        set_uppercase(director_edit, QRegularExpression("^([a-zа-яё]{1})|(\b[a-zа-яё]{1})", QRegularExpression::NoPatternOption));
         QString genres;
         for(int i=0;i<genre_billet_widgets->size();i++){
             genres+=genre_billet_widgets->at(i)->text();
@@ -454,36 +454,59 @@ void App_page::on_accept_button_clicked(){
         emit genre_scroll_was_changed();
     }
 }
-bool App_page::finding_invalid_symbols(){
+bool App_page::has_invalid_symbols(){
     bool state=false;
-    QString name=name_edit->placeholderText();
-    QString directors=director_edit->placeholderText();
-
-    QRegularExpression name_r_expr("([^0-9a-zа-яё!\\&:\\.,'\"«»-]+)", QRegularExpression::CaseInsensitiveOption);
-    QRegularExpression directors_r_expr("([^a-zа-яё-]+)", QRegularExpression::CaseInsensitiveOption);
-    if(name_r_expr.globalMatch(name, 0, QRegularExpression::NormalMatch, QRegularExpression::NoMatchOption).isValid()){
+    QRegularExpression name_r_expr("(_+)|([^\\wа-яё!:\\.,-\\s]+)|([!:\\.,-]{2,})", QRegularExpression::CaseInsensitiveOption);//подумать над переносом строки и табуляцией
+    QRegularExpression directors_r_expr("([^a-zа-яё.,-\\s]+)", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression date_r_expr("([^\\d]+)", QRegularExpression::CaseInsensitiveOption);
+    if(finding_invalid_symbols(name_edit, name_r_expr)){
         state=true;
         name_invalid_symbol_label->setVisible(true);
     }
-    if(directors_r_expr.globalMatch(directors, 0, QRegularExpression::NormalMatch, QRegularExpression::NoMatchOption).isValid()){
+    if(finding_invalid_symbols(director_edit, directors_r_expr)){
         state=true;
         director_invalid_symbol_label->setVisible(true);
     }
+    if(finding_invalid_symbols(date_edit, date_r_expr)){
+        state=true;
+        //director_invalid_symbol_label->setVisible(true);//добавить виджет
+    }
     return state;
 }
-void App_page::removing_extra_spacing(QTextEdit* text_edit){
+bool App_page::finding_invalid_symbols(QTextEdit* text_edit, const QRegularExpression& expression){
+    bool state=false;
     QString text=text_edit->placeholderText();
-    text.remove(QRegularExpression ("^(?<begin>[\\s.,]+)|(?<inside>[\\s]{2,})|(?<end>[\\s.,]+)$", QRegularExpression::CaseInsensitiveOption));
+    QRegularExpressionMatchIterator match_iter=expression.globalMatch(text, 0, QRegularExpression::NormalMatch, QRegularExpression::NoMatchOption);
+    if(match_iter.hasNext()){
+        QRegularExpressionMatch match=match_iter.next();
+        state=true;
+        int pos=match.capturedStart();
+        text_edit->textCursor().setPosition(pos, QTextCursor::MoveAnchor);
+    }
+    return state;
+}
+bool App_page::finding_invalid_symbols(QLineEdit* line_edit, const QRegularExpression& expression){
+    bool state=false;
+    QString text=line_edit->placeholderText();
+    QRegularExpressionMatchIterator match_iter=expression.globalMatch(text, 0, QRegularExpression::NormalMatch, QRegularExpression::NoMatchOption);
+    if(match_iter.hasNext()){
+        QRegularExpressionMatch match=match_iter.next();
+        state=true;
+    }
+    return state;
+}
+void App_page::removing_extra_symbols(QTextEdit* text_edit){
+    QString text=text_edit->placeholderText();
+    text.remove(QRegularExpression ("^([\\s.,]+)|([\\s]{2,})|([\\s.,]+)$", QRegularExpression::CaseInsensitiveOption));
     text.squeeze();
-
     text_edit->setText(text);
 }
-void App_page::uppercase_setting(QTextEdit* text_edit, const QRegularExpression& expression){
+void App_page::set_uppercase(QTextEdit* text_edit, const QRegularExpression& expression){
     QString text=text_edit->placeholderText();
     QRegularExpressionMatchIterator match_iter=expression.globalMatch(text, 0, QRegularExpression::NormalMatch, QRegularExpression::NoMatchOption);
     qsizetype position=-1;
     QString symbol;
-    if(match_iter.hasNext()){
+    while(match_iter.hasNext()){
         QRegularExpressionMatch match=match_iter.next();
         position=match.capturedStart();
         symbol=match.captured().toUpper();
