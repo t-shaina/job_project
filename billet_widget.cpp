@@ -19,7 +19,7 @@ Billet_widget::Billet_widget(QWidget* parent, const QString& data)
     text_label->setScaledContents(true);
     text_label->setFixedHeight(15);
     QCommonStyle style;
-    delete_button->setIcon(style.standardIcon(QStyle::SP_TabCloseButton /*SP_TitleBarCloseButton*/));
+    delete_button->setIcon(style.standardIcon(QStyle::SP_DockWidgetCloseButton/*SP_TitleBarCloseButton*/));
     delete_button->setFixedSize(13,13);
     this->setFixedSize(text_label->width()+delete_button->width(), text_label->height());
     this->setStyleSheet("QGroupBox{border: 1px;}");

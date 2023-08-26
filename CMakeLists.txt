@@ -28,6 +28,9 @@ set(PROJECT_SOURCES
     creator.cpp
     json_creator.cpp
     billet_widget.cpp
+    app_page_painter.cpp
+    app_page_painter.h
+    symbols_inspector.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

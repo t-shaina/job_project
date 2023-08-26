@@ -1,6 +1,6 @@
-#include "mainwindow.h"
-#include"start_page.h"
-#include"app_page.h"
+//#include "mainwindow.h"
+//#include"start_page.h"
+//#include"app_page.h"
 #include"creator.h"
 #include <QApplication>
 
