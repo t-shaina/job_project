@@ -51,25 +51,34 @@ QJsonObject Json_creator::get_json_data(){
     return this->json_data;
 }
 QJsonArray Json_creator::creating_directors_or_genre_array(QString data){
+    data.push_back(' ');
     QJsonArray data_array;
     QString word;
     for(int i=0;i<data.size();i++){
         if(data.at(i)==' '){
+
             data_array.push_back(word);
+            qDebug()<<"in creating directors or genry array"<<data_array.last().toString();
             word.clear();
         }
         else word+=data.at(i);
-
     }
+
     return data_array;
 }
 QJsonObject Json_creator::creating_row_object(QStringList* data, int position){
     QJsonObject json_row_data;
+    for (int i=0; i<data->size();i++)
+        qDebug()<<data->at(i);
     json_row_data["Title"]=data->at(position);
     json_row_data["Directors"]=Json_creator::creating_directors_or_genre_array(data->at(++position));
     json_row_data["Genres"]=Json_creator::creating_directors_or_genre_array(data->at(++position));
     json_row_data["Year"]=data->at(++position);
     json_row_data["Rating"]=data->at(++position);
     json_row_data["Status"]=data->at(++position);
+    qDebug()<<"in creating row_object title is"<<json_row_data.value("Title").toString();
+    qDebug()<<"in creating row object year is"<<json_row_data.value("Year").toString();
+    qDebug()<<"in creating row object rating is"<<json_row_data.value("Rating").toString();
+    qDebug()<<"in creating row object status is"<<json_row_data.value("Status").toString();
     return json_row_data;
 }

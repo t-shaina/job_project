@@ -45,12 +45,14 @@ void MainWindow::resize_window(){
 }
 
 void MainWindow:: destroy_app_page(){
+    qDebug()<<"in destroy app  page";
     this->app_page->~App_page();
     this->start_page->set_start_page_visible(true);
     this->setFixedSize(500, 350);
     status.setText("Войдите в систему");
 }
 void MainWindow::creating_registration_page(){
+    qDebug()<<"in creating registration page";
     this->start_page->set_start_page_visible(false);
     this->registration_page=new Registration_page(this);
     QObject::connect(this->registration_page, SIGNAL(step_back()), this, SLOT(breaking_registration_page()));
@@ -58,6 +60,7 @@ void MainWindow::creating_registration_page(){
     status.setText("Зарегестрируйтесь");
 }
 void MainWindow:: breaking_registration_page(){
+    qDebug()<<"in breaking registration  page";
     this->registration_page->~Registration_page();
     this->start_page->set_start_page_visible(true);//need7
     this->setFixedSize(500, 350);
@@ -109,7 +112,7 @@ void MainWindow::msg_such_user_not_exist(){
 }
 void MainWindow:: create_app_page(QVariantMap* data){
     //App_page app_page=new App_page(this);
-    //this->start_page->set_start_page_visible(false);
+    this->start_page->set_start_page_visible(false);
     qDebug()<<"in create_app_page";
     this->app_page=new App_page(this);
     this->resize_window();

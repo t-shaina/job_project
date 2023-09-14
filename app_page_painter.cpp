@@ -364,6 +364,7 @@ void App_page_painter::on_redact_button_clicked(){
     accept_button->setText("Обновить");
 }
 void App_page_painter::on_director_add_button_clicked(){
+    //director_combo_box->setPlaceholderText(' ');
     qDebug()<<"in director add button clicked";
     QRegularExpression directors_r_expr("([^a-zа-яё\\d\\.\\-\\s]+)", QRegularExpression::CaseInsensitiveOption);
     Symbols_inspector symbols_inspector=Symbols_inspector();
@@ -425,7 +426,7 @@ void App_page_painter::on_director_combo_box_text_changed(){
 QString App_page_painter::widgets_list_to_string(QList<QSharedPointer<Billet_widget>>* list){
     QString widgets_string;
     for(int i=0;i<list->size();i++){
-        widgets_string+=genre_billet_widgets->at(i)->text();
+        widgets_string+=list->at(i)->text();
         widgets_string+=" ";
     }
     widgets_string.removeLast();

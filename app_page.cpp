@@ -40,7 +40,11 @@ App_page::App_page(QWidget *parent)
     connect(this, SIGNAL( director_scroll_was_changed()), this->app_page_painter, SLOT(on_name_director_genre_data_edit_changed()));
     connect(this, SIGNAL(genre_scroll_was_changed()), this->app_page_painter, SLOT(on_name_director_genre_data_edit_changed()));
 }
-
+App_page::~App_page(){
+    delete app_page_painter;
+    //delete delete_rows_list;
+    //delete delete_rows_list;
+}
 void App_page::on_back_button_clicked(){
     //email.clear();
     emit step_out();    
@@ -126,12 +130,13 @@ void App_page::on_accept_button_clicked(){
 
     else{
         Symbols_inspector symbols_inspector=Symbols_inspector();
-        symbols_inspector.removing_extra_symbols(app_page_painter->name_edit);
-        symbols_inspector.set_uppercase(app_page_painter->name_edit, QRegularExpression("^([a-zа-яё]{1})|(?<=[!\\.\\:\'\"«]{1}\\s*)[a-zа-яё]{1}", QRegularExpression::NoPatternOption));//проверка двойных слэш и  "
+        //symbols_inspector.removing_extra_symbols(app_page_painter->name_edit);
+        //symbols_inspector.set_uppercase(app_page_painter->name_edit, QRegularExpression("^([a-zа-яё]{1})|(?<=[!\\.\\:\'\"«]{1}\\s*)[a-zа-яё]{1}", QRegularExpression::NoPatternOption));//проверка двойных слэш и  "
         QString genres=app_page_painter->widgets_list_to_string(app_page_painter->genre_billet_widgets);
         QString directors=app_page_painter->widgets_list_to_string(app_page_painter->director_billet_widgets);
+        qDebug()<<"title in text edit is"<<app_page_painter->name_edit->toPlainText();
         QStringList insert_list= QStringList()<<this->email
-                                             <<app_page_painter->name_edit->placeholderText()
+                                             <<app_page_painter->name_edit->toPlainText()
                                              <<directors
                                              <<genres
                                              <<app_page_painter->date_edit->text()

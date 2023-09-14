@@ -28,9 +28,9 @@ class App_page:public QWidget
     Q_OBJECT
 public:
     App_page(QWidget* parent=nullptr);
+    ~App_page();
     QString email;
-    App_page_painter* app_page_painter;
-
+    App_page_painter* app_page_painter;   
     QList<int>* delete_rows_list;
     QList<int>* update_rows_list;
 private:
