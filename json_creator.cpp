@@ -68,8 +68,6 @@ QJsonArray Json_creator::creating_directors_or_genre_array(QString data){
 }
 QJsonObject Json_creator::creating_row_object(QStringList* data, int position){
     QJsonObject json_row_data;
-    for (int i=0; i<data->size();i++)
-        qDebug()<<data->at(i);
     json_row_data["Title"]=data->at(position);
     json_row_data["Directors"]=Json_creator::creating_directors_or_genre_array(data->at(++position));
     json_row_data["Genres"]=Json_creator::creating_directors_or_genre_array(data->at(++position));

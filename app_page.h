@@ -39,6 +39,7 @@ private:
     void remove_from_delete_list(int row);
     void add_to_update_list();
     void remove_from_update_list(int row);
+    int find_row_in_list(QList<int>* list, const QJsonObject& object_row);
 
     //bool has_invalid_symbols();
 

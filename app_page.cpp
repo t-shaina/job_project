@@ -90,6 +90,26 @@ void App_page::remove_from_update_list(int row){
     }
     update_rows_list->removeOne(row);
 }
+int App_page::find_row_in_list(QList<int>* list, const QJsonObject& object_row){
+    int row=-1;
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(app_page_painter->table->model());
+    QVariantMap object_map=object_row.toVariantMap();
+    QList<int>::iterator end=list->end();
+    QString title=object_map.take("Title").toString();
+    QString directors=jsonarray_to_str(object_map.take("Directors").toJsonArray());
+    QString year=object_map.take("Year").toString();
+    qDebug()<<"in finf row list size is"<<list->size();
+    int current_row=0;
+    for(QList<int>::iterator i=list->begin(); i<end;i++, current_row++){
+        if(model->item(*i, 0)->text()==title&&
+            model->item(*i, 1)->text()==directors&&
+            model->item(*i, 3)->text()==year){
+            return current_row;
+            break;
+        }
+    }
+    return row;
+}
 void App_page::on_delete_button_clicked(){
     //selected_row->clear();
     QStringList delete_list;
@@ -237,32 +257,21 @@ void App_page::filling_in_table(QJsonArray* array_data, int row_position){
 QString App_page::jsonarray_to_str(const QJsonArray& array_object){
     QString element;
     for(int i=0; i<array_object.size();i++){
-        element+=array_object.at(i).toString();        
+        element+=array_object.at(i).toString();
         element+=", ";
     }
     element.removeLast();
     element.removeLast();
+    qDebug()<<"in jsonarray to str element is"<<element;
     return element;
 }
 void App_page::remove_row_in_table(QJsonArray* data){
     qDebug()<<"in remove row in table";
     QStandardItemModel* model=static_cast<QStandardItemModel*>(app_page_painter->table->model());
-    QJsonObject row_object= data->at(0).toObject();
-    QVariantMap row_data=row_object.toVariantMap();
-    int row=-1;
-    QList<int>::iterator end=delete_rows_list->end();
-    QString deleted_title=row_data.take("Title").toString();
-    QString deleted_directors=jsonarray_to_str(row_data.take("Directors").toJsonArray());
-    QString deleted_year=row_data.take("Year").toString();
-    for(QList<int>::iterator i=delete_rows_list->begin(); i<end;i++){//считается, что пул режиссеров мог снять один title за один год
-        if(model->item(*i, 0)->text()==deleted_title&&
-           model->item(*i, 1)->text()==deleted_directors&&
-           model->item(*i, 3)->text()==deleted_year){
-            row=*i;
-            break;
-        }
-    }
-    qDebug()<<row;
+    //QJsonObject row_object= data->at(0).toObject();
+    //QVariantMap row_data=row_object.toVariantMap();
+    int row=find_row_in_list(delete_rows_list, data->at(0).toObject());
+    qDebug()<<"in remove row in table row is "<<row;
     this->remove_from_delete_list(row);
     qDebug()<<"after remove from delete_list";
     model->removeRow(row);
