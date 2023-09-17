@@ -272,9 +272,13 @@ void App_page::remove_row_in_table(QJsonArray* data){
     //QVariantMap row_data=row_object.toVariantMap();
     int row=find_row_in_list(delete_rows_list, data->at(0).toObject());
     qDebug()<<"in remove row in table row is "<<row;
-    this->remove_from_delete_list(row);
+    if(row>0){
+        model->removeRow(row);
+        this->remove_from_delete_list(row);
+    }
+    else qDebug()<<"incorrect number of row in remove row in table";
     qDebug()<<"after remove from delete_list";
-    model->removeRow(row);
+
 }
 void App_page::filling_page_with_data(QJsonArray* data){
     qDebug()<<"in filing page with data";
