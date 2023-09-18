@@ -25,6 +25,11 @@ QString Symbols_inspector::removing_extra_symbols(QString string){
     string.squeeze();
     return string;
 }
+QString Symbols_inspector::removing_last_spaces(QString string){
+    string.remove(QRegularExpression ("([\\s.,]+)$", QRegularExpression::CaseInsensitiveOption));
+    string.squeeze();
+    return string;
+}
 void Symbols_inspector::set_uppercase(QTextEdit* text_edit, const QRegularExpression& expression){
     QString text=text_edit->placeholderText();
     QRegularExpressionMatchIterator match_iter=expression.globalMatch(text, 0, QRegularExpression::NormalMatch, QRegularExpression::NoMatchOption);

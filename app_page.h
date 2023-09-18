@@ -51,6 +51,7 @@ private:
     QString set_uppercase(QString string, const QRegularExpression& expression);*/
     QString jsonarray_to_str(const QJsonArray& array_object);
     void filling_in_table(QJsonArray* data, int row_position);
+    void filling_in_director_combo_box(QJsonArray* data);
     bool has_invalid_symbols();
 public slots:
     QStandardItemModel* get_table_model();

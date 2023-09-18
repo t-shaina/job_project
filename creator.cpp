@@ -117,9 +117,9 @@ void Creator::creating_connect(Behavour_id behavour_id){
         QObject::connect(this->behavour, SIGNAL(records_exist(QVariantMap*)), this->main_window, SLOT(msg_records_exist(QVariantMap*)));
         break;
     case insert_id:
-        QObject::connect(this->behavour, SIGNAL(data_exist()), this->main_window, SLOT(msg_data_exist()));
+        QObject::connect(this->behavour, SIGNAL(data_exist(QVariantMap*)), this->main_window, SLOT(msg_data_exist(QVariantMap* )));
         QObject::connect(this->behavour, SIGNAL(insert_successful(QVariantMap*)), this->main_window, SLOT(msg_insert_successful(QVariantMap*)));
-        QObject::connect(this->behavour, SIGNAL(insert_failed()), this->main_window, SLOT(msg_insert_failed()));
+        QObject::connect(this->behavour, SIGNAL(insert_failed(QVariantMap*)), this->main_window, SLOT(msg_insert_failed(QVariantMap*)));
         break;
     case registration_id:
         QObject::connect(this->behavour, SIGNAL(registration_failed()), this->main_window, SLOT(msg_registration_failed()));

@@ -149,8 +149,8 @@ void App_page::on_accept_button_clicked(){
     }
 
     else{
-        Symbols_inspector symbols_inspector=Symbols_inspector();
-        //symbols_inspector.removing_extra_symbols(app_page_painter->name_edit);
+        //Symbols_inspector symbols_inspector=Symbols_inspector();
+        //QString name_without_spaces=symbols_inspector.removing_extra_symbols(app_page_painter->name_edit->placeholderText());
         //symbols_inspector.set_uppercase(app_page_painter->name_edit, QRegularExpression("^([a-zа-яё]{1})|(?<=[!\\.\\:\'\"«]{1}\\s*)[a-zа-яё]{1}", QRegularExpression::NoPatternOption));//проверка двойных слэш и  "
         QString genres=app_page_painter->widgets_list_to_string(app_page_painter->genre_billet_widgets);
         QString directors=app_page_painter->widgets_list_to_string(app_page_painter->director_billet_widgets);
@@ -247,23 +247,25 @@ void App_page::filling_in_table(QJsonArray* array_data, int row_position){
             model->setItem(row_position, column, item);
             //row_of_item->push_back(item);
         }
-        //model->appendRow(*row_of_item);
-        //row_of_item->clear();
         counter++;
         row_position++;
     }
-    //delete row_of_item;
+    filling_in_director_combo_box(array_data);
+
 }
 QString App_page::jsonarray_to_str(const QJsonArray& array_object){
-    QString element;
+    QString result_string;
     for(int i=0; i<array_object.size();i++){
-        element+=array_object.at(i).toString();
+        Symbols_inspector symbols_inspector;
+        QString element=symbols_inspector.removing_last_spaces(array_object.at(i).toString());
+        //qDebug()<<"in jsonarray to str element is"<<element;
         element+=", ";
+        result_string+=element;
     }
-    element.removeLast();
-    element.removeLast();
-    qDebug()<<"in jsonarray to str element is"<<element;
-    return element;
+    result_string.removeLast();
+    result_string.removeLast();
+    qDebug()<<"in jsonarray to str  is"<<result_string;
+    return result_string;
 }
 void App_page::remove_row_in_table(QJsonArray* data){
     qDebug()<<"in remove row in table";
@@ -283,14 +285,13 @@ void App_page::remove_row_in_table(QJsonArray* data){
 void App_page::filling_page_with_data(QJsonArray* data){
     qDebug()<<"in filing page with data";
     QStandardItemModel* model=static_cast<QStandardItemModel*>(app_page_painter->table->model());
-    QJsonArray::iterator array_iter=data->begin();
-    //QStringList directors_list;
-
     model->clear();
-    app_page_painter->main_table_settings();
-    //model->setColumnCount(6);
-    //model->setHorizontalHeaderLabels(headers);
-
+    app_page_painter->main_table_settings();   
+    //app_page_painter->director_combo_box->addItems(*app_page_painter->directors_list);
+    filling_in_table(data, 0);
+}
+void App_page::filling_in_director_combo_box(QJsonArray* data){
+    QJsonArray::iterator array_iter=data->begin();
     for(;array_iter!=data->end();array_iter++){
         QJsonObject row_object= array_iter->toObject();
         QVariantMap row_data=row_object.toVariantMap();
@@ -302,11 +303,10 @@ void App_page::filling_page_with_data(QJsonArray* data){
             director=array_directors_object.at(i).toString();
             if(!app_page_painter->directors_list->contains(director)){
                 app_page_painter->directors_list->push_back(director);
+                app_page_painter->director_combo_box->addItem(director);
             }
         }
     }
-    app_page_painter->director_combo_box->addItems(*app_page_painter->directors_list);
-    filling_in_table(data, 0);
 }
 void App_page::insert_row_in_table(QJsonArray* data){
     //тут или в заполнении таблицв проверка кратности размра листа 6

@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     QFont main_window_font("Cochin", 0, 0);
     this->setFont(main_window_font);
     statusBar()->addWidget(&status);
+    status.setLineWidth(350);
     status.setText("Войдите в систему");
     this->start_page=new Start_page(this);
     //QObject::connect(this->start_page, SIGNAL(entry_request(QStringList*)), this, SLOT(set_username(QString)));//
@@ -146,16 +147,28 @@ void MainWindow::msg_records_exist(QVariantMap* data){
     QJsonArray data_array=data->take("Rows").toJsonArray();
     this->app_page->filling_page_with_data(&data_array);
 }
-void MainWindow::msg_data_exist(){
-    status.setText("Такой фильм уже существует");
+void MainWindow::msg_data_exist(QVariantMap* data){
+    QJsonArray data_array=data->take("Rows").toJsonArray();
+    QString status="Строка: ";
+    status+=data_array.at(0).toString();
+    status+=" ";
+    status+=data_array.at(1).toString();
+    status+=" ";
+    status+=data_array.at(3).toString();
+    status+=" уже существует";
+    this->status.setText("Такой фильм уже существует");
 }
 void MainWindow::msg_insert_successful(QVariantMap* data){
     status.setText("Вставка прошла успешно");
     QJsonArray data_array=data->take("Rows").toJsonArray();
     this->app_page->insert_row_in_table(&data_array);
 }
-void MainWindow::msg_insert_failed(){
-    status.setText("Строка не была добавлена");
+void MainWindow::msg_insert_failed(QVariantMap* data){
+    QJsonArray data_array=data->take("Rows").toJsonArray();
+    QString status="Строка: ";
+    status+=data_array.at(0).toString();
+    status+=" не была добавлена";
+    this->status.setText(status);
 }
 void MainWindow::msg_registration_failed(){
     status.setText("Такой пользователь уже зарегестрирован");

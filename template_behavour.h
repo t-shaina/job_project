@@ -55,9 +55,9 @@ private:
 public slots:
     //void creating_connect(Template_behavour* behavour);
 signals:
-    void data_exist();
+    void data_exist(QVariantMap* data);
     void insert_successful(QVariantMap* data);
-    void insert_failed();
+    void insert_failed(QVariantMap* data);
 };
 
 class Registration_behavour:public Template_behavour{

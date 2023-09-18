@@ -55,9 +55,9 @@ public slots:
     void msg_deletion_successful(QVariantMap* data);
     void msg_records_not_exist();
     void msg_records_exist(QVariantMap* data);
-    void msg_data_exist();
+    void msg_data_exist(QVariantMap* data);
     void msg_insert_successful(QVariantMap* data);
-    void msg_insert_failed();
+    void msg_insert_failed(QVariantMap* data);
     void msg_registration_failed();
     void msg_registration_successful(QVariantMap* data);
     void msg_all_records_not_exist();

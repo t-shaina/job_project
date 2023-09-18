@@ -54,9 +54,10 @@ QJsonArray Json_creator::creating_directors_or_genre_array(QString data){
     data.push_back(' ');
     QJsonArray data_array;
     QString word;
+    qDebug()<<"size of directors or genre array is"<<data.size();
     for(int i=0;i<data.size();i++){
         if(data.at(i)==' '){
-
+            qDebug()<<"creating directors or genry word is"<<word;
             data_array.push_back(word);
             qDebug()<<"in creating directors or genry array"<<data_array.last().toString();
             word.clear();

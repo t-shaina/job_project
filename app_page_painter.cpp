@@ -26,7 +26,7 @@ const QStringList genre_list=QStringList()<<"Комедия"<<"Мелодрам�
 
 const QStringList headers= QStringList()<<"Название"<<"Режиссер"<<"Жанр"<<"Год"<<"Рейтинг"<<"Статус";
 const QStringList sort_list=QStringList()<<"Год"<<"Рейтинг"<<"Статус";
-const QStringList status_list=QStringList()<<"Просмотрено"<<"Собираюсь смотреть"<<"Не рекомендую";
+const QStringList status_list=QStringList()<<"Просмотрено"<<"Буду смотреть"<<"Не рекомендую";
 
 
 App_page_painter::App_page_painter(QWidget* parent)
@@ -220,52 +220,47 @@ App_page_painter::~App_page_painter(){qDebug()<<"in app page painter destructor"
 void App_page_painter::set_search_edit(int search_id){
     //
 }
+QStringList App_page_painter::string_to_list(const QString& field){
+    QString string=field;
+    QStringList list;
+    string.push_back(',');
+    qDebug()<<"in str to list string is"<<string;
+    QString word;
+    for(int i=0; i<string.size(); ++i){
+        if(string.at(i)==','){
+            i++;
+            list.push_back(word);
+            word.clear();
+        }
+        else word+=string.at(i);
+    }
+    return list;
+}
 void App_page_painter::set_date_edit(int data_value){
     QString text=QString::number(data_value);
     date_edit->setText(text);
 }
 void App_page_painter::set_director_scroll(int director_id){
     QString text=directors_list->at(director_id);
-    //QStandardItemModel* director_model=static_cast<QStandardItemModel*>(director_combo_box->model());
-    //director_model->item(director_id)->setEnabled(false);
     set_scroll(director_combo_box, director_scroll_group, text, director_billet_widgets);
-    emit director_scroll_was_changed();
-
-    /*QString text=director_combo_box->itemText(director_id);
-    if(director_edit->toPlainText().isEmpty()){
-        director_edit->setText(director_edit->toPlainText()+text);
-    }
-    else director_edit->setText(director_edit->toPlainText()+" "+text);*/
+    emit director_scroll_was_changed();    
 }
 void App_page_painter::set_genre_scroll(int genre_id){
     QString text=genre_list.at(genre_id);
-    //QStandardItemModel* genre_model=static_cast<QStandardItemModel*>(genre_combo_box->model());
-    //genre_model->item(genre_id)->setEnabled(false);
     set_scroll(director_combo_box, genre_scroll_group, text, genre_billet_widgets);
     emit genre_scroll_was_changed();
 }
 void App_page_painter::set_scroll(QComboBox* combo_box, QGroupBox* group, const QString& text, QList<QSharedPointer<Billet_widget>>* list){
     QString element;
-    int size=text.size();
-    for(int i=0; i<size;i++){
-        if(i==size-1||text.at(i)==','/*||text.at(i)==' '*/){
-            if(i==size-1)
-                element+=text.at(i);
-            if(text.at(i)==',')
-                i++;
-            if(is_field_of_combo_box_enabled(combo_box, element)){
-                this->set_field_of_combo_box_enabled(combo_box, element, false);
-                Billet_widget* widget=new Billet_widget(group, element);
-                QSharedPointer<Billet_widget> widget_ptr(widget, &QObject::deleteLater);
-                group->layout()->addWidget(widget_ptr.get());
-                list->push_back(widget_ptr);
-                QObject::connect(widget, SIGNAL(widget_was_deleted(QString)), this, SLOT(on_widget_was_deleted(QString)));
-                //emit genre_scroll_was_changed();
-            }
-            element.clear();
-        }
-        else
-            element+=text.at(i);
+    Symbols_inspector symbols_inspector;
+    QString text_without_extra_symbols=symbols_inspector.removing_extra_symbols(text);
+    if(is_field_of_combo_box_enabled(combo_box, text_without_extra_symbols)){
+        this->set_field_of_combo_box_enabled(combo_box, text, false);
+        Billet_widget* widget=new Billet_widget(group, text_without_extra_symbols);
+        QSharedPointer<Billet_widget> widget_ptr(widget, &QObject::deleteLater);
+        group->layout()->addWidget(widget_ptr.get());
+        list->push_back(widget_ptr);
+        QObject::connect(widget, SIGNAL(widget_was_deleted(QString)), this, SLOT(on_widget_was_deleted(QString)));
     }
 }
 void App_page_painter::set_date_slider_position(){
@@ -343,15 +338,17 @@ void App_page_painter::on_redact_button_clicked(){
     genre_billet_widgets->clear();
     director_billet_widgets->clear();
     QString directors=row_to_update->at(1);
-    //directors.push_back(' ');
-    set_scroll(director_combo_box, director_scroll_group, directors, director_billet_widgets);
+    QStringList directors_list=string_to_list(directors);
+    for(int i=0; i<directors_list.size(); ++i){
+        set_scroll(director_combo_box, director_scroll_group, directors_list.at(i), director_billet_widgets);
+    }
     emit director_scroll_was_changed();
     QString genres=row_to_update->at(2);
-    //genres.push_back(' ');
-    set_scroll(genre_combo_box, genre_scroll_group, genres, genre_billet_widgets);
-    emit genre_scroll_was_changed();
-    //QString genre;
-    //QStandardItemModel* genre_model=static_cast<QStandardItemModel*>(genre_combo_box->model());
+    QStringList genres_list=string_to_list(genres);
+    for(int i=0; i<genres_list.size(); ++i){
+        set_scroll(genre_combo_box, genre_scroll_group, genres_list.at(i), genre_billet_widgets);
+    }
+    emit genre_scroll_was_changed();   
     redact_transfer_state=true;
     name_invalid_symbol_label->setVisible(false);
     name_edit->setText(row_to_update->at(0));
@@ -384,6 +381,7 @@ void App_page_painter::on_director_add_button_clicked(){
             *directors_list<<text;
             director_combo_box->addItem(text);
         }
+        qDebug()<<"in add button clicked text is"<<text;
         set_scroll(director_combo_box, director_scroll_group, text, director_billet_widgets);
     }
 }
@@ -426,6 +424,7 @@ void App_page_painter::on_director_combo_box_text_changed(){
 QString App_page_painter::widgets_list_to_string(QList<QSharedPointer<Billet_widget>>* list){
     QString widgets_string;
     for(int i=0;i<list->size();i++){
+        qDebug()<<"in widgets list to string element is"<<list->at(i)->text();
         widgets_string+=list->at(i)->text();
         widgets_string+=" ";
     }

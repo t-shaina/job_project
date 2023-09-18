@@ -99,6 +99,7 @@ private:
     void set_field_of_combo_box_enabled(QComboBox* combo_box, QString text, bool enabled);
     void set_combo_box_enabled(QComboBox* combo_box, QList<QSharedPointer<Billet_widget>>* list, bool enabled);
     bool is_field_of_combo_box_enabled(QComboBox* combo_box, QString text);
+    QStringList string_to_list(const QString& field);
 
 
 
