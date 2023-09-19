@@ -25,7 +25,7 @@ Creator::~Creator()
     delete behavour;
 }
 void Creator::create_query(QStringList* data){
-    qDebug()<<"in create_query firs element is"<< data->at(1);
+    //qDebug()<<"in create_query firs element is"<< data->at(1);
     QByteArray array_data=QJsonDocument(Json_creator(data).get_json_data()).toJson();
     i_adapter->sendData(array_data);
 }

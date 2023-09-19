@@ -52,6 +52,10 @@ Start_page::Start_page(QWidget *parent)
     connect(button_entry, SIGNAL(clicked()), this, SLOT(on_button_entry_clicked()));
     connect(edit_email, SIGNAL(textEdited(QString)), this, SLOT(on_email_password_edit_edited()));
     connect(edit_password, SIGNAL(textEdited(QString)), this, SLOT(on_email_password_edit_edited()));
+
+    edit_email->setFocus();
+    connect(edit_email, SIGNAL(returnPressed()), this, SLOT(on_email_return_pressed()));
+    connect(edit_password, SIGNAL(returnPressed()), this, SLOT(on_password_return_pressed()));
 }
 
 Start_page::~Start_page(){};
@@ -73,10 +77,25 @@ void Start_page::on_button_entry_clicked(){
 
 }
 void Start_page::on_email_password_edit_edited(){
-    if(edit_email->text().isEmpty()||edit_password->text().isEmpty()||edit_password->text().length()!=6)
+    if(!is_email_password_edits_is_correct())
         button_entry->setEnabled(false);
     else button_entry->setEnabled(true);
 }
 void Start_page::on_button_registration_clicked(){
     emit create_registration_page();
+}
+void Start_page::on_email_return_pressed(){
+    if(is_email_password_edits_is_correct())
+        on_button_entry_clicked();
+    else edit_password->setFocus();
+}
+void Start_page::on_password_return_pressed(){
+    if(is_email_password_edits_is_correct())
+        on_button_entry_clicked();
+    else edit_email->setFocus();
+}
+bool Start_page::is_email_password_edits_is_correct(){
+    if(edit_email->text().isEmpty()||edit_password->text().isEmpty()||edit_password->text().length()!=6)
+        return false;
+    else return true;
 }

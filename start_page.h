@@ -27,6 +27,9 @@ private:
     QGridLayout* layout_page1;
 private slots:
     void on_email_password_edit_edited();
+    void on_email_return_pressed();
+    void on_password_return_pressed();
+    bool is_email_password_edits_is_correct();
 
 signals:
     void entry_request(QStringList*);

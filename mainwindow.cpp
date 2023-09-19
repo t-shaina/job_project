@@ -6,10 +6,12 @@
 #include<QJsonArray>
 #include<QJsonObject>
 #include <stdlib.h>
+#include<QMenu>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , status(new QLabel(this))
+    , menu_bar(new QMenuBar(this))
 
 {
     ui->setupUi(this);
@@ -19,6 +21,9 @@ MainWindow::MainWindow(QWidget *parent)
     statusBar()->addWidget(&status);
     status.setLineWidth(350);
     status.setText("Войдите в систему");
+    //QMenu* menu=new QMenu("Удалить учетную запись", &menu_bar);
+    //menu_bar.addMenu(menu);
+    //this->setMenuBar(&menu_bar);
     this->start_page=new Start_page(this);
     //QObject::connect(this->start_page, SIGNAL(entry_request(QStringList*)), this, SLOT(set_username(QString)));//
     //QObject::connect(this->start_page, SIGNAL(entry_request(QStringlist*)), this, SLOT(resize_window()));

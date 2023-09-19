@@ -28,7 +28,7 @@ Billet_widget::Billet_widget(QWidget* parent, const QString& data)
     this->show();
     connect(delete_button, SIGNAL(clicked()), this, SLOT(on_delete_button_clicked()));
     emit widget_was_constructed();
-    qDebug()<<"in billet_widget constructor";
+    //qDebug()<<"in billet_widget constructor";
 }
 Billet_widget::Billet_widget(const Billet_widget& b_w){
     text_label=b_w.text_label;

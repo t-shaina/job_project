@@ -2,6 +2,7 @@
 #define APP_PAGE_PAINTER_H
 
 #include"billet_widget.h"
+#include"combo_box.h"
 #include <QObject>
 #include <QWidget>
 #include<QGridLayout>
@@ -36,14 +37,14 @@ public:
     QPushButton* search_button;
     QTextEdit* name_edit;
     QLabel* name_invalid_symbol_label;
-    QComboBox* director_combo_box;
+    ComboBox* director_combo_box;
     QList<QSharedPointer<Billet_widget>>* genre_billet_widgets;
     QLabel* director_invalid_symbol_label;
     QList<QSharedPointer<Billet_widget>>* director_billet_widgets;
     QLineEdit* date_edit;
     QLabel* date_invalid_symbol_label;
     QSpinBox* rating_spin_box;
-    QComboBox* status_combo_box;
+    ComboBox* status_combo_box;
     QPushButton* accept_button;
     QPushButton* back_button;
     QTableView* table;
@@ -72,7 +73,7 @@ private:
     QGroupBox* clear_group;
     QPushButton* redact_button;
     QLabel* sort_label;
-    QComboBox* sort_combo_box;
+    ComboBox* sort_combo_box;
     QPushButton* sort_button;
     QLabel* name_label;
 
@@ -81,7 +82,7 @@ private:
     QScrollArea* director_scroll;
     QGroupBox* director_scroll_group;
     QLabel* genre_label;
-    QComboBox* genre_combo_box;
+    ComboBox* genre_combo_box;
     QScrollArea* genre_scroll;
     QGroupBox* genre_scroll_group;
 
@@ -96,9 +97,9 @@ private:
     void main_buttons_settings(int w, int h);
 
     void main_scroll_group_settings(QScrollArea* scroll, QWidget* group, QLayout* layout);
-    void set_field_of_combo_box_enabled(QComboBox* combo_box, QString text, bool enabled);
+    void set_field_of_combo_box_enabled(QComboBox* combo_box, const QString& text, bool enabled);
     void set_combo_box_enabled(QComboBox* combo_box, QList<QSharedPointer<Billet_widget>>* list, bool enabled);
-    bool is_field_of_combo_box_enabled(QComboBox* combo_box, QString text);
+    bool is_field_of_combo_box_enabled(QComboBox* combo_box, const QString& text);
     QStringList string_to_list(const QString& field);
 
 
@@ -112,16 +113,21 @@ private slots:
     void set_scroll(QComboBox* combo_box, QGroupBox* group, const QString& text, QList<QSharedPointer<Billet_widget>>* list);
     void on_search_edit_edited();
     void on_name_director_genre_data_edit_changed();
+    bool is_data_input_complete();
     void on_name_edit_changed();
     void on_director_combo_box_text_changed();
-    void on_widget_was_deleted(QString text);
+    void on_widget_was_deleted(const QString& text);
 
     void on_redact_button_clicked();
     void on_sort_button_clicked();
-    void on_director_add_button_clicked();
+
     void on_clear_button_clicked();
 
     void on_table_row_selected(QModelIndex index);
+public slots:
+    void set_focus_to(QWidget* widget);
+    void on_director_add_button_clicked();
+
 signals:
     void genre_scroll_was_changed();
     void director_scroll_was_changed();

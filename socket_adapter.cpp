@@ -34,7 +34,7 @@ void Socket_adapter::readyRead(){
 
             in>>buf;
             block_size_in=0; // тут добавить прорверку, что все блоки пришли
-            qDebug() <<buf;
+            //qDebug() <<buf;
             emit have_new_message(buf);
         }
     }
@@ -52,7 +52,7 @@ void Socket_adapter::sendData(const QByteArray& message){
     sendStream << (quint16)(block.size() - sizeof(quint16));
     qDebug()<<"in sendData block_size " << (quint16)(block.size() - sizeof(quint16));
 ;
-    qDebug()<<"in sendData block "<< block.toStdString();
+    //qDebug()<<"in sendData block "<< block.toStdString();
     socket_->write(block);
 }
 

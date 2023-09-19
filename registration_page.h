@@ -33,6 +33,11 @@ private slots:
     void on_edits_edited();
     void on_back_button_clicked();
     void on_registration_button_clicked();
+    bool is_edits_are_correct();
+    void on_name_return_pressed();
+    void on_email_return_pressed();
+    void on_password_return_pressed();
+    void on_repeat_password_return_pressed();
 signals:
     void step_back();
     void registration_request(QStringList*);

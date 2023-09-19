@@ -62,9 +62,11 @@ Registration_page::Registration_page(QWidget *parent)
     incorrect_repeated_password_msg->setText(incorrect_repeated_password_text);
     incorrect_repeated_password_msg->setVisible(false);
     incorrect_repeated_password_msg->setStyleSheet("color: red; font-size: 10px");
-    //incorrect_repeated_password_msg->setGeometry();
+
 
     registration_button->setEnabled(false);
+
+    //edit_email->returnPressed();
 
     connect(edit_name, SIGNAL(textEdited(QString)), this, SLOT(on_edits_edited()));
     connect(edit_email, SIGNAL(textEdited(QString)), this, SLOT(on_edits_edited()));
@@ -73,13 +75,16 @@ Registration_page::Registration_page(QWidget *parent)
     connect(back_button, SIGNAL(clicked()), this, SLOT(on_back_button_clicked()));
     connect(registration_button, SIGNAL(clicked()), this, SLOT(on_registration_button_clicked()));
 
+    edit_name->setFocus();
+    connect(edit_name, SIGNAL(returnPressed()), this, SLOT(on_name_return_pressed()));
+    connect(edit_email, SIGNAL(returnPressed()), this, SLOT(on_email_return_pressed()));
+    connect(edit_password, SIGNAL(returnPressed()), this, SLOT(on_password_return_pressed()));
+    connect(edit_repeat_password, SIGNAL(returnPressed()), this, SLOT(on_repeat_password_return_pressed()));
+
 }
 
 void Registration_page::on_edits_edited(){
-    if(edit_name->text().isEmpty()||edit_email->text().isEmpty()||
-        edit_password->text().isEmpty()||edit_repeat_password->text().isEmpty()||
-        edit_password->text().length()!=6 ||edit_repeat_password->text().length()!=6){
-
+    if(!is_edits_are_correct()){
         registration_button->setEnabled(false);
     }
     else registration_button->setEnabled(true);
@@ -100,4 +105,32 @@ void Registration_page::on_registration_button_clicked(){
 
         emit registration_request(&registration_list);
     }
+}
+bool Registration_page::is_edits_are_correct(){
+    if(edit_name->text().isEmpty()||edit_email->text().isEmpty()||
+        edit_password->text().isEmpty()||edit_repeat_password->text().isEmpty()||
+        edit_password->text().length()!=6 ||edit_repeat_password->text().length()!=6){
+        return false;
+    }
+    else return true;
+}
+void Registration_page::on_name_return_pressed(){
+    if(is_edits_are_correct())
+        on_registration_button_clicked();
+    else edit_email->setFocus();
+}
+void Registration_page::on_email_return_pressed(){
+    if(is_edits_are_correct())
+        on_registration_button_clicked();
+    else edit_password->setFocus();
+}
+void Registration_page::on_password_return_pressed(){
+    if(is_edits_are_correct())
+        on_registration_button_clicked();
+    else edit_repeat_password->setFocus();
+}
+void Registration_page::on_repeat_password_return_pressed(){
+    if(is_edits_are_correct())
+        on_registration_button_clicked();
+    else edit_name->setFocus();
 }

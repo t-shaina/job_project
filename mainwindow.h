@@ -7,6 +7,7 @@
 #include <QString>
 #include<QStringList>
 #include<QLabel>
+#include<QMenuBar>
 #include<QVariantMap>
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,6 +25,7 @@ public:
 private:
     Ui::MainWindow *ui;
     QLabel status;
+    QMenuBar menu_bar;
     Start_page* start_page;
     Registration_page* registration_page;
     App_page* app_page;

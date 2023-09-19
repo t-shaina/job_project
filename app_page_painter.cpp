@@ -39,14 +39,14 @@ App_page_painter::App_page_painter(QWidget* parent)
     search_button(new QPushButton("Поиск", this)),
     name_edit (new QTextEdit(this)),
     name_invalid_symbol_label(new QLabel("Введен недопустимый символ",this)),
-    director_combo_box(new QComboBox(this)),
+    director_combo_box(new ComboBox(this)),
     genre_billet_widgets(new QList<QSharedPointer<Billet_widget>>),
     director_invalid_symbol_label(new QLabel("Введен недопустимый символ",this)),
     director_billet_widgets(new QList<QSharedPointer<Billet_widget>>),
     date_edit(new QLineEdit(this)),
     date_invalid_symbol_label(new QLabel("Введен недопустимый символ",this)),
     rating_spin_box(new QSpinBox(this)),
-    status_combo_box(new QComboBox(this)),
+    status_combo_box(new ComboBox(this)),
     accept_button (new QPushButton("Добавить", this)),
     back_button (new QPushButton("Выйти", this)),
     table(new QTableView(this)),
@@ -67,7 +67,7 @@ App_page_painter::App_page_painter(QWidget* parent)
     clear_group(new QGroupBox(this)),
     redact_button(new QPushButton("Редактировать", this)),
     sort_label(new QLabel("Сортировать по", this)),
-    sort_combo_box(new QComboBox(this)),
+    sort_combo_box(new ComboBox(this)),
     sort_button(new QPushButton("Сортировать",this)),
     name_label (new QLabel("Название", this)),
     director_label (new QLabel("Режиссер", this)),
@@ -78,7 +78,7 @@ App_page_painter::App_page_painter(QWidget* parent)
     genre_label (new QLabel("Жанр", this)),
     genre_scroll(new QScrollArea(this)),
     genre_scroll_group(new QGroupBox(genre_scroll)),
-    genre_combo_box(new QComboBox(this)),
+    genre_combo_box(new ComboBox(this)),
     date_label (new QLabel("Год создания", this)),
     date_slider(new QSlider(this)),
     rating_label (new QLabel("Рейтинг", this)),
@@ -215,6 +215,19 @@ App_page_painter::App_page_painter(QWidget* parent)
     connect(date_edit, SIGNAL(textChanged(QString)), this, SLOT(on_name_director_genre_data_edit_changed()));
     connect(date_edit, SIGNAL(textEdited(QString)), this, SLOT(set_date_slider_position()));
 
+    connect(name_edit, SIGNAL(returnPressed()), this, SLOT(set_focus_to(this->director_combo_box)));
+    connect(director_combo_box, SIGNAL(enter_pressed()), this, SLOT(on_director_add_button_clicked()));
+    connect(director_combo_box, SIGNAL(down_pressed()), this, SLOT(set_focus_to(qobject_cast<QWidget*>(genre_combo_box))));
+    connect(director_combo_box, SIGNAL(up_pressed()), this, SLOT(set_focus_to(this->name_edit)));
+    connect(genre_combo_box, SIGNAL(down_pressed()), this, SLOT(set_focus_to(this->date_edit)));
+    connect(genre_combo_box, SIGNAL(up_pressed()), this, SLOT(set_focus_to(this->director_combo_box)));
+    connect(date_edit, SIGNAL(returnPressed()), this, SLOT(set_focus_to(this->rating_spin_box)));
+    //connect(date_edit, SIGNAL(down_pressed()), this, SLOT(this->set_focus_to(date_edit)));
+    //connect(date_edit, SIGNAL(up_pressed()), this, SLOT(this->set_focus_to(director_combo_box)));
+    //connect(status_combo_box, SIGNAL(enter_pressed()), this, SLOT(this->set_focus_to(rating_spin_box)));
+
+
+
 }
 App_page_painter::~App_page_painter(){qDebug()<<"in app page painter destructor";}
 void App_page_painter::set_search_edit(int search_id){
@@ -224,7 +237,7 @@ QStringList App_page_painter::string_to_list(const QString& field){
     QString string=field;
     QStringList list;
     string.push_back(',');
-    qDebug()<<"in str to list string is"<<string;
+    //qDebug()<<"in str to list string is"<<string;
     QString word;
     for(int i=0; i<string.size(); ++i){
         if(string.at(i)==','){
@@ -241,21 +254,23 @@ void App_page_painter::set_date_edit(int data_value){
     date_edit->setText(text);
 }
 void App_page_painter::set_director_scroll(int director_id){
+    qDebug()<<"in set director scroll director is"<<directors_list->at(director_id);
     QString text=directors_list->at(director_id);
     set_scroll(director_combo_box, director_scroll_group, text, director_billet_widgets);
     emit director_scroll_was_changed();    
 }
 void App_page_painter::set_genre_scroll(int genre_id){
+    qDebug()<<"in set genre scroll genre is"<<genre_list.at(genre_id);
     QString text=genre_list.at(genre_id);
     set_scroll(director_combo_box, genre_scroll_group, text, genre_billet_widgets);
     emit genre_scroll_was_changed();
 }
 void App_page_painter::set_scroll(QComboBox* combo_box, QGroupBox* group, const QString& text, QList<QSharedPointer<Billet_widget>>* list){
-    QString element;
     Symbols_inspector symbols_inspector;
     QString text_without_extra_symbols=symbols_inspector.removing_extra_symbols(text);
+    //qDebug()<<"in set scroll element is"<<text_without_extra_symbols;
     if(is_field_of_combo_box_enabled(combo_box, text_without_extra_symbols)){
-        this->set_field_of_combo_box_enabled(combo_box, text, false);
+        this->set_field_of_combo_box_enabled(combo_box, text_without_extra_symbols, false);
         Billet_widget* widget=new Billet_widget(group, text_without_extra_symbols);
         QSharedPointer<Billet_widget> widget_ptr(widget, &QObject::deleteLater);
         group->layout()->addWidget(widget_ptr.get());
@@ -270,25 +285,32 @@ void App_page_painter::set_date_slider_position(){
         date_slider->setSliderPosition(year);
     else date_slider->setSliderPosition(current_year);
 }
-void App_page_painter::on_widget_was_deleted(QString text){
+void App_page_painter::on_widget_was_deleted(const QString& text){
+    Symbols_inspector symbols_inspector;
+    QString text_without_extra_symbols=symbols_inspector.removing_extra_symbols(text);
     Billet_widget* widget=static_cast<Billet_widget*>(sender());
     QGroupBox* parent=qobject_cast<QGroupBox*>(widget->parent());
     QSharedPointer<Billet_widget> widget_ptr=static_cast<QSharedPointer<Billet_widget>>(widget);
     if(parent==genre_scroll_group){
         genre_billet_widgets->removeOne(widget_ptr);
-        set_field_of_combo_box_enabled(genre_combo_box, text, true);
+        set_field_of_combo_box_enabled(genre_combo_box, text_without_extra_symbols, true);
         emit genre_scroll_was_changed();
     }
     else {
         director_billet_widgets->removeOne(widget_ptr);
-        set_field_of_combo_box_enabled(director_combo_box, text, true);
+        set_field_of_combo_box_enabled(director_combo_box, text_without_extra_symbols, true);
         emit director_scroll_was_changed();
     }
 }
-void App_page_painter::set_field_of_combo_box_enabled(QComboBox* combo_box, QString text, bool enabled){
+void App_page_painter::set_field_of_combo_box_enabled(QComboBox* combo_box, const QString& text, bool enabled){
+    //qDebug()<<"in set field of conmo box enabled element is "<<text;
     QStandardItemModel* model=static_cast<QStandardItemModel*>(combo_box->model());
     QList<QStandardItem*> items=model->findItems(text);
+    //for(int i=0; model->rowCount(); ++i){
+        //qDebug()<<"in model row is "<<model->item(i, 0)->text();
+    //}
     for(QStandardItem* item:items){
+        //qDebug()<<"in set field of cb enabled item has text"<<item->text();
         item->setEnabled(enabled);
     }
 }
@@ -303,10 +325,12 @@ void App_page_painter::set_all_combo_box_enabled(bool enabled){
     set_combo_box_enabled(director_combo_box, director_billet_widgets, enabled);
     set_combo_box_enabled(genre_combo_box, genre_billet_widgets, enabled);
 }
-bool App_page_painter::is_field_of_combo_box_enabled(QComboBox* combo_box, QString text){
+bool App_page_painter::is_field_of_combo_box_enabled(QComboBox* combo_box, const QString& text){
     bool status =true;
+    Symbols_inspector symbols_inspector;
+    QString text_without_extra_symbols=symbols_inspector.removing_extra_symbols(text);
     QStandardItemModel* model=static_cast<QStandardItemModel*>(combo_box->model());
-    QList<QStandardItem*> items=model->findItems(text);
+    QList<QStandardItem*> items=model->findItems(text_without_extra_symbols);
     foreach (QStandardItem* item, items) {
         if(!item->isEnabled()){
             status=false;
@@ -383,6 +407,9 @@ void App_page_painter::on_director_add_button_clicked(){
         }
         qDebug()<<"in add button clicked text is"<<text;
         set_scroll(director_combo_box, director_scroll_group, text, director_billet_widgets);
+        //QStandardItemModel* director_model=static_cast<QStandardItemModel*>(director_combo_box->model());
+        //director_combo_box->setCurrentText(-1);
+        director_combo_box->setEditText("");
     }
 }
 void App_page_painter::on_clear_button_clicked(){
@@ -457,13 +484,26 @@ void App_page_painter::on_name_director_genre_data_edit_changed(){
     }
 
 }
+bool App_page_painter::is_data_input_complete(){
+    if(name_edit->toPlainText().isEmpty()||
+        director_billet_widgets->size()==0||
+        genre_billet_widgets->size()==0||
+        date_edit->text().isEmpty()||
+        rating_spin_box->cleanText()=="0"||
+        status_combo_box->currentText()=="Просмотрено"){
+        return false;
+    }
+    else return true;
+}
 void App_page_painter::on_name_edit_changed(){
     QSize text_size=name_edit->fontMetrics().size(Qt::TextWordWrap, name_edit->placeholderText());
     if(text_size.width()>name_edit->width())
         name_edit->setMinimumHeight(text_size.height()*text_size.width()/name_edit->width());
 }
 
-
+void App_page_painter::set_focus_to(QWidget* widget){
+    widget->setFocus();
+}
 void App_page_painter::base_settings(){
 
     layout_page->setAlignment(layout_page->parentWidget(), Qt::AlignHCenter|Qt::AlignVCenter);

@@ -39,6 +39,8 @@ App_page::App_page(QWidget *parent)
 
     connect(this, SIGNAL( director_scroll_was_changed()), this->app_page_painter, SLOT(on_name_director_genre_data_edit_changed()));
     connect(this, SIGNAL(genre_scroll_was_changed()), this->app_page_painter, SLOT(on_name_director_genre_data_edit_changed()));
+
+    connect(app_page_painter->search_edit, SIGNAL(enter_pressed()), this, SLOT(on_search_button_clicked()));
 }
 App_page::~App_page(){
     delete app_page_painter;
@@ -242,7 +244,7 @@ void App_page::filling_in_table(QJsonArray* array_data, int row_position){
             default:
                 break;
             }
-            qDebug()<<string_of_item;
+            //qDebug()<<string_of_item;
             QStandardItem* item=new QStandardItem(string_of_item);
             model->setItem(row_position, column, item);
             //row_of_item->push_back(item);
@@ -264,7 +266,7 @@ QString App_page::jsonarray_to_str(const QJsonArray& array_object){
     }
     result_string.removeLast();
     result_string.removeLast();
-    qDebug()<<"in jsonarray to str  is"<<result_string;
+    //qDebug()<<"in jsonarray to str  is"<<result_string;
     return result_string;
 }
 void App_page::remove_row_in_table(QJsonArray* data){
@@ -300,7 +302,8 @@ void App_page::filling_in_director_combo_box(QJsonArray* data){
         array_directors_object=row_data.take("Directors").toJsonArray();
         //director=jsonarray_to_str(array_object);
         for(int i=0;i<array_directors_object.size();i++){
-            director=array_directors_object.at(i).toString();
+            Symbols_inspector symbols_inspector;
+            director=symbols_inspector.removing_last_spaces(array_directors_object.at(i).toString());
             if(!app_page_painter->directors_list->contains(director)){
                 app_page_painter->directors_list->push_back(director);
                 app_page_painter->director_combo_box->addItem(director);

@@ -31,6 +31,8 @@ set(PROJECT_SOURCES
     app_page_painter.cpp
     app_page_painter.h
     symbols_inspector.cpp
+    combo_box.cpp
+    combo_box.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
