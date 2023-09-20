@@ -14,10 +14,10 @@ Start_page::Start_page(QWidget *parent)
     :QWidget(parent),
     label_email(new QLabel(email_label_text,this)),
     label_password(new QLabel(password_label_text, this)),
-    edit_email(new QLineEdit(this)),
-    edit_password(new QLineEdit(this)),
-    button_entry(new QPushButton(entrbutton_text, this)),
-    button_registration(new QPushButton(regbutton_text, this)),
+    edit_email(new LineEdit(this)),
+    edit_password(new LineEdit(this)),
+    button_entry(new PushButton(entrbutton_text, this)),
+    button_registration(new PushButton(regbutton_text, this)),
     layout_page1(new QGridLayout(this))
 
 {
@@ -55,7 +55,14 @@ Start_page::Start_page(QWidget *parent)
 
     edit_email->setFocus();
     connect(edit_email, SIGNAL(returnPressed()), this, SLOT(on_email_return_pressed()));
-    connect(edit_password, SIGNAL(returnPressed()), this, SLOT(on_password_return_pressed()));
+    connect(edit_email, SIGNAL(down_pressed()), this, SLOT(set_focus_to_edit_password()));
+    connect(edit_password, SIGNAL(down_pressed()), this, SLOT(set_focus_to_button_entry()));
+    connect(edit_password, SIGNAL(up_pressed()), this, SLOT(set_focus_to_edit_email()));
+    connect(edit_password, SIGNAL(returnPressed()), this, SLOT(on_button_entry_clicked()));
+    connect(button_registration, SIGNAL(enter_pressed()), this, SLOT(on_button_registration_clicked()));
+    connect(button_registration, SIGNAL(right_pressed()), this, SLOT(set_focus_to_button_entry()));
+    connect(button_entry, SIGNAL(enter_pressed()), this, SLOT(on_button_entry_clicked()));
+    connect(button_entry, SIGNAL(up_pressed()), this, SLOT(set_focus_to_edit_password()));
 }
 
 Start_page::~Start_page(){};
@@ -71,9 +78,13 @@ void Start_page::set_start_page_visible(bool flag){
 //void Start_page::logged_in(QString username){};
 
 void Start_page::on_button_entry_clicked(){
-    QStringList entry_list=QStringList()<<edit_email->text()<<edit_password->text();
-    qDebug()<< entry_list.at(0)<<entry_list.at(1);
-    emit entry_request(&entry_list);
+    if(is_email_password_edits_is_correct()){
+        QStringList entry_list=QStringList()<<edit_email->text()<<edit_password->text();
+        qDebug()<< entry_list.at(0)<<entry_list.at(1);
+        emit entry_request(&entry_list);
+    }
+    else
+        emit incorrect_email_or_password();
 
 }
 void Start_page::on_email_password_edit_edited(){

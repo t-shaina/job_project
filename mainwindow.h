@@ -39,6 +39,7 @@ signals:
 public slots:
     void set_username(QString username);
     void resize_window();
+    void on_incorrect_email_or_password();
 
     void destroy_app_page();
     void creating_registration_page();

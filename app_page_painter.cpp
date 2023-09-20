@@ -33,22 +33,22 @@ App_page_painter::App_page_painter(QWidget* parent)
     :QWidget(parent),
     directors_list(new QStringList()),
     row_to_update(new QStringList()),
-    delete_button(new QPushButton("Удалить", this)),
-    show_all_button(new QPushButton("Показать все", this)),
-    search_edit(new QLineEdit(this)),
-    search_button(new QPushButton("Поиск", this)),
-    name_edit (new QTextEdit(this)),
+    delete_button(new PushButton("Удалить", this)),
+    show_all_button(new PushButton("Показать все", this)),
+    search_edit(new LineEdit(this)),
+    search_button(new PushButton("Поиск", this)),
+    name_edit (new TextEdit(this)),
     name_invalid_symbol_label(new QLabel("Введен недопустимый символ",this)),
     director_combo_box(new ComboBox(this)),
     genre_billet_widgets(new QList<QSharedPointer<Billet_widget>>),
     director_invalid_symbol_label(new QLabel("Введен недопустимый символ",this)),
     director_billet_widgets(new QList<QSharedPointer<Billet_widget>>),
-    date_edit(new QLineEdit(this)),
+    date_edit(new LineEdit(this)),
     date_invalid_symbol_label(new QLabel("Введен недопустимый символ",this)),
-    rating_spin_box(new QSpinBox(this)),
+    rating_spin_box(new SpinBox(this)),
     status_combo_box(new ComboBox(this)),
-    accept_button (new QPushButton("Добавить", this)),
-    back_button (new QPushButton("Выйти", this)),
+    accept_button (new PushButton("Добавить", this)),
+    back_button (new PushButton("Выйти", this)),
     table(new QTableView(this)),
     redact_transfer_state(false),
 
@@ -65,14 +65,14 @@ App_page_painter::App_page_painter(QWidget* parent)
     genre_group(new QGroupBox(edit_group)),
     date_group(new QGroupBox(edit_group)),
     clear_group(new QGroupBox(this)),
-    redact_button(new QPushButton("Редактировать", this)),
+    redact_button(new PushButton("Редактировать", this)),
     sort_label(new QLabel("Сортировать по", this)),
     sort_combo_box(new ComboBox(this)),
-    sort_button(new QPushButton("Сортировать",this)),
+    sort_button(new PushButton("Сортировать",this)),
     name_label (new QLabel("Название", this)),
     director_label (new QLabel("Режиссер", this)),
 
-    director_add_button(new QPushButton(this)),
+    director_add_button(new PushButton(this)),
     director_scroll(new QScrollArea(this)),
     director_scroll_group(new QGroupBox(director_scroll)),
     genre_label (new QLabel("Жанр", this)),
@@ -83,7 +83,7 @@ App_page_painter::App_page_painter(QWidget* parent)
     date_slider(new QSlider(this)),
     rating_label (new QLabel("Рейтинг", this)),
     status_label (new QLabel("Статус", this)),
-    clear_button(new QPushButton("Очистить", this))
+    clear_button(new PushButton("Очистить", this))
 
 {
       qDebug()<<"inn app page painter constructor";
@@ -214,17 +214,46 @@ App_page_painter::App_page_painter(QWidget* parent)
     connect(director_combo_box, SIGNAL(editTextChanged(QString)), this, SLOT(on_director_combo_box_text_changed()));
     connect(date_edit, SIGNAL(textChanged(QString)), this, SLOT(on_name_director_genre_data_edit_changed()));
     connect(date_edit, SIGNAL(textEdited(QString)), this, SLOT(set_date_slider_position()));
-
-    connect(name_edit, SIGNAL(returnPressed()), this, SLOT(set_focus_to(this->director_combo_box)));
+    //switches for redact widgets
+    connect(search_edit, SIGNAL(right_pressed()), this, SLOT(set_focus_to_search_button()));
+    connect(search_edit, SIGNAL(up_pressed()), this, SLOT(set_focus_to_show_all_button()));
+    connect(name_edit, SIGNAL(down_pressed()), this, SLOT(set_focus_to_director_combo_box()));
     connect(director_combo_box, SIGNAL(enter_pressed()), this, SLOT(on_director_add_button_clicked()));
-    connect(director_combo_box, SIGNAL(down_pressed()), this, SLOT(set_focus_to(qobject_cast<QWidget*>(genre_combo_box))));
-    connect(director_combo_box, SIGNAL(up_pressed()), this, SLOT(set_focus_to(this->name_edit)));
-    connect(genre_combo_box, SIGNAL(down_pressed()), this, SLOT(set_focus_to(this->date_edit)));
-    connect(genre_combo_box, SIGNAL(up_pressed()), this, SLOT(set_focus_to(this->director_combo_box)));
-    connect(date_edit, SIGNAL(returnPressed()), this, SLOT(set_focus_to(this->rating_spin_box)));
-    //connect(date_edit, SIGNAL(down_pressed()), this, SLOT(this->set_focus_to(date_edit)));
-    //connect(date_edit, SIGNAL(up_pressed()), this, SLOT(this->set_focus_to(director_combo_box)));
-    //connect(status_combo_box, SIGNAL(enter_pressed()), this, SLOT(this->set_focus_to(rating_spin_box)));
+    connect(director_combo_box, SIGNAL(down_pressed()), this, SLOT(set_focus_to_genre_combo_box()));
+    connect(director_combo_box, SIGNAL(up_pressed()), this, SLOT(set_focus_to_name_edit()));
+    connect(director_combo_box, SIGNAL(right_pressed()), this, SLOT(set_focus_to_genre_combo_box_item()));
+    connect(genre_combo_box, SIGNAL(down_pressed()), this, SLOT(set_focus_to_date_edit()));
+    connect(genre_combo_box, SIGNAL(up_pressed()), this, SLOT(set_focus_to_director_combo_box()));
+    connect(rating_spin_box, SIGNAL(down_pressed()), this, SLOT(set_focus_to_status_combo_box()));
+    connect(rating_spin_box, SIGNAL(up_pressed()), this, SLOT(set_focus_to_date_edit()));
+    connect(date_edit, SIGNAL(down_pressed()), this, SLOT(set_focus_to_rating_spin_box()));
+    connect(date_edit, SIGNAL(up_pressed()), this, SLOT(set_focus_to_genre_combo_box()));
+    connect(status_combo_box, SIGNAL(down_pressed()), this, SLOT(set_focus_to_accept_button()));
+    connect(status_combo_box, SIGNAL(up_pressed()), this, SLOT(set_focus_to_rating_spin_box()));
+    //switches for buttons
+    connect(delete_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_search_edit()));
+    connect(delete_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_redact_button()));
+    connect(redact_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_search_edit()));
+    connect(redact_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_show_all_button()));
+    connect(redact_button, SIGNAL(left_pressed()), this, SLOT(set_focus_to_delete_button()));
+    connect(redact_button, SIGNAL(enter_pressed()), this, SLOT(on_redact_button_clicked()));
+    connect(show_all_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_search_edit()));
+    connect(show_all_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_sort_button()));
+    connect(show_all_button, SIGNAL(left_pressed()), this, SLOT(set_focus_to_redact_button()));
+    connect(sort_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_search_edit()));
+    connect(sort_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_accept_button()));
+    connect(sort_button, SIGNAL(enter_pressed()), this, SLOT(on_sort_button_clicked()));
+    connect(search_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_back_button()));
+    connect(director_add_button, SIGNAL(enter_pressed()), this, SLOT(on_director_add_button_clicked()));
+    connect(accept_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_back_button()));
+    connect(accept_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_clear_button()));
+    connect(accept_button, SIGNAL(left_pressed()), this, SLOT(set_focus_to_sort_button()));
+    connect(clear_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_back_button()));
+    connect(clear_button, SIGNAL(left_pressed()), this, SLOT(set_focus_to_accept_button()));
+    connect(clear_button, SIGNAL(enter_pressed()), this, SLOT(on_clear_button_clicked()));
+    connect(back_button, SIGNAL(left_pressed()), this, SLOT(set_focus_to_search_edit()));
+    connect(back_button, SIGNAL(up_pressed()), this, SLOT(set_focus_to_accept_button()));
+    //connect(show_all_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_search_edit()));
 
 
 
@@ -503,6 +532,14 @@ void App_page_painter::on_name_edit_changed(){
 
 void App_page_painter::set_focus_to(QWidget* widget){
     widget->setFocus();
+}
+void App_page_painter::set_focus_to(ComboBox* widget){
+    widget->setFocus();
+}
+void App_page_painter::set_focus_to_genre_combo_box_item(){
+    //QStandardItemModel* model=static_cast<QStandardItemModel*>(genre_combo_box->model());
+    //genre_combo_box->rootModelIndex().setFocus();
+
 }
 void App_page_painter::base_settings(){
 

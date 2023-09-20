@@ -1,23 +1,20 @@
-#ifndef COMBO_BOX_H
-#define COMBO_BOX_H
+#ifndef SPINBOX_H
+#define SPINBOX_H
 
 #include <QObject>
 #include <QWidget>
-#include<QComboBox>
-
-class ComboBox: public QComboBox
+#include<QSpinBox>
+class SpinBox: public QSpinBox
 {
     Q_OBJECT
 public:
-    //QComboBox
-    ComboBox(QWidget* parent=nullptr);
+    SpinBox(QWidget* parent=nullptr);
 public slots:
     void keyPressEvent(QKeyEvent *e);
 signals:
     void enter_pressed();
     void down_pressed();
     void up_pressed();
-    void right_pressed();
 };
 
-#endif // COMBO_BOX_H
+#endif // SPINBOX_H

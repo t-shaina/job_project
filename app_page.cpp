@@ -39,8 +39,13 @@ App_page::App_page(QWidget *parent)
 
     connect(this, SIGNAL( director_scroll_was_changed()), this->app_page_painter, SLOT(on_name_director_genre_data_edit_changed()));
     connect(this, SIGNAL(genre_scroll_was_changed()), this->app_page_painter, SLOT(on_name_director_genre_data_edit_changed()));
-
-    connect(app_page_painter->search_edit, SIGNAL(enter_pressed()), this, SLOT(on_search_button_clicked()));
+    //switches
+    connect(app_page_painter->search_edit, SIGNAL(returnPressed()), this, SLOT(on_search_button_clicked()));
+    connect(app_page_painter->delete_button, SIGNAL(enter_pressed()), this, SLOT(on_delete_button_clicked()));
+    connect(app_page_painter->show_all_button, SIGNAL(enter_pressed()), this, SLOT(on_show_all_button_clicked()));
+    connect(app_page_painter->search_button, SIGNAL(enter_pressed()), this, SLOT(on_search_button_clicked()));
+    connect(app_page_painter->accept_button, SIGNAL(enter_pressed()), this, SLOT(on_accept_button_clicked()));
+    connect(app_page_painter->back_button, SIGNAL(enter_pressed()), this, SLOT(on_back_button_clicked()));
 }
 App_page::~App_page(){
     delete app_page_painter;

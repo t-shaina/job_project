@@ -3,6 +3,10 @@
 
 #include"billet_widget.h"
 #include"combo_box.h"
+#include "text_edit.h"
+#include "line_edit.h"
+#include "spin_box.h"
+#include"push_button.h"
 #include <QObject>
 #include <QWidget>
 #include<QGridLayout>
@@ -31,22 +35,22 @@ public:
     QStringList* directors_list;
     QStringList* row_to_update;
     QModelIndex update_model_index;
-    QPushButton* delete_button;
-    QPushButton* show_all_button;
+    PushButton* delete_button;
+    PushButton* show_all_button;
     QLineEdit* search_edit;
-    QPushButton* search_button;
-    QTextEdit* name_edit;
+    PushButton* search_button;
+    TextEdit* name_edit;
     QLabel* name_invalid_symbol_label;
     ComboBox* director_combo_box;
     QList<QSharedPointer<Billet_widget>>* genre_billet_widgets;
     QLabel* director_invalid_symbol_label;
     QList<QSharedPointer<Billet_widget>>* director_billet_widgets;
-    QLineEdit* date_edit;
+    LineEdit* date_edit;
     QLabel* date_invalid_symbol_label;
-    QSpinBox* rating_spin_box;
+    SpinBox* rating_spin_box;
     ComboBox* status_combo_box;
-    QPushButton* accept_button;
-    QPushButton* back_button;
+    PushButton* accept_button;
+    PushButton* back_button;
     QTableView* table;
     bool redact_transfer_state;
 
@@ -71,14 +75,14 @@ private:
     QGroupBox* genre_group;
     QGroupBox* date_group;
     QGroupBox* clear_group;
-    QPushButton* redact_button;
+    PushButton* redact_button;
     QLabel* sort_label;
     ComboBox* sort_combo_box;
-    QPushButton* sort_button;
+    PushButton* sort_button;
     QLabel* name_label;
 
     QLabel* director_label;
-    QPushButton* director_add_button;
+    PushButton* director_add_button;
     QScrollArea* director_scroll;
     QGroupBox* director_scroll_group;
     QLabel* genre_label;
@@ -90,7 +94,7 @@ private:
     QSlider* date_slider;
     QLabel* rating_label;
     QLabel* status_label;
-    QPushButton* clear_button;
+    PushButton* clear_button;
 
 private:
     void base_settings();
@@ -120,14 +124,31 @@ private slots:
 
     void on_redact_button_clicked();
     void on_sort_button_clicked();
-
+    void on_director_add_button_clicked();
     void on_clear_button_clicked();
 
     void on_table_row_selected(QModelIndex index);
 public slots:
+    //switches for redact widgets
     void set_focus_to(QWidget* widget);
-    void on_director_add_button_clicked();
-
+    void set_focus_to(ComboBox* widget);
+    inline void set_focus_to_search_edit(){ search_edit->setFocus();}
+    inline void set_focus_to_name_edit(){ name_edit->setFocus();}
+    inline void set_focus_to_director_combo_box(){ director_combo_box->setFocus();}
+    inline void set_focus_to_genre_combo_box(){ genre_combo_box->setFocus();}
+    void set_focus_to_genre_combo_box_item();
+    inline void set_focus_to_date_edit(){ date_edit->setFocus();}
+    inline void set_focus_to_rating_spin_box(){ rating_spin_box->setFocus();}
+    inline void set_focus_to_status_combo_box(){ status_combo_box->setFocus();}
+    //switches for buttons
+    inline void set_focus_to_delete_button(){delete_button->setFocus();}
+    inline void set_focus_to_redact_button(){redact_button->setFocus();}
+    inline void set_focus_to_show_all_button(){show_all_button->setFocus();}
+    inline void set_focus_to_sort_button(){sort_button->setFocus();}
+    inline void set_focus_to_search_button(){search_button->setFocus();}
+    inline void set_focus_to_accept_button(){ accept_button->setFocus();}
+    inline void set_focus_to_clear_button(){clear_button->setFocus();}
+    inline void set_focus_to_back_button(){ back_button->setFocus();}
 signals:
     void genre_scroll_was_changed();
     void director_scroll_was_changed();

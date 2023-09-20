@@ -1,16 +1,14 @@
-#ifndef COMBO_BOX_H
-#define COMBO_BOX_H
+#ifndef LINEEDIT_H
+#define LINEEDIT_H
 
 #include <QObject>
 #include <QWidget>
-#include<QComboBox>
-
-class ComboBox: public QComboBox
+#include<QLineEdit>
+class LineEdit: public QLineEdit
 {
     Q_OBJECT
 public:
-    //QComboBox
-    ComboBox(QWidget* parent=nullptr);
+    LineEdit(QWidget* parent=nullptr);
 public slots:
     void keyPressEvent(QKeyEvent *e);
 signals:
@@ -18,6 +16,7 @@ signals:
     void down_pressed();
     void up_pressed();
     void right_pressed();
+    void left_pressed();
 };
 
-#endif // COMBO_BOX_H
+#endif // LINEEDIT_H

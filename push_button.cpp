@@ -1,11 +1,16 @@
-#include "combo_box.h"
+#include "push_button.h"
 #include<QKeyEvent>
-ComboBox::ComboBox(QWidget* parent):QComboBox(parent)
+
+PushButton::PushButton(const QString &text, QWidget *parent):QPushButton(text, parent)
 {
-    //this->setFocusPolicy();
+
 }
-void ComboBox::keyPressEvent(QKeyEvent *event){
-    QComboBox::keyPressEvent(event);
+PushButton::PushButton(QWidget *parent):QPushButton(parent)
+{
+
+}
+void PushButton::keyPressEvent(QKeyEvent *event){
+    QPushButton::keyPressEvent(event);
     switch (event->key()) {
     case Qt::Key_Enter:
         emit enter_pressed();
@@ -19,9 +24,11 @@ void ComboBox::keyPressEvent(QKeyEvent *event){
     case Qt::Key_Right:
         emit right_pressed();
         break;
+    case Qt::Key_Left:
+        emit left_pressed();
+        break;
     default:
         break;
     }
 
 }
-

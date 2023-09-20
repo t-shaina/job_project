@@ -1,11 +1,12 @@
-#include "combo_box.h"
+#include "spin_box.h"
 #include<QKeyEvent>
-ComboBox::ComboBox(QWidget* parent):QComboBox(parent)
+
+SpinBox::SpinBox(QWidget* parent): QSpinBox(parent)
 {
-    //this->setFocusPolicy();
+
 }
-void ComboBox::keyPressEvent(QKeyEvent *event){
-    QComboBox::keyPressEvent(event);
+void SpinBox::keyPressEvent(QKeyEvent *event){
+    QSpinBox::keyPressEvent(event);
     switch (event->key()) {
     case Qt::Key_Enter:
         emit enter_pressed();
@@ -16,12 +17,8 @@ void ComboBox::keyPressEvent(QKeyEvent *event){
     case Qt::Key_Up:
         emit up_pressed();
         break;
-    case Qt::Key_Right:
-        emit right_pressed();
-        break;
     default:
         break;
     }
 
 }
-

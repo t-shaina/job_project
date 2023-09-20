@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     //QObject::connect(this->start_page, SIGNAL(entry_request(QStringList*)), this, SLOT(create_app_page()));
     QObject::connect(this->start_page, SIGNAL(entry_request(QStringList*)), this, SLOT(processing_entry_request(QStringList*)));
     QObject::connect(this->start_page, SIGNAL(create_registration_page()), this, SLOT(creating_registration_page()));
-
+    QObject::connect(this->start_page, SIGNAL(incorrect_email_or_password()), this, SLOT(on_incorrect_email_or_password()));
     //QObject::connect(this->app_page, SIGNAL(step_back()), this, SLOT(destroy_app_page()));
 }
 
@@ -49,7 +49,9 @@ void MainWindow::resize_window(){
     this->setSizeIncrement(8, 6);
     this->setFixedSize(1280, 800);
 }
-
+void MainWindow::on_incorrect_email_or_password(){
+    this->status.setText("Неверный Email или пароль");
+}
 void MainWindow:: destroy_app_page(){
     qDebug()<<"in destroy app  page";
     this->app_page->~App_page();

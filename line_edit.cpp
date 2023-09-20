@@ -1,11 +1,15 @@
-#include "combo_box.h"
+#include "line_edit.h"
 #include<QKeyEvent>
-ComboBox::ComboBox(QWidget* parent):QComboBox(parent)
+
+LineEdit::LineEdit(QWidget* parent):QLineEdit(parent)
 {
-    //this->setFocusPolicy();
+    this->setEnabled(true);
+    this->setReadOnly(false);
+    this->setUpdatesEnabled(true);
+
 }
-void ComboBox::keyPressEvent(QKeyEvent *event){
-    QComboBox::keyPressEvent(event);
+void LineEdit::keyPressEvent(QKeyEvent *event){
+    QLineEdit::keyPressEvent(event);
     switch (event->key()) {
     case Qt::Key_Enter:
         emit enter_pressed();
@@ -19,9 +23,11 @@ void ComboBox::keyPressEvent(QKeyEvent *event){
     case Qt::Key_Right:
         emit right_pressed();
         break;
+    case Qt::Key_Left:
+        emit left_pressed();
+        break;
     default:
         break;
     }
 
 }
-

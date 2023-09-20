@@ -1,23 +1,20 @@
-#ifndef COMBO_BOX_H
-#define COMBO_BOX_H
+#ifndef TEXTEDIT_H
+#define TEXTEDIT_H
 
 #include <QObject>
 #include <QWidget>
-#include<QComboBox>
-
-class ComboBox: public QComboBox
+#include <QTextEdit>
+class TextEdit:public QTextEdit
 {
     Q_OBJECT
 public:
-    //QComboBox
-    ComboBox(QWidget* parent=nullptr);
+    TextEdit(QWidget* parent=nullptr);
 public slots:
     void keyPressEvent(QKeyEvent *e);
 signals:
     void enter_pressed();
     void down_pressed();
     void up_pressed();
-    void right_pressed();
 };
 
-#endif // COMBO_BOX_H
+#endif // TEXTEDIT_H

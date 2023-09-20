@@ -33,6 +33,10 @@ set(PROJECT_SOURCES
     symbols_inspector.cpp
     combo_box.cpp
     combo_box.h
+    line_edit.cpp
+    text_edit.cpp
+    spin_box.cpp
+    push_button.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -1,6 +1,8 @@
 #ifndef START_PAGE_H
 #define START_PAGE_H
 
+#include"line_edit.h"
+#include"push_button.h"
 #include <QWidget>
 #include <QGroupBox>
 #include <QPushButton>
@@ -20,10 +22,10 @@ private:
 
     QLabel* label_email;
     QLabel* label_password;
-    QLineEdit* edit_email;
-    QLineEdit* edit_password;
-    QPushButton* button_entry;
-    QPushButton* button_registration;
+    LineEdit* edit_email;
+    LineEdit* edit_password;
+    PushButton* button_entry;
+    PushButton* button_registration;
     QGridLayout* layout_page1;
 private slots:
     void on_email_password_edit_edited();
@@ -31,9 +33,15 @@ private slots:
     void on_password_return_pressed();
     bool is_email_password_edits_is_correct();
 
+    inline void set_focus_to_button_entry(){button_entry->setFocus();}
+    inline void set_focus_to_button_registration(){button_registration->setFocus();}
+    inline void set_focus_to_edit_email(){edit_email->setFocus();}
+    inline void set_focus_to_edit_password(){edit_password->setFocus();}
+
 signals:
     void entry_request(QStringList*);
     void create_registration_page();
+    void incorrect_email_or_password();
 public slots:
     void on_button_entry_clicked();
     void on_button_registration_clicked();
