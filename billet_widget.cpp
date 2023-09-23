@@ -48,7 +48,7 @@ bool Billet_widget::operator==(const Billet_widget& b_w)const{
 }
 void Billet_widget::on_delete_button_clicked(){
     emit widget_was_deleted(this->text());
-    qDebug()<<"in billet_widget delete_button_clicked";
+    //qDebug()<<"in billet_widget delete_button_clicked";
     //this->~Billet_widget();
 }
 Billet_widget::~Billet_widget(){

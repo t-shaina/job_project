@@ -37,6 +37,8 @@ set(PROJECT_SOURCES
     text_edit.cpp
     spin_box.cpp
     push_button.cpp
+    films_table_view.cpp
+    menu.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

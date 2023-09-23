@@ -7,6 +7,7 @@
 #include "line_edit.h"
 #include "spin_box.h"
 #include"push_button.h"
+#include"films_table_view.h"
 #include <QObject>
 #include <QWidget>
 #include<QGridLayout>
@@ -51,16 +52,11 @@ public:
     ComboBox* status_combo_box;
     PushButton* accept_button;
     PushButton* back_button;
-    QTableView* table;
+    FilmsTableView* table;
     bool redact_transfer_state;
 
 
-    void main_table_settings();
-    QString widgets_list_to_string(QList<QSharedPointer<Billet_widget>>* list);
-    void set_all_combo_box_enabled(bool enabled);
-
 private:
-
 
     QGridLayout* layout_page;
     QGroupBox* table_group;
@@ -105,8 +101,11 @@ private:
     void set_combo_box_enabled(QComboBox* combo_box, QList<QSharedPointer<Billet_widget>>* list, bool enabled);
     bool is_field_of_combo_box_enabled(QComboBox* combo_box, const QString& text);
     QStringList string_to_list(const QString& field);
-
-
+public:
+    //inline int get_table_group_width(){return table_group->width();}
+    void main_table_settings();
+    QString widgets_list_to_string(QList<QSharedPointer<Billet_widget>>* list);
+    void set_all_combo_box_enabled(bool enabled);
 
 private slots:
     void set_search_edit(int search_id);//переименовать
@@ -126,9 +125,7 @@ private slots:
     void on_sort_button_clicked();
     void on_director_add_button_clicked();
     void on_clear_button_clicked();
-
-    void on_table_row_selected(QModelIndex index);
-public slots:
+    void on_table_row_selected(QModelIndex index);   
     //switches for redact widgets
     void set_focus_to(QWidget* widget);
     void set_focus_to(ComboBox* widget);
@@ -136,6 +133,7 @@ public slots:
     inline void set_focus_to_name_edit(){ name_edit->setFocus();}
     inline void set_focus_to_director_combo_box(){ director_combo_box->setFocus();}
     inline void set_focus_to_genre_combo_box(){ genre_combo_box->setFocus();}
+    inline void set_focus_to_sort_combo_box(){ sort_combo_box->setFocus();}
     void set_focus_to_genre_combo_box_item();
     inline void set_focus_to_date_edit(){ date_edit->setFocus();}
     inline void set_focus_to_rating_spin_box(){ rating_spin_box->setFocus();}
@@ -149,6 +147,11 @@ public slots:
     inline void set_focus_to_accept_button(){ accept_button->setFocus();}
     inline void set_focus_to_clear_button(){clear_button->setFocus();}
     inline void set_focus_to_back_button(){ back_button->setFocus();}
+    //switches for table
+    inline void set_focus_to_table(){ table->setFocus();}
+
+    void on_table_down_pressed();
+
 signals:
     void genre_scroll_was_changed();
     void director_scroll_was_changed();

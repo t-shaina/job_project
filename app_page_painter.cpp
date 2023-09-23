@@ -49,7 +49,7 @@ App_page_painter::App_page_painter(QWidget* parent)
     status_combo_box(new ComboBox(this)),
     accept_button (new PushButton("Добавить", this)),
     back_button (new PushButton("Выйти", this)),
-    table(new QTableView(this)),
+    table(new FilmsTableView(this)),
     redact_transfer_state(false),
 
     layout_page(new QGridLayout(this)),
@@ -195,7 +195,7 @@ App_page_painter::App_page_painter(QWidget* parent)
     main_scroll_group_settings(genre_scroll, genre_scroll_group, genre_scroll_layout);
 
     base_settings();
-
+    set_focus_to_show_all_button();
     connect(redact_button, SIGNAL(clicked()), this, SLOT(on_redact_button_clicked()));
     connect(sort_button, SIGNAL(clicked()), this, SLOT(on_sort_button_clicked()));
     connect(director_add_button, SIGNAL(clicked()), this, SLOT(on_director_add_button_clicked()));
@@ -218,7 +218,7 @@ App_page_painter::App_page_painter(QWidget* parent)
     connect(search_edit, SIGNAL(right_pressed()), this, SLOT(set_focus_to_search_button()));
     connect(search_edit, SIGNAL(up_pressed()), this, SLOT(set_focus_to_show_all_button()));
     connect(name_edit, SIGNAL(down_pressed()), this, SLOT(set_focus_to_director_combo_box()));
-    connect(director_combo_box, SIGNAL(enter_pressed()), this, SLOT(on_director_add_button_clicked()));
+    //connect(director_combo_box, SIGNAL(enter_pressed()), this, SLOT(on_director_add_button_clicked()));
     connect(director_combo_box, SIGNAL(down_pressed()), this, SLOT(set_focus_to_genre_combo_box()));
     connect(director_combo_box, SIGNAL(up_pressed()), this, SLOT(set_focus_to_name_edit()));
     connect(director_combo_box, SIGNAL(right_pressed()), this, SLOT(set_focus_to_genre_combo_box_item()));
@@ -233,16 +233,21 @@ App_page_painter::App_page_painter(QWidget* parent)
     //switches for buttons
     connect(delete_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_search_edit()));
     connect(delete_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_redact_button()));
+    connect(delete_button, SIGNAL(up_pressed()), this, SLOT(set_focus_to_table()));
     connect(redact_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_search_edit()));
     connect(redact_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_show_all_button()));
     connect(redact_button, SIGNAL(left_pressed()), this, SLOT(set_focus_to_delete_button()));
     connect(redact_button, SIGNAL(enter_pressed()), this, SLOT(on_redact_button_clicked()));
+    connect(redact_button, SIGNAL(up_pressed()), this, SLOT(set_focus_to_table()));
     connect(show_all_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_search_edit()));
-    connect(show_all_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_sort_button()));
+    connect(show_all_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_sort_combo_box()));
     connect(show_all_button, SIGNAL(left_pressed()), this, SLOT(set_focus_to_redact_button()));
+    connect(show_all_button, SIGNAL(up_pressed()), this, SLOT(set_focus_to_table()));
     connect(sort_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_search_edit()));
     connect(sort_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_accept_button()));
+    connect(sort_button, SIGNAL(left_pressed()), this, SLOT(set_focus_to_sort_combo_box()));
     connect(sort_button, SIGNAL(enter_pressed()), this, SLOT(on_sort_button_clicked()));
+    connect(sort_button, SIGNAL(up_pressed()), this, SLOT(set_focus_to_table()));
     connect(search_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_back_button()));
     connect(director_add_button, SIGNAL(enter_pressed()), this, SLOT(on_director_add_button_clicked()));
     connect(accept_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_back_button()));
@@ -254,7 +259,14 @@ App_page_painter::App_page_painter(QWidget* parent)
     connect(back_button, SIGNAL(left_pressed()), this, SLOT(set_focus_to_search_edit()));
     connect(back_button, SIGNAL(up_pressed()), this, SLOT(set_focus_to_accept_button()));
     //connect(show_all_button, SIGNAL(down_pressed()), this, SLOT(set_focus_to_search_edit()));
-
+    //switches for table
+    connect(table, SIGNAL(down_pressed()), this, SLOT(on_table_down_pressed()));
+    connect(table, SIGNAL(update_action()),this, SLOT(on_redact_button_clicked()));
+    //switches for sort_combo_box
+    connect(sort_combo_box, SIGNAL(right_pressed()), this, SLOT(set_focus_to_sort_button()));
+    connect(sort_combo_box, SIGNAL(left_pressed()), this, SLOT(set_focus_to_show_all_button()));
+    connect(sort_combo_box, SIGNAL(down_pressed()), this, SLOT(set_focus_to_search_edit()));
+    connect(sort_combo_box, SIGNAL(up_pressed()), this, SLOT(set_focus_to_table()));
 
 
 }
@@ -636,33 +648,25 @@ void App_page_painter::main_buttons_settings(int w, int h){
     clear_button->setEnabled(false);
 }
 void App_page_painter::main_table_settings(){
-    qDebug()<<"in main table settings";
-    //table->setHorizontalHeader();
-    QStandardItemModel* model=new QStandardItemModel(0, 6, this);
-    this->table->setModel(model);
-    table->setShowGrid(true);
-    table->setSelectionMode(QAbstractItemView::SingleSelection);//мб несколько shift
-    table->setSelectionBehavior(QAbstractItemView::SelectRows);
-    model->setColumnCount(6);
-    model->setHorizontalHeaderLabels(headers);
-
-    table->setColumnWidth(0, table_group->width()*0.20);
-    table->setColumnWidth(1, table_group->width()*0.20);
-    table->setColumnWidth(2, table_group->width()*0.20);
-    table->setColumnWidth(3, table_group->width()*0.10);
-    table->setColumnWidth(4, table_group->width()*0.10);
-    table->setColumnWidth(5, table_group->width()*0.15);
-    table->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
-    table->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    table->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    table->table_settings(table_group->width());
 }
+
 void App_page_painter::main_scroll_group_settings(QScrollArea* scroll, QWidget* group, QLayout* layout){
     scroll->setWidgetResizable(false);
     scroll->setAlignment(Qt::AlignLeft);
     scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     group->setFixedSize(scroll->width(), scroll->height());
     group->setLayout(layout);
     group->setStyleSheet("QGroupBox{border: 0px;}");
     scroll->setWidget(group);
+}
+void App_page_painter::on_table_down_pressed(){
+    QStandardItemModel* model=static_cast<QStandardItemModel*>(table->model());
+    QItemSelectionModel* select_model=table->selectionModel();
+    if(model->rowCount()==(select_model->currentIndex().row()+1)){
+
+        set_focus_to_show_all_button();
+        //select_model->setCurrentIndex(QModelIndex(), QItemSelectionModel::NoUpdate);//установка текущего индекса в недопустимое значение
+    }
 }

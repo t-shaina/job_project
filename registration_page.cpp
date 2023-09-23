@@ -19,13 +19,13 @@ Registration_page::Registration_page(QWidget *parent)
     label_email(new QLabel(email_label_text,this)),
     label_password(new QLabel(password_label_text, this)),
     label_repeat_password(new QLabel(repeat_password_label_text, this)),
-    edit_name(new QLineEdit(this)),
-    edit_email(new QLineEdit(this)),
-    edit_password(new QLineEdit(this)),
-    edit_repeat_password(new QLineEdit(this)),
+    edit_name(new LineEdit(this)),
+    edit_email(new LineEdit(this)),
+    edit_password(new LineEdit(this)),
+    edit_repeat_password(new LineEdit(this)),
     incorrect_repeated_password_msg(new QLabel(edit_repeat_password)),
-    back_button(new QPushButton(backbutton_text, this)),
-    registration_button(new QPushButton(regbutton_text, this)),
+    back_button(new PushButton(backbutton_text, this)),
+    registration_button(new PushButton(regbutton_text, this)),
     layout_registration_page(new QGridLayout(this))
 {
     layout_registration_page->setVerticalSpacing(30);
@@ -76,10 +76,25 @@ Registration_page::Registration_page(QWidget *parent)
     connect(registration_button, SIGNAL(clicked()), this, SLOT(on_registration_button_clicked()));
 
     edit_name->setFocus();
+    //switches for edits
     connect(edit_name, SIGNAL(returnPressed()), this, SLOT(on_name_return_pressed()));
+    connect(edit_name, SIGNAL(down_pressed()), this, SLOT(set_focus_to_edit_email()));
     connect(edit_email, SIGNAL(returnPressed()), this, SLOT(on_email_return_pressed()));
+    connect(edit_email, SIGNAL(down_pressed()), this, SLOT(set_focus_to_edit_password()));
+    connect(edit_email, SIGNAL(up_pressed()), this, SLOT(set_focus_to_edit_name()));
     connect(edit_password, SIGNAL(returnPressed()), this, SLOT(on_password_return_pressed()));
+    connect(edit_password, SIGNAL(down_pressed()), this, SLOT(set_focus_to_edit_repeat_password()));
+    connect(edit_password, SIGNAL(up_pressed()), this, SLOT(set_focus_to_edit_email()));
     connect(edit_repeat_password, SIGNAL(returnPressed()), this, SLOT(on_repeat_password_return_pressed()));
+    connect(edit_repeat_password, SIGNAL(down_pressed()), this, SLOT(set_focus_to_registration_button()));
+    connect(edit_repeat_password, SIGNAL(up_pressed()), this, SLOT(set_focus_to_edit_password()));
+    //switches for buttons
+    connect(registration_button, SIGNAL(enter_pressed()), this, SLOT(on_registration_button_clicked()));
+    connect(registration_button, SIGNAL(up_pressed()), this, SLOT(set_focus_to_edit_repeat_password()));
+    connect(registration_button, SIGNAL(left_pressed()), this, SLOT(set_focus_to_back_button()));
+    connect(back_button, SIGNAL(enter_pressed()), this, SLOT(on_back_button_clicked()));
+    connect(back_button, SIGNAL(right_pressed()), this, SLOT(set_focus_to_registration_button()));
+
 
 }
 

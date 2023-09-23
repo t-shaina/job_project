@@ -46,6 +46,7 @@ App_page::App_page(QWidget *parent)
     connect(app_page_painter->search_button, SIGNAL(enter_pressed()), this, SLOT(on_search_button_clicked()));
     connect(app_page_painter->accept_button, SIGNAL(enter_pressed()), this, SLOT(on_accept_button_clicked()));
     connect(app_page_painter->back_button, SIGNAL(enter_pressed()), this, SLOT(on_back_button_clicked()));
+    connect(app_page_painter->table, SIGNAL(delete_action()),this, SLOT(on_delete_button_clicked()));
 }
 App_page::~App_page(){
     delete app_page_painter;
@@ -251,6 +252,7 @@ void App_page::filling_in_table(QJsonArray* array_data, int row_position){
             }
             //qDebug()<<string_of_item;
             QStandardItem* item=new QStandardItem(string_of_item);
+            if (column==3||column==4||column==5)item->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
             model->setItem(row_position, column, item);
             //row_of_item->push_back(item);
         }
@@ -293,7 +295,7 @@ void App_page::filling_page_with_data(QJsonArray* data){
     qDebug()<<"in filing page with data";
     QStandardItemModel* model=static_cast<QStandardItemModel*>(app_page_painter->table->model());
     model->clear();
-    app_page_painter->main_table_settings();   
+    this->app_page_painter->main_table_settings();
     //app_page_painter->director_combo_box->addItems(*app_page_painter->directors_list);
     filling_in_table(data, 0);
 }

@@ -5,9 +5,16 @@ ComboBox::ComboBox(QWidget* parent):QComboBox(parent)
     //this->setFocusPolicy();
 }
 void ComboBox::keyPressEvent(QKeyEvent *event){
-    QComboBox::keyPressEvent(event);
+    //QComboBox::keyPressEvent(event);
     switch (event->key()) {
+    case Qt::Key_Return:
+        QComboBox::keyPressEvent(event);
+        qDebug()<<"return";
+        emit return_pressed();
+        break;
     case Qt::Key_Enter:
+        qDebug()<<"enter";
+        QComboBox::keyPressEvent(event);
         emit enter_pressed();
         break;
     case Qt::Key_Down:
@@ -16,10 +23,16 @@ void ComboBox::keyPressEvent(QKeyEvent *event){
     case Qt::Key_Up:
         emit up_pressed();
         break;
-    case Qt::Key_Right:
+    case Qt::Key_Right:       
+        QComboBox::keyPressEvent(event);
         emit right_pressed();
         break;
-    default:
+    case Qt::Key_Left:
+        QComboBox::keyPressEvent(event);
+        emit left_pressed();
+        break;
+    default:       
+        QComboBox::keyPressEvent(event);
         break;
     }
 

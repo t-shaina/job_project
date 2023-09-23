@@ -18,6 +18,8 @@ signals:
     void down_pressed();
     void up_pressed();
     void right_pressed();
+    void left_pressed();
+    void return_pressed();
 };
 
 #endif // COMBO_BOX_H

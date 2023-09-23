@@ -1,6 +1,8 @@
 #ifndef REGISTRATION_PAGE_H
 #define REGISTRATION_PAGE_H
 
+#include"line_edit.h"
+#include"push_button.h"
 #include <QObject>
 #include <QWidget>
 #include<QPushButton>
@@ -19,16 +21,16 @@ private:
     QLabel* label_email;
     QLabel* label_password;
     QLabel* label_repeat_password;
-    QLineEdit* edit_name;
-    QLineEdit* edit_email;
-    QLineEdit* edit_password;
-    QLineEdit* edit_repeat_password;
+    LineEdit* edit_name;
+    LineEdit* edit_email;
+    LineEdit* edit_password;
+    LineEdit* edit_repeat_password;
     QLabel* incorrect_repeated_password_msg;
     //QPushButton* button_entry;
-    QPushButton* button_registration;
+    //QPushButton* button_registration;
     QGridLayout* layout_registration_page;
-    QPushButton* back_button;
-    QPushButton* registration_button;
+    PushButton* back_button;
+    PushButton* registration_button;
 private slots:
     void on_edits_edited();
     void on_back_button_clicked();
@@ -38,6 +40,12 @@ private slots:
     void on_email_return_pressed();
     void on_password_return_pressed();
     void on_repeat_password_return_pressed();
+    inline void set_focus_to_edit_name(){edit_name->setFocus();}
+    inline void set_focus_to_edit_email(){edit_email->setFocus();}
+    inline void set_focus_to_edit_password(){edit_password->setFocus();}
+    inline void set_focus_to_edit_repeat_password(){edit_repeat_password->setFocus();}
+    inline void set_focus_to_back_button(){back_button->setFocus();}
+    inline void set_focus_to_registration_button(){registration_button->setFocus();}
 signals:
     void step_back();
     void registration_request(QStringList*);
