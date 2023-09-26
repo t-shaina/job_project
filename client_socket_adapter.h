@@ -8,6 +8,8 @@ class Client_socket_adapter:public Socket_adapter
     Q_OBJECT
 public:
     explicit Client_socket_adapter(QObject* parent);
+
+
 };
 
 #endif // CLIENT_SOCKET_ADAPTER_H

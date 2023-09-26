@@ -11,7 +11,10 @@ public:
     explicit ISocket_adapter(QObject* parent);
     virtual ~ISocket_adapter();
     virtual void sendData(const QByteArray& str)=0;
+
 signals:
+    //void no_connection(QAbstractSocket::SocketError);
+    virtual void socket_error(QTcpSocket::SocketError, const QByteArray&);
     void have_new_message(QByteArray message);
     void disconnected();
 };
@@ -26,11 +29,14 @@ public:
     QStringList* received_data;
     Socket_adapter(QObject* parent, QTcpSocket* p_socket=0);
     virtual ~Socket_adapter();
-    virtual void sendData(const QByteArray& message);
+    virtual  void sendData(const QByteArray& message);
+
 protected slots:
     void readyRead();   
     void on_disconnected();
 signals:
+    void socket_error(QTcpSocket::SocketError, const QByteArray&);
+    //void no_connection(QAbstractSocket::SocketError);
     void have_new_message(QByteArray message);
     void disconnected();
 };

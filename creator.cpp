@@ -8,6 +8,7 @@
 #include<QVariantMap>
 Creator::Creator(QApplication* parent)
 {
+    buffer=new Buffer();
     main_window=new MainWindow ();
     main_window->setWindowTitle("FilmsInfo");
     main_window->show();
@@ -15,7 +16,32 @@ Creator::Creator(QApplication* parent)
 
     QObject::connect(this->main_window, SIGNAL(have_request(QStringList*)), this, SLOT(create_query(QStringList*)));//
     QObject::connect(this->i_adapter, SIGNAL(have_new_message(QByteArray)), this, SLOT(data_received(QByteArray)));
+    QObject::connect(this->i_adapter, SIGNAL(socket_error(QTcpSocket::SocketError, const QByteArray&)), this, SLOT(on_socket_error(QTcpSocket::SocketError, const QByteArray&)));
 
+}
+void Creator::on_socket_error(QTcpSocket::SocketError error, const QByteArray& data){
+
+    qDebug()<<error;
+    switch (error) {
+    case QAbstractSocket::ConnectionRefusedError:
+        buffer->push(data);
+        try_sending();
+        //i_adapter->connect_to_host("127.0.0.1", 1234);
+        break;
+    case QAbstractSocket::RemoteHostClosedError:
+        buffer->push(data);
+        //i_adapter=new Client_socket_adapter(this);
+        break;
+    default:
+        //i_adapter=new Client_socket_adapter(this);
+         qDebug()<<"connection error cannot be fixed";
+        break;
+    }
+}
+void Creator::try_sending(){
+    if (!buffer->is_empty()) {
+        i_adapter->sendData(buffer->pop());
+    }
 }
 Creator::~Creator()
 {
@@ -25,7 +51,6 @@ Creator::~Creator()
     delete behavour;
 }
 void Creator::create_query(QStringList* data){
-    //qDebug()<<"in create_query firs element is"<< data->at(1);
     QByteArray array_data=QJsonDocument(Json_creator(data).get_json_data()).toJson();
     i_adapter->sendData(array_data);
 }

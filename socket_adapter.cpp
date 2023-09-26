@@ -15,6 +15,14 @@ Socket_adapter::Socket_adapter(QObject* parent, QTcpSocket* p_socket)
     connect(socket_, SIGNAL(disconnected()), this, SLOT(on_disconnected()));
 
 }
+/*void Socket_adapter::connect_to_host(QString&&  host, quint16 port){
+    socket_->connectToHost(host, port);
+    if(!socket_->waitForConnected(10000)){
+        //emit no_connection(socket_->error());
+        qDebug()<<"in client_socket_adapter error is"<<socket_->errorString();
+    }
+}*/
+
 Socket_adapter::~Socket_adapter(){}
 void Socket_adapter::readyRead(){
     qDebug()<< "in readyRead";
@@ -45,14 +53,20 @@ void Socket_adapter::on_disconnected(){
 }
 
 void Socket_adapter::sendData(const QByteArray& message){
-    QByteArray block;
-    QDataStream sendStream(&block, QIODevice::ReadWrite);
-    sendStream << quint16(0) << message;
-    sendStream.device()->seek(0);
-    sendStream << (quint16)(block.size() - sizeof(quint16));
-    qDebug()<<"in sendData block_size " << (quint16)(block.size() - sizeof(quint16));
-;
-    //qDebug()<<"in sendData block "<< block.toStdString();
-    socket_->write(block);
+    qDebug()<<socket_->state();
+    if(socket_->isValid()&&socket_->state()==QAbstractSocket::ConnectedState){
+        QByteArray block;
+        QDataStream sendStream(&block, QIODevice::ReadWrite);
+        sendStream << quint16(0) << message;
+        sendStream.device()->seek(0);
+        sendStream << (quint16)(block.size() - sizeof(quint16));
+        qDebug()<<"in sendData block_size " << (quint16)(block.size() - sizeof(quint16));
+
+        //qDebug()<<"in sendData block "<< block.toStdString();
+        if(socket_->write(block)==-1){
+            emit socket_error(socket_->error(), message);
+        }
+    }
+    else emit socket_error(socket_->error(), message);
 }
 

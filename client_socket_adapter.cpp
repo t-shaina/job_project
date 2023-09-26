@@ -3,5 +3,8 @@
 Client_socket_adapter::Client_socket_adapter(QObject* parent)
     :Socket_adapter(parent)
 {
-    socket_->connectToHost("127.0.0.1", 1234);
+     //QObject::connect(this, SIGNAL(no_connection(QTcpSocket::SocketError)), parent, SLOT(on_socket_error(QTcpSocket::SocketError)));
+     socket_->connectToHost("127.0.0.1", 1234);
+
 }
+

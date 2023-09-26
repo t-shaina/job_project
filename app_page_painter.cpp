@@ -39,7 +39,7 @@ App_page_painter::App_page_painter(QWidget* parent)
     search_button(new PushButton("Поиск", this)),
     name_edit (new TextEdit(this)),
     name_invalid_symbol_label(new QLabel("Введен недопустимый символ",this)),
-    director_combo_box(new ComboBox(this)),
+    director_combo_box(new EditComboBox(this)),
     genre_billet_widgets(new QList<QSharedPointer<Billet_widget>>),
     director_invalid_symbol_label(new QLabel("Введен недопустимый символ",this)),
     director_billet_widgets(new QList<QSharedPointer<Billet_widget>>),
@@ -218,7 +218,7 @@ App_page_painter::App_page_painter(QWidget* parent)
     connect(search_edit, SIGNAL(right_pressed()), this, SLOT(set_focus_to_search_button()));
     connect(search_edit, SIGNAL(up_pressed()), this, SLOT(set_focus_to_show_all_button()));
     connect(name_edit, SIGNAL(down_pressed()), this, SLOT(set_focus_to_director_combo_box()));
-    //connect(director_combo_box, SIGNAL(enter_pressed()), this, SLOT(on_director_add_button_clicked()));
+    connect(director_combo_box, SIGNAL(return_pressed()), this, SLOT(on_director_add_button_clicked()));
     connect(director_combo_box, SIGNAL(down_pressed()), this, SLOT(set_focus_to_genre_combo_box()));
     connect(director_combo_box, SIGNAL(up_pressed()), this, SLOT(set_focus_to_name_edit()));
     connect(director_combo_box, SIGNAL(right_pressed()), this, SLOT(set_focus_to_genre_combo_box_item()));
@@ -609,7 +609,7 @@ void App_page_painter::base_settings(){
     genre_combo_box->addItems(genre_list);
     QStandardItemModel* director_model=new QStandardItemModel(director_combo_box);
     director_combo_box->setModel(director_model);
-    director_combo_box->setEditable(true);
+    //director_combo_box->setEditable(true);
     date_slider->setOrientation(Qt::Horizontal);
     //genre_scroll->setReadOnly(true);
 

@@ -42,7 +42,7 @@ public:
     PushButton* search_button;
     TextEdit* name_edit;
     QLabel* name_invalid_symbol_label;
-    ComboBox* director_combo_box;
+    EditComboBox* director_combo_box;
     QList<QSharedPointer<Billet_widget>>* genre_billet_widgets;
     QLabel* director_invalid_symbol_label;
     QList<QSharedPointer<Billet_widget>>* director_billet_widgets;

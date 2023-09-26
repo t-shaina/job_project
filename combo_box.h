@@ -21,5 +21,21 @@ signals:
     void left_pressed();
     void return_pressed();
 };
+class EditComboBox: public QComboBox
+{
+    Q_OBJECT
+public:
+    //QComboBox
+    EditComboBox(QWidget* parent=nullptr);
+public slots:
+    void keyPressEvent(QKeyEvent *e);
+signals:
+    void enter_pressed();
+    void down_pressed();
+    void up_pressed();
+    void right_pressed();
+    void left_pressed();
+    void return_pressed();
+};
 
 #endif // COMBO_BOX_H
