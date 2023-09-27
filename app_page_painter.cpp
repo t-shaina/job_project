@@ -270,7 +270,7 @@ App_page_painter::App_page_painter(QWidget* parent)
 
 
 }
-App_page_painter::~App_page_painter(){qDebug()<<"in app page painter destructor";}
+App_page_painter::~App_page_painter(){}
 void App_page_painter::set_search_edit(int search_id){
     //
 }
@@ -295,13 +295,13 @@ void App_page_painter::set_date_edit(int data_value){
     date_edit->setText(text);
 }
 void App_page_painter::set_director_scroll(int director_id){
-    qDebug()<<"in set director scroll director is"<<directors_list->at(director_id);
+    //qDebug()<<"in set director scroll director is"<<directors_list->at(director_id);
     QString text=directors_list->at(director_id);
     set_scroll(director_combo_box, director_scroll_group, text, director_billet_widgets);
     emit director_scroll_was_changed();    
 }
 void App_page_painter::set_genre_scroll(int genre_id){
-    qDebug()<<"in set genre scroll genre is"<<genre_list.at(genre_id);
+    //qDebug()<<"in set genre scroll genre is"<<genre_list.at(genre_id);
     QString text=genre_list.at(genre_id);
     set_scroll(director_combo_box, genre_scroll_group, text, genre_billet_widgets);
     emit genre_scroll_was_changed();
@@ -427,26 +427,26 @@ void App_page_painter::on_redact_button_clicked(){
 }
 void App_page_painter::on_director_add_button_clicked(){
     //director_combo_box->setPlaceholderText(' ');
-    qDebug()<<"in director add button clicked";
+    //qDebug()<<"in director add button clicked";
     QRegularExpression directors_r_expr("([^a-zа-яё\\d\\.\\-\\s]+)", QRegularExpression::CaseInsensitiveOption);
     Symbols_inspector symbols_inspector=Symbols_inspector();
     bool status=symbols_inspector.finding_invalid_symbols(director_combo_box, directors_r_expr);
     if (status){
-        qDebug()<<"in finding invalid symbol branch in add button clicked";
+        //qDebug()<<"in finding invalid symbol branch in add button clicked";
         director_invalid_symbol_label->setVisible(true);
     }
     else {
 
-        qDebug()<<"in doesnt finding invalid symbol branch in add button clicked";
+        //qDebug()<<"in doesnt finding invalid symbol branch in add button clicked";
         QString text=symbols_inspector.removing_extra_symbols(director_combo_box->currentText());
         symbols_inspector.set_uppercase(text, QRegularExpression("^([a-zа-яё]{1})|(\b[a-zа-яё]{1})", QRegularExpression::DotMatchesEverythingOption));
         //QString text=director_combo_box->currentText();
         if(!directors_list->contains(text)){
-            qDebug()<<"in doesnt contains text branch in add button clicked text is"<<text;
+            //qDebug()<<"in doesnt contains text branch in add button clicked text is"<<text;
             *directors_list<<text;
             director_combo_box->addItem(text);
         }
-        qDebug()<<"in add button clicked text is"<<text;
+        //qDebug()<<"in add button clicked text is"<<text;
         set_scroll(director_combo_box, director_scroll_group, text, director_billet_widgets);
         //QStandardItemModel* director_model=static_cast<QStandardItemModel*>(director_combo_box->model());
         //director_combo_box->setCurrentText(-1);
@@ -469,7 +469,7 @@ void App_page_painter::on_clear_button_clicked(){
     emit director_scroll_was_changed();
 }
 void App_page_painter::on_table_row_selected(QModelIndex index){
-    qDebug()<<"in table row selected";
+
     delete_button->setEnabled(true);
     redact_button->setEnabled(true);
 
@@ -492,7 +492,7 @@ void App_page_painter::on_director_combo_box_text_changed(){
 QString App_page_painter::widgets_list_to_string(QList<QSharedPointer<Billet_widget>>* list){
     QString widgets_string;
     for(int i=0;i<list->size();i++){
-        qDebug()<<"in widgets list to string element is"<<list->at(i)->text();
+        //qDebug()<<"in widgets list to string element is"<<list->at(i)->text();
         widgets_string+=list->at(i)->text();
         widgets_string+=" ";
     }
@@ -507,7 +507,7 @@ void App_page_painter::on_search_edit_edited(){
 void App_page_painter::on_name_director_genre_data_edit_changed(){
     QTextEdit* sender_;
     if(sender_==qobject_cast<QTextEdit*>(sender())){//разобрать
-        qDebug()<<"sender is text_edit";
+        //qDebug()<<"sender is text_edit";
         name_invalid_symbol_label->setVisible(false);
         director_invalid_symbol_label->setVisible(false);
     }

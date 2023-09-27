@@ -53,7 +53,7 @@ void Billet_widget::on_delete_button_clicked(){
 }
 Billet_widget::~Billet_widget(){
     //emit widget_was_deleted(this->text());
-    qDebug()<<"in billet_widget destructor";
+    //qDebug()<<"in billet_widget destructor";
 }
 QString Billet_widget::text()const{
     return text_label->text();

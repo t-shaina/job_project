@@ -26,6 +26,10 @@ QByteArray Buffer::pop(){
     QPair<int, QByteArray> element=buffer->dequeue();
     return element.second;
 }
+QByteArray Buffer::head(){
+    QPair<int, QByteArray> element=buffer->head();
+    return element.second;
+}
 bool Buffer::contains_key(int key){
     for (QQueue<QPair<int, QByteArray>>::iterator i=buffer->begin(); i<buffer->end(); i++) {
         if(i->first==key)

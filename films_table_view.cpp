@@ -40,7 +40,7 @@ void FilmsTableView::mousePressEvent(QMouseEvent *event){
     }
 }
 void FilmsTableView::table_settings(int table_group_width){
-    qDebug()<<"in main table settings";
+    //qDebug()<<"in main table settings";
     //table->setHorizontalHeader();
     QStandardItemModel* model=new QStandardItemModel(0, 6, this);
     this->setModel(model);

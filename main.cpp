@@ -3,18 +3,18 @@
 //#include"app_page.h"
 #include"creator.h"
 #include <QApplication>
+#include<QCommandLineParser>
 #include"symbols_inspector.h"
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setWindowIcon(QIcon("~/Qt/my/untitled2/icon.png"));
     Creator c(&a);
+    if(argc>0){
+        QCommandLineParser parser;
+        parser.process(a);
+        c.set_host_port(parser.positionalArguments());
+    }
 
-
-    Symbols_inspector symbols_inspector=Symbols_inspector();
-    QString test="name   ";
-    qDebug()<<"name with spaces is"<<test;
-    QString name_without_spaces=symbols_inspector.removing_last_spaces(test);
-    qDebug()<<"name without spaces is"<<name_without_spaces;
     return a.exec();
 }

@@ -15,6 +15,7 @@ public:
     QQueue<QPair<int, QByteArray>>* buffer;
     void push(const QByteArray& data);
     QByteArray pop();
+    QByteArray head();
     bool is_empty();
 private:
     bool contains_key(int key);

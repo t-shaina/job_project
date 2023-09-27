@@ -50,7 +50,7 @@ void EditComboBox::keyPressEvent(QKeyEvent *event){
         emit return_pressed();
         break;
     case Qt::Key_Enter:
-        qDebug()<<"enter";
+        //qDebug()<<"enter";
         //QComboBox::keyPressEvent(event);
         emit enter_pressed();
         break;

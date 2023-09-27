@@ -52,6 +52,7 @@ public slots:
     void processing_entry_request(QStringList*);
     void processing_registration_request(QStringList*);
     // слоты обработки входящих сообщений
+    void msg_about_connection(const QString&);
     void msg_such_user_not_exist();
     void create_app_page(QVariantMap* data);
     void msg_deletion_failed();

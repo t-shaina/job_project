@@ -29,7 +29,6 @@ App_page::App_page(QWidget *parent)
 
 {
     app_page_painter=new App_page_painter(parent);
-    qDebug()<<"inn app page constructor";
     //connect(sort_combo_box, SIGNAL(activated(int)), this, SLOT(set_search_edit(int)));
     connect(app_page_painter->back_button, SIGNAL(clicked()), this, SLOT(on_back_button_clicked()));
     connect(app_page_painter->delete_button, SIGNAL(clicked()), this, SLOT(on_delete_button_clicked()));
@@ -106,7 +105,6 @@ int App_page::find_row_in_list(QList<int>* list, const QJsonObject& object_row){
     QString title=object_map.take("Title").toString();
     QString directors=jsonarray_to_str(object_map.take("Directors").toJsonArray());
     QString year=object_map.take("Year").toString();
-    qDebug()<<"in finf row list size is"<<list->size();
     int current_row=0;
     for(QList<int>::iterator i=list->begin(); i<end;i++, current_row++){
         if(model->item(*i, 0)->text()==title&&
@@ -162,7 +160,7 @@ void App_page::on_accept_button_clicked(){
         //symbols_inspector.set_uppercase(app_page_painter->name_edit, QRegularExpression("^([a-zа-яё]{1})|(?<=[!\\.\\:\'\"«]{1}\\s*)[a-zа-яё]{1}", QRegularExpression::NoPatternOption));//проверка двойных слэш и  "
         QString genres=app_page_painter->widgets_list_to_string(app_page_painter->genre_billet_widgets);
         QString directors=app_page_painter->widgets_list_to_string(app_page_painter->director_billet_widgets);
-        qDebug()<<"title in text edit is"<<app_page_painter->name_edit->toPlainText();
+        //qDebug()<<"title in text edit is"<<app_page_painter->name_edit->toPlainText();
         QStringList insert_list= QStringList()<<this->email
                                              <<app_page_painter->name_edit->toPlainText()
                                              <<directors
@@ -282,17 +280,15 @@ void App_page::remove_row_in_table(QJsonArray* data){
     //QJsonObject row_object= data->at(0).toObject();
     //QVariantMap row_data=row_object.toVariantMap();
     int row=find_row_in_list(delete_rows_list, data->at(0).toObject());
-    qDebug()<<"in remove row in table row is "<<row;
+    //qDebug()<<"in remove row in table row is "<<row;
     if(row>0){
         model->removeRow(row);
         this->remove_from_delete_list(row);
     }
     else qDebug()<<"incorrect number of row in remove row in table";
-    qDebug()<<"after remove from delete_list";
-
 }
 void App_page::filling_page_with_data(QJsonArray* data){
-    qDebug()<<"in filing page with data";
+    //qDebug()<<"in filing page with data";
     QStandardItemModel* model=static_cast<QStandardItemModel*>(app_page_painter->table->model());
     model->clear();
     this->app_page_painter->main_table_settings();
@@ -320,7 +316,7 @@ void App_page::filling_in_director_combo_box(QJsonArray* data){
 }
 void App_page::insert_row_in_table(QJsonArray* data){
     //тут или в заполнении таблицв проверка кратности размра листа 6
-    qDebug()<<"in insert_row_in_table";
+    //qDebug()<<"in insert_row_in_table";
     QStandardItemModel* model=static_cast<QStandardItemModel*>(app_page_painter->table->model());
     int current_number_of_rows=model->rowCount();
     filling_in_table(data, current_number_of_rows);//точно +1?
@@ -342,7 +338,7 @@ void App_page::update_row_in_table(QJsonObject* data_new_object, QJsonObject* da
             break;
         }
     }
-    qDebug()<<row;
+    //qDebug()<<row;
     this->remove_from_update_list(row);
     //QJsonObject row_new_object= array_data->at(1).toObject();
     QVariantMap row_new_data=data_new_object->toVariantMap();

@@ -76,7 +76,7 @@ void MainWindow:: breaking_registration_page(){
 }
 void MainWindow::processing_entry_request(QStringList* entry_list){
     entry_list->push_front("0");
-    qDebug()<< entry_list->at(0)<<entry_list->at(1)<<entry_list->at(2);
+    //qDebug()<< entry_list->at(0)<<entry_list->at(1)<<entry_list->at(2);
     emit have_request(entry_list);
 }
 void MainWindow::processing_search_request(QStringList* search_list){
@@ -86,7 +86,7 @@ void MainWindow::processing_search_request(QStringList* search_list){
 void MainWindow::processing_delete_request(QStringList* delete_list){
     qDebug()<<"in processing delete_request";
     delete_list->push_front("1");
-    qDebug()<< delete_list->at(0)<<delete_list->at(1)<<delete_list->at(2);
+    //qDebug()<< delete_list->at(0)<<delete_list->at(1)<<delete_list->at(2);
     emit have_request(delete_list);
 }
 void MainWindow::processing_select_all_request(QStringList* email){
@@ -114,6 +114,9 @@ void MainWindow::processing_insert_request(QStringList* insert_list){
 void MainWindow::processing_registration_request(QStringList* registration_list){
     registration_list->push_front("4");
     emit have_request(registration_list);
+}
+void MainWindow::msg_about_connection(const QString& msg){
+    status.setText(msg);
 }
 void MainWindow::msg_such_user_not_exist(){
     status.setText("Неверный  email или пароль");
