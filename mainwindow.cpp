@@ -154,6 +154,7 @@ void MainWindow::msg_records_not_exist(){
     status.setText("По запросу ничего не найдено");
 }
 void MainWindow::msg_records_exist(QVariantMap* data){
+    status.setText("По запросу найдены строки");
     QJsonArray data_array=data->take("Rows").toJsonArray();
     this->app_page->filling_page_with_data(&data_array);
 }

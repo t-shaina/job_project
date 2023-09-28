@@ -141,8 +141,9 @@ void App_page::on_show_all_button_clicked(){
 }
 void App_page::on_search_button_clicked(){
     QStringList data=QStringList();
+    Symbols_inspector symbols_inspector;
     data<<this->email;
-    data<<this->app_page_painter->search_edit->text();
+    data<<symbols_inspector.removing_last_spaces(this->app_page_painter->search_edit->text());
     emit search_request(&data);
 }
 
@@ -224,9 +225,11 @@ void App_page::filling_in_table(QJsonArray* array_data, int row_position){
             QString string_of_item= QString();
             //QVariantMap::const_iterator iter;
             QJsonArray array_object;
+            Symbols_inspector symbols_inspector;
             switch (column) {
+
             case 0:
-                string_of_item=row_data.take("Title").toString();
+                string_of_item=symbols_inspector.removing_last_spaces(row_data.take("Title").toString());
                 break;
             case 1:
                 array_object=row_data.take("Directors").toJsonArray();
@@ -243,14 +246,14 @@ void App_page::filling_in_table(QJsonArray* array_data, int row_position){
                 string_of_item=row_data.take("Rating").toString();
                 break;
             case 5:
-                string_of_item=row_data.take("Status").toString();
+                string_of_item=symbols_inspector.removing_last_spaces(row_data.take("Status").toString());
                 break;
             default:
                 break;
             }
-            //qDebug()<<string_of_item;
+            qDebug()<<"in filling in table string is"<<string_of_item;
             QStandardItem* item=new QStandardItem(string_of_item);
-            if (column==3||column==4||column==5)item->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+            if (column==3||column==4/*||column==5*/)item->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
             model->setItem(row_position, column, item);
             //row_of_item->push_back(item);
         }
