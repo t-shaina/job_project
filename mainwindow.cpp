@@ -192,6 +192,7 @@ void MainWindow::msg_all_records_not_exist(){
     status.setText("Ошибка обновления данных");
 }
 void MainWindow::msg_all_records_exist(QVariantMap* data){
+    status.setText("Получены данные");
     QJsonArray data_array=data->take("Rows").toJsonArray();
     this->app_page->filling_page_with_data(&data_array);
 }

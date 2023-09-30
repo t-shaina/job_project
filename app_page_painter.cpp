@@ -396,6 +396,7 @@ void App_page_painter::on_redact_button_clicked(){
     for(int i=0; i<model->columnCount();i++){
         QModelIndex column_index=model->index(row, i);
         this->row_to_update->push_back(column_index.data().toString());
+        qDebug()<<"on redact button clicked row to update is"<<column_index.data();
     }
     //this->add_to_update_list();
     this->set_all_combo_box_enabled(true);
