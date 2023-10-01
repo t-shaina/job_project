@@ -3,12 +3,14 @@
 #include"start_page.h"
 #include"registration_page.h"
 #include"app_page.h"
+#include"dialog.h"
 #include <QMainWindow>
 #include <QString>
 #include<QStringList>
 #include<QLabel>
 #include<QMenuBar>
 #include<QVariantMap>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -25,7 +27,7 @@ public:
 private:
     Ui::MainWindow *ui;
     QLabel status;
-    QMenuBar menu_bar;
+    Dialog* dialog;
     Start_page* start_page;
     Registration_page* registration_page;
     App_page* app_page;
@@ -35,11 +37,12 @@ signals:
     void entry_response();
     void delete_response();
     void have_request(QStringList* data);
+    void window_was_destroyed();
 
 public slots:
     void set_username(QString username);
     void resize_window();
-    void on_incorrect_email_or_password();
+    void msg_incorrect_email_or_password();
 
     void destroy_app_page();
     void creating_registration_page();
@@ -70,7 +73,7 @@ public slots:
     void msg_updation_successful(QVariantMap* data);
     //void data_decryption(QString);
     //void data_encoding(QStringList* data);
-
+    //void closeEvent(QCloseEvent *event);
 
 };
 #endif // MAINWINDOW_H

@@ -21,6 +21,8 @@ class Entry_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QVariantMap* data, int error_code);
+public:
+    virtual ~Entry_behavour(){};
 public slots:
     //void creating_connect(Template_behavour* behavour);
 signals:
@@ -32,6 +34,8 @@ class Delete_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QVariantMap* data, int error_code);
+public:
+    virtual ~Delete_behavour(){};
 public slots:
     //void creating_connect(Template_behavour* behavour);
 signals:   
@@ -42,6 +46,8 @@ class Select_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QVariantMap* data, int error_code);
+public:
+    virtual ~Select_behavour(){};
 public slots:
     //void creating_connect(Template_behavour* behavour);
 signals:
@@ -52,6 +58,8 @@ class Insert_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QVariantMap* data, int error_code);
+public:
+    virtual ~Insert_behavour(){};
 public slots:
     //void creating_connect(Template_behavour* behavour);
 signals:
@@ -64,6 +72,8 @@ class Registration_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QVariantMap* data, int error_code);
+public:
+    virtual ~Registration_behavour(){};
 public slots:
     //void creating_connect(Template_behavour* behavour);
 signals:
@@ -75,6 +85,8 @@ class Select_all_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QVariantMap* data, int error_code);
+public:
+    virtual ~Select_all_behavour(){};
 public slots:
     //void creating_connect(Template_behavour* behavour);
 signals:
@@ -87,6 +99,8 @@ class Update_behavour:public Template_behavour{
     Q_OBJECT
 private:
     void processing_of_behavour(QVariantMap* data, int error_code);
+public:
+    virtual ~Update_behavour(){};
 public slots:
     //void creating_connect(Template_behavour* behavour);
 signals:

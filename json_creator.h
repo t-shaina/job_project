@@ -13,7 +13,9 @@ class Json_creator
 public:
     Json_creator(QStringList* data);
     static QJsonArray creating_directors_or_genre_array(QString data);
-    static QJsonObject creating_row_object(QStringList* data, int position);
+    static QJsonArray creating_old_directors_or_genre_array(QString data);// with commas
+    static QJsonObject creating_row_object(QStringList* data, int position=2);
+    static QJsonObject creating_old_row_object(QStringList* data, int position=8);// with commas
     QJsonObject get_json_data();
     ~Json_creator();
 private:

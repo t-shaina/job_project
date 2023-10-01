@@ -8,16 +8,17 @@
 #include <stdlib.h>
 #include<QMenu>
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+    : QMainWindow(parent, Qt::WindowSystemMenuHint)
     , ui(new Ui::MainWindow)
     , status(new QLabel(this))
-    , menu_bar(new QMenuBar(this))
+    //, menu_bar(new QMenuBar(this))
 
 {
     ui->setupUi(this);
     this->setFixedSize(500, 350);
     QFont main_window_font("Cochin", 0, 0);
     this->setFont(main_window_font);
+    this->setAttribute(Qt::WA_DeleteOnClose);
     statusBar()->addWidget(&status);
     status.setLineWidth(350);
     status.setText("Войдите в систему");
@@ -30,13 +31,15 @@ MainWindow::MainWindow(QWidget *parent)
     //QObject::connect(this->start_page, SIGNAL(entry_request(QStringList*)), this, SLOT(create_app_page()));
     QObject::connect(this->start_page, SIGNAL(entry_request(QStringList*)), this, SLOT(processing_entry_request(QStringList*)));
     QObject::connect(this->start_page, SIGNAL(create_registration_page()), this, SLOT(creating_registration_page()));
-    QObject::connect(this->start_page, SIGNAL(incorrect_email_or_password()), this, SLOT(on_incorrect_email_or_password()));
+    QObject::connect(this->start_page, SIGNAL(incorrect_email_or_password()), this, SLOT(msg_incorrect_email_or_password()));
     //QObject::connect(this->app_page, SIGNAL(step_back()), this, SLOT(destroy_app_page()));
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    //emit window_was_destroyed();
+    //destroy(true, true);
+    //delete ui;
 }
 
 void MainWindow::set_username(QString username){
@@ -49,7 +52,7 @@ void MainWindow::resize_window(){
     this->setSizeIncrement(8, 6);
     this->setFixedSize(1280, 800);
 }
-void MainWindow::on_incorrect_email_or_password(){
+void MainWindow::msg_incorrect_email_or_password(){
     this->status.setText("Неверный Email или пароль");
 }
 void MainWindow:: destroy_app_page(){
@@ -205,3 +208,6 @@ void MainWindow::msg_updation_successful(QVariantMap* data){
     QJsonObject data_old_object=data->take("Row_old").toJsonObject();
     this->app_page->update_row_in_table(&data_new_object, &data_old_object);
 }
+/*void MainWindow::closeEvent(QCloseEvent *event){
+    //dialog=new Dialog(this);
+}*/

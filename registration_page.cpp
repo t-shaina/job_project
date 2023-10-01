@@ -97,7 +97,7 @@ Registration_page::Registration_page(QWidget *parent)
 
 
 }
-
+Registration_page::~Registration_page(){/*destroy(true, true);*/}
 void Registration_page::on_edits_edited(){
     if(!is_edits_are_correct()){
         registration_button->setEnabled(false);

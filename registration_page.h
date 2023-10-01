@@ -15,6 +15,7 @@ class Registration_page: public QWidget
     Q_OBJECT
 public:
     Registration_page(QWidget* parent=nullptr);
+    ~Registration_page();
 
 private:
     QLabel* label_name;

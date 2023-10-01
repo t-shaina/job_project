@@ -106,6 +106,7 @@ public:
     void main_table_settings();
     QString widgets_list_to_string(QList<QSharedPointer<Billet_widget>>* list);
     void set_all_combo_box_enabled(bool enabled);
+    void filling_in_director_combo_box(QJsonArray directors);
 
 private slots:
     void set_search_edit(int search_id);//переименовать

@@ -37,7 +37,7 @@ Json_creator::Json_creator(QStringList* data)
         json_data["RequestCode"]=data->at(0);
         json_data["Email"]=data->at(1);
         json_data["Row_new"]=Json_creator::creating_row_object(data, 2);
-        json_data["Row_old"]=Json_creator::creating_row_object(data, 8);// с седьмого элемента начинается строка старых данных
+        json_data["Row_old"]=Json_creator::creating_old_row_object(data, 8);// с седьмого элемента начинается строка старых данных
         break;
     default:
         break;
@@ -67,11 +67,43 @@ QJsonArray Json_creator::creating_directors_or_genre_array(QString data){
 
     return data_array;
 }
+QJsonArray Json_creator::creating_old_directors_or_genre_array(QString data){//with commas
+    data.push_back(',');
+    QJsonArray data_array;
+    QString word;
+    //qDebug()<<"size of directors or genre array is"<<data.size();
+    for(int i=0;i<data.size();i++){
+        if(data.at(i)==','){
+            i++;
+            //qDebug()<<"creating directors or genry word is"<<word;
+            data_array.push_back(word);
+            //qDebug()<<"in creating directors or genry array"<<data_array.last().toString();
+            word.clear();
+        }
+        else word+=data.at(i);
+    }
+
+    return data_array;
+}
 QJsonObject Json_creator::creating_row_object(QStringList* data, int position){
     QJsonObject json_row_data;
     json_row_data["Title"]=data->at(position);
     json_row_data["Directors"]=Json_creator::creating_directors_or_genre_array(data->at(++position));
     json_row_data["Genres"]=Json_creator::creating_directors_or_genre_array(data->at(++position));
+    json_row_data["Year"]=data->at(++position);
+    json_row_data["Rating"]=data->at(++position);
+    json_row_data["Status"]=data->at(++position);
+    qDebug()<<"in creating row_object title is"<<json_row_data.value("Title").toString();
+    qDebug()<<"in creating row object year is"<<json_row_data.value("Year").toString();
+    qDebug()<<"in creating row object rating is"<<json_row_data.value("Rating").toString();
+    qDebug()<<"in creating row object status is"<<json_row_data.value("Status").toString();
+    return json_row_data;
+}
+QJsonObject Json_creator::creating_old_row_object(QStringList* data, int position){//with commas
+    QJsonObject json_row_data;
+    json_row_data["Title"]=data->at(position);
+    json_row_data["Directors"]=Json_creator::creating_old_directors_or_genre_array(data->at(++position));
+    json_row_data["Genres"]=Json_creator::creating_old_directors_or_genre_array(data->at(++position));
     json_row_data["Year"]=data->at(++position);
     json_row_data["Rating"]=data->at(++position);
     json_row_data["Status"]=data->at(++position);

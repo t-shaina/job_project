@@ -14,23 +14,23 @@ Creator::Creator(QApplication* parent)
     i_adapter= new Client_socket_adapter(this);
 
     QObject::connect(this->main_window, SIGNAL(have_request(QStringList*)), this, SLOT(create_query(QStringList*)));//
+    QObject::connect(this->main_window, SIGNAL(window_was_destroyed()), this, SLOT(main_window_was_destroyed()));//
     QObject::connect(this->i_adapter, SIGNAL(error_with_connection(const QString&)), this->main_window, SLOT(msg_about_connection(const QString&)));//
     QObject::connect(this->i_adapter, SIGNAL(have_new_message(QByteArray)), this, SLOT(data_received(QByteArray)));
     //QObject::connect(this->i_adapter, SIGNAL(socket_error(QTcpSocket::SocketError, const QByteArray&)), this, SLOT(on_socket_error(QTcpSocket::SocketError, const QByteArray&)));
 
 }
 
-/*void Creator::try_sending(){
-    if (!buffer->is_empty()) {
-        i_adapter->sendData(buffer->pop());
-    }
-}*/
+void Creator::main_window_was_destroyed(){
+    //this->~Creator();
+}
 Creator::~Creator()
 {
-    delete main_window;
+
+    //delete main_window;
     //socket->disconnect();
-    delete i_adapter;
-    delete behavour;
+    //delete i_adapter;
+    //delete behavour;
 }
 void Creator::set_host_port(QStringList arguments){
     i_adapter->set_host(arguments.at(0));

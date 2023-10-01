@@ -21,6 +21,7 @@ public:
     void removing_extra_symbols(QLineEdit* line_edit);
     QString removing_extra_symbols(QString string);
     QString removing_last_spaces(QString string);
+    QString removing_last_comma(QString string);
     void set_uppercase(QTextEdit* text_edit, const QRegularExpression& expression);
     QString set_uppercase(QString string, const QRegularExpression& expression);
 };

@@ -65,7 +65,7 @@ Start_page::Start_page(QWidget *parent)
     connect(button_entry, SIGNAL(up_pressed()), this, SLOT(set_focus_to_edit_password()));
 }
 
-Start_page::~Start_page(){};
+Start_page::~Start_page(){/*destroy(true, true);*/};
 
 void Start_page::set_start_page_visible(bool flag){
     label_email->setVisible(flag);

@@ -48,9 +48,9 @@ App_page::App_page(QWidget *parent)
     connect(app_page_painter->table, SIGNAL(delete_action()),this, SLOT(on_delete_button_clicked()));
 }
 App_page::~App_page(){
-    delete app_page_painter;
+    //delete app_page_painter;
     //delete delete_rows_list;
-    //delete delete_rows_list;
+    //delete update_rows_list;
 }
 void App_page::on_back_button_clicked(){
     //email.clear();
@@ -307,14 +307,7 @@ void App_page::filling_in_director_combo_box(QJsonArray* data){
         QJsonArray array_directors_object;
         array_directors_object=row_data.take("Directors").toJsonArray();
         //director=jsonarray_to_str(array_object);
-        for(int i=0;i<array_directors_object.size();i++){
-            Symbols_inspector symbols_inspector;
-            director=symbols_inspector.removing_last_spaces(array_directors_object.at(i).toString());
-            if(!app_page_painter->directors_list->contains(director)){
-                app_page_painter->directors_list->push_back(director);
-                app_page_painter->director_combo_box->addItem(director);
-            }
-        }
+        app_page_painter->filling_in_director_combo_box(array_directors_object);
     }
 }
 void App_page::insert_row_in_table(QJsonArray* data){
@@ -349,9 +342,10 @@ void App_page::update_row_in_table(QJsonObject* data_new_object, QJsonObject* da
         QString string_of_item= QString();
         //QJsonArray::const_iterator iter;
         QJsonArray array_object;
+        Symbols_inspector symbols_inspector;
         switch (column){
         case 0:
-            string_of_item=row_new_data.take("Title").toString();
+            string_of_item=symbols_inspector.removing_last_spaces(row_new_data.take("Title").toString());
             break;
         case 1:
             array_object=row_new_data.take("Directors").toJsonArray();
@@ -374,7 +368,9 @@ void App_page::update_row_in_table(QJsonObject* data_new_object, QJsonObject* da
             break;
             }
         QStandardItem* item=new QStandardItem(string_of_item);
+        if (column==3||column==4/*||column==5*/)item->setTextAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
         model->setItem(row, column, item);
-        model->emit itemChanged(item);//проверить нужно ли
+        //model->emit itemChanged(item);//проверить нужно ли
     }
+    app_page_painter->filling_in_director_combo_box(row_new_data.take("Directors").toJsonArray());
 }

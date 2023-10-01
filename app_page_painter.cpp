@@ -4,6 +4,7 @@
 #include<QCommonStyle>
 #include<QDate>
 #include<QHeaderView>
+#include<QJsonArray>
 const int width_window=1280;
 const int height_window=800;
 const int l_margin=10;
@@ -270,7 +271,7 @@ App_page_painter::App_page_painter(QWidget* parent)
 
 
 }
-App_page_painter::~App_page_painter(){}
+App_page_painter::~App_page_painter(){ /*destroy(true, true);*/}
 void App_page_painter::set_search_edit(int search_id){
     //
 }
@@ -366,6 +367,17 @@ void App_page_painter::set_all_combo_box_enabled(bool enabled){
     set_combo_box_enabled(director_combo_box, director_billet_widgets, enabled);
     set_combo_box_enabled(genre_combo_box, genre_billet_widgets, enabled);
 }
+void App_page_painter::filling_in_director_combo_box(QJsonArray directors){
+    QString director= QString();
+    for(int i=0;i<directors.size();i++){
+        Symbols_inspector symbols_inspector;
+        director=symbols_inspector.removing_last_spaces(directors.at(i).toString());
+        if(!directors_list->contains(director)){
+            directors_list->push_back(director);
+            director_combo_box->addItem(director);
+        }
+    }
+}
 bool App_page_painter::is_field_of_combo_box_enabled(QComboBox* combo_box, const QString& text){
     bool status =true;
     Symbols_inspector symbols_inspector;
@@ -393,8 +405,10 @@ void App_page_painter::on_redact_button_clicked(){
     QModelIndex index=select_model->currentIndex();
     int row=index.row();
     update_model_index=index;
+    Symbols_inspector symbols_inspector;
     for(int i=0; i<model->columnCount();i++){
         QModelIndex column_index=model->index(row, i);
+        //QString cell=column_index.data().toString();
         this->row_to_update->push_back(column_index.data().toString());
         qDebug()<<"on redact button clicked row to update is"<<column_index.data();
     }

@@ -40,6 +40,7 @@ set(PROJECT_SOURCES
     films_table_view.cpp
     menu.cpp
     buffer.cpp
+    dialog.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
